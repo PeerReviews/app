@@ -1,2 +1,5 @@
 # Dossiers générés par MySQL ou Moodle pour les données
 dbdata/
+
+# Fichiers confidentiels
+.env
