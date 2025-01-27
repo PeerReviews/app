@@ -8,16 +8,17 @@ services:
       - ./moodle:/var/www/html
       - ./moodledata:/var/moodledata
     environment:
-      - MOODLE_DATABASE_HOST=db
-      - MOODLE_DATABASE_NAME=moodle
-      - MOODLE_DATABASE_USER=moodle
-      - MOODLE_DATABASE_PASSWORD=moodlepass
+      - MOODLE_DATABASE_HOST=${MOODLE_DATABASE_HOST}
+      - MOODLE_DATABASE_NAME=${MOODLE_DATABASE_NAME}
+      - MOODLE_DATABASE_USER=${MOODLE_DATABASE_USER}
+      - MOODLE_DATABASE_PASSWORD=${MOODLE_DATABASE_PASSWORD}
+
   db:
     image: mariadb:latest
     environment:
-      MYSQL_DATABASE: moodle
-      MYSQL_USER: moodle
-      MYSQL_PASSWORD: moodlepass
-      MYSQL_ROOT_PASSWORD: rootpass
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./dbdata:/var/lib/mysql
