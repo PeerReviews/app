@@ -26100,6 +26100,14 @@ blockquote {
   filter: brightness(0) invert(1);
 }
 
+.activityiconcontainer.project {
+  background-color: #b8e6fe;
+}
+.activityiconcontainer.project .activityicon:not(.nofilter),
+.activityiconcontainer.project .icon:not(.nofilter) {
+  filter: brightness(0) invert(1);
+}
+
 .activityiconcontainer.collaboration {
   background-color: #f7634d;
 }
@@ -26155,6 +26163,7 @@ blockquote {
   --activitycommunication: #11a676;
   --activitycontent: #399be2;
   --activityinterface: #a378ff;
+  --activityproject: #b8e6fe;
 }
 
 /* admin.less */

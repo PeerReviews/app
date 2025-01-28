@@ -52,6 +52,7 @@ Available purpose types are:
   - MOD_PURPOSE_CONTENT
   - MOD_PURPOSE_ADMINISTRATION
   - MOD_PURPOSE_INTERFACE
+  - MOD_PURPOSE_PROJECT
   - MOD_PURPOSE_OTHER
 The colours for these types are defined in theme/boost/scss/moodle/variables.scss
 * The format_base is now deprecated. Use core_courseformat\base instead.

@@ -477,6 +477,8 @@ define('MOD_PURPOSE_COMMUNICATION', 'communication');
 define('MOD_PURPOSE_CONTENT', 'content');
 /** Module purpose interface */
 define('MOD_PURPOSE_INTERFACE', 'interface');
+/** Module purpose interface */
+define('MOD_PURPOSE_PROJECT', 'project');
 /** Module purpose other */
 define('MOD_PURPOSE_OTHER', 'other');
 
