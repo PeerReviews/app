@@ -27,6 +27,20 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
 
+    // Vérification des dates et assignation sans strtotime() car déjà en timestamp Unix
+    foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
+        if (isset($data->$date_field)) {
+            // Vérifiez si la date est un timestamp valide
+            if (is_int($data->$date_field) && $data->$date_field > 0) {
+                $record->$date_field = $data->$date_field;
+            } else {
+                throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
+            }
+        } else {
+            throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
+        }
+    }
+
     // Vérification des champs obligatoires
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
@@ -46,7 +60,6 @@ function studentqcm_add_instance($data, $mform = null) {
 
     return $id;
 }
-
 
 
 

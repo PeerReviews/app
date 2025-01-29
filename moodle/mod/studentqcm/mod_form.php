@@ -17,6 +17,36 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('editor', 'intro', get_string('intro', 'mod_studentqcm'), null);
         $mform->setType('intro', PARAM_RAW);
         $mform->addRule('intro', null, 'required', null, 'client');
+
+        // Ajout des champs de date.
+
+        // First date range
+        $mform->addElement('date_selector', 'start_date_1', get_string('start_date_1', 'mod_studentqcm'));
+        $mform->addRule('start_date_1', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_1', get_string('end_date_1', 'mod_studentqcm'));
+        $mform->addRule('end_date_1', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_tt_1', get_string('end_date_tt_1', 'mod_studentqcm'));
+        $mform->addRule('end_date_tt_1', null, 'required', null, 'client');
+
+        $mform->addElement('date_selector', 'start_date_2', get_string('start_date_2', 'mod_studentqcm'));
+        $mform->addRule('start_date_2', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_2', get_string('end_date_2', 'mod_studentqcm'));
+        $mform->addRule('end_date_2', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_tt_2', get_string('end_date_tt_2', 'mod_studentqcm'));
+        $mform->addRule('end_date_tt_2', null, 'required', null, 'client');
+
+        $mform->addElement('date_selector', 'start_date_3', get_string('start_date_3', 'mod_studentqcm'));
+        $mform->addRule('start_date_3', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_3', get_string('end_date_3', 'mod_studentqcm'));
+        $mform->addRule('end_date_3', null, 'required', null, 'client');
+        
+        $mform->addElement('date_selector', 'end_date_tt_3', get_string('end_date_tt_3', 'mod_studentqcm'));
+        $mform->addRule('end_date_tt_3', null, 'required', null, 'client');
         
         $this->standard_coursemodule_elements();
 

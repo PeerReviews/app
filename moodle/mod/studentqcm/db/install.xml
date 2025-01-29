@@ -13,6 +13,15 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="start_date_1" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_1" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_tt_1" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="start_date_2" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_2" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_tt_2" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="start_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="end_date_tt_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </FIELDS>
     </TABLE>
