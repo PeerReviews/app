@@ -25,7 +25,9 @@ $string['end_date_tt_3'] = 'Phase 3 : date fin tiers-temps';
 $string['phase1'] = 'PHASE 1';
 $string['phase2'] = 'PHASE 2';
 $string['phase3'] = 'PHASE 2';
-
+$string['phase_start'] = 'Début';
+$string['phase_available'] = 'Commencer';
+$string['phase_unavailable'] = 'Indisponible';
 $string['phase1_title'] = 'Création de QCMs';
 $string['phase2_title'] = 'Évaluation de QCMs';
-$string['phase3_title'] = 'Correction à partir des évaluations';
+$string['phase3_title'] = 'Modification des QCMs';

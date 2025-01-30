@@ -20,17 +20,14 @@ function studentqcm_add_instance($data, $mform = null) {
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
 
-    // Nettoyer les champs pour correspondre à la table
     $record = new stdClass();
     $record->name = trim($data->name);
     $record->intro = isset($data->intro['text']) ? trim($data->intro['text']) : '';
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
 
-    // Vérification des dates et assignation sans strtotime() car déjà en timestamp Unix
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
         if (isset($data->$date_field)) {
-            // Vérifiez si la date est un timestamp valide
             if (is_int($data->$date_field) && $data->$date_field > 0) {
                 $record->$date_field = $data->$date_field;
             } else {
@@ -41,7 +38,6 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
-    // Vérification des champs obligatoires
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
@@ -49,10 +45,6 @@ function studentqcm_add_instance($data, $mform = null) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'intro');
     }
 
-    // Log pour vérification des données avant insertion
-    error_log(print_r($record, true));
-
-    // Insérer dans la table studentqcm
     $id = $DB->insert_record('studentqcm', $record);
     if (!$id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
