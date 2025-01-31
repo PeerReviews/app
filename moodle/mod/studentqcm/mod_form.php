@@ -20,7 +20,6 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         // Ajout des champs de date.
 
-        // First date range
         $mform->addElement('date_selector', 'start_date_1', get_string('start_date_1', 'mod_studentqcm'));
         $mform->addRule('start_date_1', null, 'required', null, 'client');
         

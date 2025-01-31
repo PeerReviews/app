@@ -31,3 +31,17 @@ $string['phase_unavailable'] = 'Indisponible';
 $string['phase1_title'] = 'Création de QCMs';
 $string['phase2_title'] = 'Évaluation de QCMs';
 $string['phase3_title'] = 'Modification des QCMs';
+
+$string['back'] = 'Retour';
+
+$string['qcm_list'] = 'Ma liste de QCMs';
+$string['add_qcm'] = 'Ajouter un QCM';
+$string['qcm_not_found'] = 'Aucun QCM trouvé';
+$string['create_qcm'] = 'Je crée mon QCM';
+
+// QCM 
+$string['question'] = 'Question';
+$string['answer'] = 'Réponse';
+$string['explanation'] = 'Explication';
+$string['correct_answer'] = 'Réponse vraie';
+$string['submit'] = 'Envoyer le QCM';
