@@ -5,7 +5,7 @@
 >
   <TABLES>
 
-    <TABLE NAME="studentqcm">
+    <TABLE NAME="studentqcm" COMMENT="Main table for StudentQCM module">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="text" LENGTH="255" NOTNULL="true"/>
@@ -22,8 +22,10 @@
         <FIELD NAME="start_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="end_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="end_date_tt_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
     </TABLE>
 
     <TABLE NAME="studentqcm_form" COMMENT="Each record is one QCM and its config data">
