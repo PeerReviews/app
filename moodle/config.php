@@ -176,6 +176,8 @@ $CFG->dataroot  = '/var/moodledata';
 // NOTE: the prefixed 0 is important, and don't use quotes.
 
 $CFG->directorypermissions = 02777;
+$CFG->disablecookievalidation = true;
+
 
 
 //=========================================================================
