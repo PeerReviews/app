@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  canvas:
+    image: instructure/canvas-lms:latest
+    container_name: canvas
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - canvas_data:/var/canvas
+    networks:
+      - canvas_network
+
+  postgres:
+    image: postgres:15
+    container_name: canvas_postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - canvas_network
+
+  redis:
+    image: redis:7
+    container_name: canvas_redis
+    restart: always
+    networks:
+      - canvas_network
+
+volumes:
+  canvas_data:
+  postgres_data:
+
+networks:
+  canvas_network:
