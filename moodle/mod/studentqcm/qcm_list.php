@@ -12,7 +12,7 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
 $userid = $USER->id;
-$qcms = $DB->get_records('studentqcm_form', array('userid' => $userid, 'status' => 'active'));
+$qcms = $DB->get_records('studentqcm_question', array('userid' => $userid));
 
 // Vérifier que l'utilisateur est connecté et qu'il a les droits nécessaires
 require_login($course, true, $cm);

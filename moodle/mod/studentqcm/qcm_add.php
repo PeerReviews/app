@@ -37,10 +37,11 @@ echo "<div class='flex mt-16 text-lg justify-between'>";
     echo "</a>";
 echo "</div>";
 
+
 echo "<form method='post' action='submit_qcm.php'>";
 echo "<div class='mt-8'>";
 
-$question_count = 3;
+$question_count = 1;
 
 for ($q = 1; $q <= $question_count; $q++) {
     // Question
@@ -90,10 +91,12 @@ echo "</div>";
 echo "</form>";
 
 
+
+echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
     tinymce.init({
-        selector: 'textarea',
+        selector: 'textarea', // Sélectionne tous les éléments <textarea>
         plugins: ['image', 'media', 'link', 'table'],
         toolbar: 'undo redo | bold italic underline | image media | link | table | uploadimage',
         image_advtab: true,
@@ -104,7 +107,7 @@ echo "<script>
         images_upload_url: 'upload.php', // Fichier serveur pour gérer l'upload
         automatic_uploads: true,
         
-        // Activer le bouton d'upload
+        // Callback pour l'upload de fichiers
         file_picker_callback: function(callback, value, meta) {
             if (meta.filetype === 'image') {
                 var input = document.createElement('input');
@@ -123,9 +126,23 @@ echo "<script>
                 };
                 input.click();
             }
+        },
+
+        // L'événement 'init' garantit que nous pouvons manipuler les éléments après initialisation
+        setup: function(editor) {
+            editor.on('init', function() {
+                // Sélectionner tous les 'textarea' convertis en éditeurs
+                var textareas = document.querySelectorAll('textarea.mce-tiny');
+                textareas.forEach(function(textarea) {
+                    // Enlever l'attribut 'aria-hidden' des textarea convertis
+                    textarea.removeAttribute('aria-hidden');
+                });
+            });
         }
     });
 </script>";
+
+
 
 
 echo $OUTPUT->footer();

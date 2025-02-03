@@ -22,50 +22,90 @@
         <FIELD NAME="start_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="end_date_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="end_date_tt_3" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="referentiel" REFTABLE="referentiel" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="referentiel" COMMENT="List of referentiel">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
 
-    <TABLE NAME="studentqcm_form" COMMENT="Each record is one QCM and its config data">
+     <TABLE NAME="competency" COMMENT="List of competencies">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="ID de l'étudiant créateur"/>
-        <FIELD NAME="qcm_content" TYPE="text" NOTNULL="true" COMMENT="Chemin ou contenu du fichier XML"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Horodatage de la création"/>
-        <FIELD NAME="status" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="active" COMMENT="Statut du QCM (e.g., active, reviewed)"/>
+        <FIELD NAME="name" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Référentiel (clé étrangère)"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="referentiel" REFTABLE="referentiel" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="subcompetency" COMMENT="List of competencies">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel"/>
+        <FIELD NAME="competency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Référentiel (clé étrangère)"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="competency" REFTABLE="competency" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="studentqcm_question" COMMENT="Each record is one QCM and its config data">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="bigint" LENGTH="10" NOTNULL="true" COMMENT="ID de l'étudiant créateur"/>
+        <FIELD NAME="indexation" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Champ d'indexation"/>
+        <FIELD NAME="question" TYPE="text" NOTNULL="true" COMMENT="Contenu XML ou chemin du fichier"/>
+        <FIELD NAME="global_comment" TYPE="text" NOTNULL="true" COMMENT="Commentaire global de la question"/>
+        <FIELD NAME="context" TYPE="text" NOTNULL="true" COMMENT="Context"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Référentiel (clé étrangère)"/>
+        <FIELD NAME="competency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Compétence (clé étrangère)"/>
+        <FIELD NAME="subcompetency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Sous-Compétence (clé étrangère)"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_user" TYPE="foreign" FIELDS="userid" REFTABLE="users" REFFIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="referentiel" REFTABLE="referentiel" REFFIELDS="id"/>
+        <KEY NAME="foreign_competency" TYPE="foreign" FIELDS="competency" REFTABLE="competency" REFFIELDS="id"/>
+        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency" REFTABLE="subcompetency" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="keyword" COMMENT="List of keywords">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="word" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Mot-clé"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
 
-    <TABLE NAME="studentqcm_evaluations" COMMENT="Liens entre QCM et évaluateurs">
+    <TABLE NAME="question_keywords" COMMENT="Relation entre questions et mots-clés">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="qcmid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="ID du QCM évalué"/>
-        <FIELD NAME="evaluatorid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="ID de l'étudiant évaluateur"/>
-        <FIELD NAME="feedback" TYPE="text" NOTNULL="false" COMMENT="Feedback de l'évaluateur"/>
-        <FIELD NAME="timeevaluated" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Horodatage de l'évaluation"/>
+        <FIELD NAME="question_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="keyword_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="foreign_qcmid" TYPE="foreign" FIELDS="qcmid" REFTABLE="studentqcm" REFFIELDS="id"/>
+        <KEY NAME="primary" TYPE="primary" FIELDS="question_id, keyword_id"/>
+        <KEY NAME="foreign_question" TYPE="foreign" FIELDS="question_id" REFTABLE="studentqcm_question" REFFIELDS="id"/>
+        <KEY NAME="foreign_keyword" TYPE="foreign" FIELDS="keyword_id" REFTABLE="keyword" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
 
-    <TABLE NAME="studentqcm_phases" COMMENT="Gestion des phases">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="phase_name" TYPE="char" LENGTH="50" NOTNULL="true" COMMENT="Nom de la phase"/>
-        <FIELD NAME="start_date" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Début de la phase"/>
-        <FIELD NAME="end_date" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Fin de la phase"/>
-        <FIELD NAME="status" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="active" COMMENT="Statut de la phase"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
   </TABLES>
 </XMLDB>
