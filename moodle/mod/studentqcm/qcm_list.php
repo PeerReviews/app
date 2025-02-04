@@ -12,7 +12,14 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
 $userid = $USER->id;
-$qcms = $DB->get_records('studentqcm_question', array('userid' => $userid));
+
+// Récupérer toutes les questions créées par l'utilisateur
+$qcms = $DB->get_records('studentqcm_question', array('userid' => $userid), 'id DESC');
+
+// Charger les noms des référentiels, compétences, sous-compétences et mots-clés
+$referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
+$competencies = $DB->get_records_menu('competency', null, '', 'id, name');
+$subcompetencies = $DB->get_records_menu('subcompetency', null, '', 'id, name');
 
 // Vérifier que l'utilisateur est connecté et qu'il a les droits nécessaires
 require_login($course, true, $cm);
@@ -32,6 +39,7 @@ echo "<div class='mx-auto'>";
     echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('qcm_list', 'mod_studentqcm') . "</p>";
 echo "</div>";
 
+// Boutons de navigation
 echo "<div class='flex mt-16 text-lg justify-between'>";
     echo "<a href='view.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
     echo "<i class='fas fa-arrow-left mr-2'></i>";
@@ -44,22 +52,41 @@ echo "<div class='flex mt-16 text-lg justify-between'>";
     echo "</a>";
 echo "</div>";
 
-echo "<div class='rounded-2xl bg-gray-50 p-2 mt-8'>";
-    if ($qcms) {
-        echo "<div class='mt-8'>";
-        echo "<p class='font-bold text-2xl text-gray-600'>" . get_string('your_qcms', 'mod_studentqcm') . "</p>";
-        echo "<ul class='list-disc pl-8'>";
-        
-        // Afficher chaque QCM
-        foreach ($qcms as $qcm) {
-            echo "<li class='mt-2'><a href='" . $qcm->qcm_content . "' class='text-lime-500 hover:underline'>" . format_string($qcm->qcm_content) . "</a></li>";
-        }
-        
-        echo "</ul>";
+if ($qcms) {
+    echo "<div class='space-y-4 mt-4'>";
+    
+    foreach ($qcms as $qcm) {
+        // Récupérer les noms correspondants aux IDs
+        $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
+        $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
+        $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
+
+        echo "<div class='p-4 bg-white rounded-lg shadow flex items-center justify-between'>";
+
+            // Partie gauche (question + infos)
+            echo "<div>";
+                // Titre de la question
+                echo "<p class='font-semibold text-xl text-gray-700'>" . format_string($qcm->question) . "</p>";
+
+                // Informations sur le référentiel, compétence et sous-compétence (Affichage des NOMS et non des IDs)
+                echo "<p class='text-gray-600 text-sm'>" . 
+                     get_string('referentiel', 'mod_studentqcm') . ": <strong>{$nom_referentiel}</strong> | " . 
+                     get_string('competency', 'mod_studentqcm') . ": <strong>{$nom_competency}</strong> | " . 
+                     get_string('subcompetency', 'mod_studentqcm') . ": <strong>{$nom_subcompetency}</strong></p>";
+            echo "</div>";
+
+            // Partie droite (boutons)
+            echo "<div class='flex space-x-2'>";
+                echo "<a href='qcm_edit.php?id={$qcm->id}' class='px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600'>" . get_string('edit', 'mod_studentqcm') . "</a>";
+                echo "<a href='qcm_delete.php?id={$qcm->id}' class='px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='return confirm(\"" . get_string('confirm_delete', 'mod_studentqcm') . "\")'>" . get_string('delete', 'mod_studentqcm') . "</a>";
+            echo "</div>";
+
         echo "</div>";
-    } else {
-        echo "<p class='text-center text-lg'>" . get_string('qcm_not_found', 'mod_studentqcm') . "</p>";
     }
-echo "</div>";
+    
+    echo "</div>";
+} else {
+    echo "<p class='text-center text-lg text-gray-600'>" . get_string('qcm_not_found', 'mod_studentqcm') . "</p>";
+}
 
 echo $OUTPUT->footer();

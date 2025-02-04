@@ -45,3 +45,17 @@ $string['answer'] = 'Réponse';
 $string['explanation'] = 'Explication';
 $string['correct_answer'] = 'Réponse vraie';
 $string['submit'] = 'Envoyer le QCM';
+$string['referentiel'] = 'Référentiel';
+$string['competency'] = 'Compétence';
+$string['subcompetency'] = 'Sous-compétence';
+$string['keywords'] = 'Mots-clés';
+$string['addmore'] = 'Ajouter + ';
+
+$string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
+$string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
+$string['atleastonekeyword'] = 'Veuillez saisir au moins un mot-clé.';
+
+$string['your_qcms'] = "QCM";
+$string['edit'] = "Modifier";
+$string['confirm_delete'] = "Supprimer";
+$string['delete'] = "Supprimer";

@@ -20,12 +20,15 @@ function studentqcm_add_instance($data, $mform = null) {
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
 
+    // Préparer les données du QCM
     $record = new stdClass();
     $record->name = trim($data->name);
     $record->intro = isset($data->intro['text']) ? trim($data->intro['text']) : '';
+    $record->introformat = isset($data->intro['format']) ? $data->intro['format'] : 0;
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
 
+    // Validation des dates
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
         if (isset($data->$date_field)) {
             if (is_int($data->$date_field) && $data->$date_field > 0) {
@@ -38,13 +41,58 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
+    // 1. Ajouter un référentiel si nécessaire
+    // if (isset($data->referentiel_name) && !record_exists('mdl_referentiel', 'name', $data->referentiel_name)) {
+    //     $referentiel = new stdClass();
+    //     $referentiel->name = $data->referentiel_name;  // Assurez-vous que $data->referentiel_name existe
+    //     $referentiel_id = $DB->insert_record('mdl_referentiel', $referentiel);
+    // } else {
+    //     $referentiel_id = $data->referentiel_id;  // Utilisation d'un ID de référentiel existant
+    // }
+
+    // 2. Ajouter une compétence si elle n'existe pas
+    // if (isset($data->competency_name) && !record_exists('mdl_competency', 'name', $data->competency_name)) {
+    //     $competency = new stdClass();
+    //     $competency->name = $data->competency_name;  // Assurez-vous que $data->competency_name existe
+    //     $competency->referentiel = $referentiel_id;  // ID du référentiel lié
+    //     $competency_id = $DB->insert_record('mdl_competency', $competency);
+    // } else {
+    //     $competency_id = $data->competency_id;  // Utilisation d'un ID de compétence existant
+    // }
+
+    // 3. Ajouter une sous-compétence si elle n'existe pas
+    // if (isset($data->subcompetency_name) && !record_exists('mdl_subcompetency', 'name', $data->subcompetency_name)) {
+    //     $subcompetency = new stdClass();
+    //     $subcompetency->name = $data->subcompetency_name;  // Assurez-vous que $data->subcompetency_name existe
+    //     $subcompetency->competency = $competency_id;  // ID de la compétence liée
+    //     $subcompetency_id = $DB->insert_record('mdl_subcompetency', $subcompetency);
+    // } else {
+    //     $subcompetency_id = $data->subcompetency_id;  // Utilisation d'un ID de sous-compétence existant
+    // }
+
+    // 4. Ajouter un mot-clé si nécessaire
+    // if (isset($data->keyword) && !record_exists('mdl_keyword', 'word', $data->keyword)) {
+    //     $keyword_entry = new stdClass();
+    //     $keyword_entry->word = $data->keyword;  // Assurez-vous que $data->keyword existe
+    //     $keyword_id = $DB->insert_record('mdl_keyword', $keyword_entry);
+    // } else {
+    //     $keyword_id = $data->keyword_id;  // Utilisation d'un ID de mot-clé existant
+    // }
+
+    // 6. Ajouter la relation entre le mot-clé et la sous-compétence
+    // if (!record_exists('mdl_subcompetency_keywords', 'keyword_id', $keyword_id, 'subcompetency_id', $subcompetency_id)) {
+    //     $subcompetency_keyword = new stdClass();
+    //     $subcompetency_keyword->keyword_id = $keyword_id;        // ID du mot-clé
+    //     $subcompetency_keyword->subcompetency_id = $subcompetency_id;  // ID de la sous-compétence
+    //     $DB->insert_record('mdl_subcompetency_keywords', $subcompetency_keyword);
+    // }
+
+    // Vérification du champ 'name'
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
-    if (empty($record->intro)) {
-        throw new moodle_exception('missingfield', 'studentqcm', '', 'intro');
-    }
 
+    // Insérer l'instance principale dans la table 'studentqcm'
     $id = $DB->insert_record('studentqcm', $record);
     if (!$id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
@@ -52,8 +100,6 @@ function studentqcm_add_instance($data, $mform = null) {
 
     return $id;
 }
-
-
 
 
 /**
@@ -76,9 +122,7 @@ function studentqcm_update_instance($data, $mform = null) {
     if (!isset($data->name) || empty(trim($data->name))) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
-    if (!isset($data->intro) || empty(trim($data->intro))) {
-        throw new moodle_exception('missingfield', 'studentqcm', '', 'intro');
-    }
+
 
     // Mise à jour des données dans la table studentqcm.
     return $DB->update_record('studentqcm', $data);
