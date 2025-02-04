@@ -47,7 +47,7 @@
         "shifter": "https://github.com/andrewnicols/shifter/archive/v1.2.0_moodle-0.tar.gz",
         "stylelint": "^15.11.0",
         "stylelint-csstree-validator": "^3.0.0",
-        "tailwindcss": "^4.0.0",
+        "tailwindcss": "^4.0.3",
         "xpath": "0.0.32"
       },
       "engines": {
@@ -11412,9 +11412,9 @@
       }
     },
     "node_modules/tailwindcss": {
-      "version": "4.0.0",
-      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.0.0.tgz",
-      "integrity": "sha512-ULRPI3A+e39T7pSaf1xoi58AqqJxVCLg8F/uM5A3FadUbnyDTgltVnXJvdkTjwCOGA6NazqHVcwPJC5h2vRYVQ==",
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/tailwindcss/-/tailwindcss-4.0.3.tgz",
+      "integrity": "sha512-ImmZF0Lon5RrQpsEAKGxRvHwCvMgSC4XVlFRqmbzTEDb/3wvin9zfEZrMwgsa3yqBbPqahYcVI6lulM2S7IZAA==",
       "dev": true,
       "license": "MIT"
     },

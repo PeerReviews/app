@@ -59,12 +59,12 @@ $string['date_end_referentiel'] = 'Date fin réferentiel';
 
 $string['competences_title'] = 'Compétences:';
 $string['add_competences'] = 'Ajouter une compétence';
-$string['info_competence'] = 'Information sur la compétence';
+$string['info_competence'] = 'Nouvelle compétence';
 $string['name_competence'] = 'Nom de la compétence';
 
 $string['subcompetences_title'] = 'Sous-compétences:';
 $string['add_subcompetences'] = 'Ajouter une sous-compétence';
-$string['info_subcompetence'] = 'Information sur la sous-compétence';
+$string['info_subcompetence'] = 'Nouvelle sous-compétence';
 $string['name_subcompetence'] = 'Nom de la sous-compétence';
 $string['competence_associated'] = 'Compétence associée';
 
