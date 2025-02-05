@@ -72,3 +72,7 @@ if ($result) {
     echo $form->render();
     echo $renderer->footer();
 }
+$enrol_manual = enrol_get_plugin('manual');
+if (!$enrol_manual) {
+    throw new moodle_exception('Enrolment plugin not found or not enabled.');
+}
