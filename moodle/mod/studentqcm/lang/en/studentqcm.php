@@ -1,4 +1,5 @@
 <?php
+
 // Fichier lang/en/studentqcm.php
 
 $string['pluginname'] = 'Student QCM';
@@ -39,7 +40,7 @@ $string['add_qcm'] = 'Ajouter un QCM';
 $string['qcm_not_found'] = 'Aucun QCM trouvé';
 $string['create_qcm'] = 'Je crée mon QCM';
 
-// QCM 
+// QCM
 $string['question'] = 'Question';
 $string['answer'] = 'Réponse';
 $string['explanation'] = 'Explication';

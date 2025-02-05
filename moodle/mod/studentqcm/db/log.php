@@ -26,9 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$logs = array(
-    array('module'=>'studentqcm', 'action'=>'view', 'mtable'=>'studentqcm', 'field'=>'name'),
-    array('module'=>'studentqcm', 'action'=>'view all', 'mtable'=>'studentqcm', 'field'=>'name'),
-    array('module'=>'studentqcm', 'action'=>'update', 'mtable'=>'studentqcm', 'field'=>'name'),
-    array('module'=>'studentqcm', 'action'=>'add', 'mtable'=>'studentqcm', 'field'=>'name'),
-);
+$logs = [
+    ['module' => 'studentqcm', 'action' => 'view', 'mtable' => 'studentqcm', 'field' => 'name'],
+    ['module' => 'studentqcm', 'action' => 'view all', 'mtable' => 'studentqcm', 'field' => 'name'],
+    ['module' => 'studentqcm', 'action' => 'update', 'mtable' => 'studentqcm', 'field' => 'name'],
+    ['module' => 'studentqcm', 'action' => 'add', 'mtable' => 'studentqcm', 'field' => 'name'],
+];

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lib.php pour le module StudentQCM.
  * Définit les fonctions d'ajout, de mise à jour et de suppression des instances du plugin.
@@ -11,7 +12,8 @@
  * @param mod_studentqcm_mod_form $mform Formulaire Moodle (optionnel)
  * @return int ID de l'instance ajoutée
  */
-function studentqcm_add_instance($data, $mform = null) {
+function studentqcm_add_instance($data, $mform = null)
+{
     global $CFG, $DB;
 
     require_once("$CFG->libdir/resourcelib.php");
@@ -63,7 +65,8 @@ function studentqcm_add_instance($data, $mform = null) {
  * @param object|null $mform Formulaire Moodle (optionnel)
  * @return bool Succès de l'opération
  */
-function studentqcm_update_instance($data, $mform = null) {
+function studentqcm_update_instance($data, $mform = null)
+{
     global $DB;
 
     // Ajouter la date de modification.
@@ -90,16 +93,17 @@ function studentqcm_update_instance($data, $mform = null) {
  * @param int $id ID de l'instance à supprimer
  * @return bool Succès de l'opération
  */
-function studentqcm_delete_instance($id) {
+function studentqcm_delete_instance($id)
+{
     global $DB;
 
     // Vérifier si l'instance existe.
-    if (!$DB->record_exists('studentqcm', array('id' => $id))) {
+    if (!$DB->record_exists('studentqcm', ['id' => $id])) {
         throw new moodle_exception('invalidinstance', 'studentqcm');
     }
 
     // Supprimer l'instance de la table studentqcm.
-    return $DB->delete_records('studentqcm', array('id' => $id));
+    return $DB->delete_records('studentqcm', ['id' => $id]);
 }
 
 /**
@@ -108,7 +112,8 @@ function studentqcm_delete_instance($id) {
  *
  * @return array Liste des callbacks disponibles
  */
-function studentqcm_get_callbacks() {
+function studentqcm_get_callbacks()
+{
     return [
         'backup' => 'studentqcm_backup_instance',
         'reset'  => 'studentqcm_reset_instance',
@@ -130,8 +135,3 @@ function studentqcm_get_callbacks() {
 //         ),
 //     );
 // }
-
-
-
-
-

@@ -8,33 +8,33 @@ $id = required_param('id', PARAM_INT);
 
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+$studentqcm = $DB->get_record('studentqcm', ['id' => $cm->instance], '*', MUST_EXIST);
 
 
 // Vérifier que l'utilisateur est connecté et qu'il a les droits nécessaires
 require_login($course, true, $cm);
 
 // Définir l'URL de la page et les informations de la page
-$PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/qcm_list.php', ['id' => $id]);
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 // Charger les fichiers CSS nécessaires
-$PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
+$PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', ['v' => time()]));
 
 // Afficher l'en-tête de la page
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-    echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-16 text-lg justify-between'>";
-    echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
-    echo "<i class='fas fa-arrow-left mr-2'></i>";
-    echo get_string('back', 'mod_studentqcm');
-    echo "</a>";
+echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
+echo "<i class='fas fa-arrow-left mr-2'></i>";
+echo get_string('back', 'mod_studentqcm');
+echo "</a>";
 echo "</div>";
 
 echo "<form method='post' action='submit_qcm.php'>";
@@ -52,7 +52,7 @@ for ($q = 1; $q <= $question_count; $q++) {
     // Réponses
     for ($i = 1; $i <= 5; $i++) {
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
-        
+
         // Réponse
         echo "<div class='py-2 grid grid-cols-12 w-full'>";
         echo "<label for='answer_{$q}_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
@@ -85,7 +85,7 @@ echo "</div>";
 
 echo "<div class='mb-4 flex justify-end'>";
 echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . get_string('submit', 'mod_studentqcm') . "</button>";
-echo "</div>";  
+echo "</div>";
 
 echo "</form>";
 
