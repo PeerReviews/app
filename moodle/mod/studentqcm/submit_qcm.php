@@ -23,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
             $question_record->indexation = 1;
-            $question_record->global_comment = '';
-            $question_record->context = '';
+            $question_record->global_comment = clean_param($question['global_comment'], PARAM_TEXT);
+            $question_record->context = clean_param($question['context'], PARAM_TEXT);
             $question_record->referentiel = clean_param($question['referentiel'], PARAM_INT);
             $question_record->competency = clean_param($question['competency'], PARAM_INT);
             $question_record->subcompetency = clean_param($question['subcompetency'], PARAM_INT);
@@ -34,6 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (!$question_id) {
                 throw new moodle_exception('insertfailed', 'studentqcm_question');
             }
+
+            if (isset($question['keywords']) && is_array($question['keywords'])) {
+                foreach ($question['keywords'] as $keyword_id) {
+                    // Créer un objet pour chaque mot-clé à associer à la question
+                    $question_keyword = new stdClass();
+                    $question_keyword->question_id = $question_id;
+                    $question_keyword->keyword_id = $keyword_id;
+            
+                    // Insérer le lien dans la base de données
+                    $DB->insert_record('question_keywords', $question_keyword);
+                }
+            }
+
+            
 
             // Insérer les réponses associées
             if (!empty($question['answers'])) {

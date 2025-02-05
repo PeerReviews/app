@@ -29,7 +29,7 @@ echo "<div class='mx-auto'>";
 echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
 echo "</div>";
 
-echo "<div class='flex mt-16 text-lg justify-between'>";
+echo "<div class='flex mt-8 text-lg justify-between'>";
 echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
 echo "<i class='fas fa-arrow-left mr-2'></i>";
 echo get_string('back', 'mod_studentqcm');
@@ -47,6 +47,7 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
+        echo "<option value=''>Sélectionnez un référentiel</option>";
         $referentiels = $DB->get_records('referentiel');
         foreach ($referentiels as $referentiel) {
             echo "<option value='{$referentiel->id}'>{$referentiel->name}</option>";
@@ -57,22 +58,16 @@ echo "<div class='mt-8'>";
         // Sélection de la compétence
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='competency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('competency', 'mod_studentqcm') . " :</label>";
-        echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
-        $competencies = $DB->get_records('competency');
-        foreach ($competencies as $competency) {
-            echo "<option value='{$competency->id}'>{$competency->name}</option>";
-        }
+        echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
+        echo "<option value=''>Sélectionnez une compétence</option>";
         echo "</select>";
         echo "</div>";
 
         // Sélection de la sous-compétence
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='subcompetency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('subcompetency', 'mod_studentqcm') . " :</label>";
-        echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
-        $subcompetencies = $DB->get_records('subcompetency');
-        foreach ($subcompetencies as $subcompetency) {
-            echo "<option value='{$subcompetency->id}'>{$subcompetency->name}</option>";
-        }
+        echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
+        echo "<option value=''>Sélectionnez une sous-compétence </option>";
         echo "</select>";
         echo "</div>";
 
@@ -90,9 +85,15 @@ echo "<div class='mt-8'>";
     }
     echo "</div>";
 
+    // Context
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
+    echo "<input type='text' id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
+    echo "</div>";
+
     // Question
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
-    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " 1:</label>";
+    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " :</label>";
     echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
     echo "</div>";
 
@@ -120,12 +121,23 @@ echo "<div class='mt-8'>";
         echo "<div class='py-2 grid grid-cols-12 w-full'>";
         echo "<label for='correct_answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
         echo "<div class='col-span-10 w-full flex items-center'>";
-        echo "<input type='checkbox' id='correct_answer_1_{$i}' name='questions[1][answers][{$i}][correct]' value='1' class='mr-2 h-4 w-4'>";
+        echo "<label class='relative inline-flex items-center cursor-pointer'>";
+        echo "<input type='checkbox' id='correct_answer_1_{$i}' name='questions[1][answers][{$i}][correct]' value='1' class='sr-only peer'>";
+        echo "<span class='w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-lime-400 peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-\"\" after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all'></span>";
+        echo "</label>";
         echo "</div>";
         echo "</div>";
 
+
+
         echo "</div>";
     }
+
+    // Commentaire / explication globale
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<label for='global_comment' class='block font-semibold text-gray-700 text-lg'>" . get_string('global_comment', 'mod_studentqcm') . " :</label>";
+    echo "<input type='text' id='global_comment' name='questions[1][global_comment]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
+    echo "</div>";
 
 
 echo "</div>";
@@ -174,4 +186,150 @@ echo "<script>
 
 </script>";
 
+?>
+
+<!-- Modal for error messages -->
+<div id="error-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+    <div class="bg-white rounded-3xl py-4 px-16 max-w-lg w-full">
+        <div class="flex justify-between items-center">
+            <h3 class="text-2xl font-semibold text-red-600">Erreur de validation</h3>
+            <button id="close-modal" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
+        </div>
+        <div id="error-messages" class="mt-4 text-gray-700"></div>
+        <div class="mt-2 text-right">
+            <button id="close-modal-btn" class="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<?php
 echo $OUTPUT->footer();
+
+?>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Filtrer les compétences en fonction du référentiel sélectionné
+    $('#referentiel_1').change(function() {
+        var referentielId = $(this).val();
+        $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', true);
+        $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
+
+        if (referentielId) {
+            $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
+                $('#competency_1').html(data).prop('disabled', false).trigger('change'); // Déclenche un événement 'change' pour charger les sous-compétences
+            });
+        }
+    });
+
+    // Mettre à jour les sous-compétences en fonction de la compétence sélectionnée
+    $('#competency_1').on('change', function() {
+        var competencyId = $(this).val();
+        $('#subcompetency_1').html('<option value="" disabled selected>Chargement...</option>').prop('disabled', true);
+
+        if (competencyId) {
+            $.getJSON('fetch_subcompetencies.php', { competency_id: competencyId }, function(data) {
+                if (data.length > 0) {
+                    var options = '<option value="" disabled selected>Sélectionnez une sous-compétence</option>';
+                    $.each(data, function(index, subcompetency) {
+                        options += `<option value="${subcompetency.id}">${subcompetency.name}</option>`;
+                    });
+                    $('#subcompetency_1').html(options).prop('disabled', false);
+                } else {
+                    $('#subcompetency_1').html('<option value="" disabled selected>Aucune sous-compétence disponible</option>').prop('disabled', true);
+                }
+            }).fail(function() {
+                // En cas d'erreur AJAX, on désactive la liste déroulante
+                $('#subcompetency_1').html('<option value="" disabled selected>Erreur de chargement</option>').prop('disabled', true);
+            });
+        }
+    });
+
+    // Validation avant soumission du formulaire
+    $('form').on('submit', function(e) {
+        var isValid = true;
+        var errorMessage = '';
+
+        // Réinitialiser la liste d'erreurs
+        $('#error-messages').empty();
+
+        // Vérification du référentiel
+        if ($('#referentiel_1').val() === "") {
+            isValid = false;
+            $('#error-messages').append('<li>Le référentiel est requis.</li>');
+        }
+
+        // Vérification de la compétence
+        if ($('#competency_1').val() === "") {
+            isValid = false;
+            $('#error-messages').append('<li>La compétence est requise.</li>');
+        }
+
+        // Vérification de la sous-compétence
+        if ($('#subcompetency_1').val() === "" || $('#subcompetency_1').val() === null) {
+            isValid = false;
+            $('#error-messages').append('<li>La sous-compétence est requise.</li>');
+        }
+
+        // Vérification des mots-clés (au moins un mot-clé doit être sélectionné)
+        // if ($('input[name="questions[1][keywords][]"]:checked').length === 0) {
+        //     isValid = false;
+        //     $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');
+        // }
+
+        // Vérification du champ contexte
+        if ($('#context_1').val().trim() === "") {
+            isValid = false;
+            $('#error-messages').append('<li>Le contexte est requis.</li>');
+        }
+
+        // Vérification de la question
+        if ($('#question_1').val().trim() === "") {
+            isValid = false;
+            $('#error-messages').append('<li>La question est requise.</li>');
+        }
+
+        // Vérification des réponses (au moins une réponse doit être marquée correcte)
+        var atLeastOneCorrectAnswer = false;
+        for (var i = 1; i <= 5; i++) {
+            if ($('#correct_answer_1_' + i).prop('checked')) {
+                atLeastOneCorrectAnswer = true;
+                break;
+            }
+        }
+
+        if (!atLeastOneCorrectAnswer) {
+            isValid = false;
+            $('#error-messages').append('<li>Au moins une réponse doit être correcte.</li>');
+        }
+
+        // Vérification du commentaire global
+        if ($('#global_comment').val().trim() === "") {
+            isValid = false;
+            $('#error-messages').append('<li>Le commentaire global est requis.</li>');
+        }
+
+        // Si la validation échoue, on empêche la soumission et on affiche un message d'erreur dans le modal
+        if (!isValid) {
+            e.preventDefault();
+
+            // Afficher les messages d'erreur dans le modal
+            $('#error-modal').removeClass('hidden');
+        }
+    });
+
+
+    // Fermer le modal
+    $('#close-modal, #close-modal-btn').on('click', function() {
+        $('#error-modal').addClass('hidden');
+    });
+});
+
+</script>
+
+
+
+
+
+

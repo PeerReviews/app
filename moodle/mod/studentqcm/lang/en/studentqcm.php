@@ -36,11 +36,15 @@ $string['back'] = 'Retour';
 
 $string['qcm_list'] = 'Ma liste de QCMs';
 $string['add_qcm'] = 'Ajouter un QCM';
+$string['edit_qcm'] = 'Modifier un QCM';
+$string['save_changes'] = 'Sauvegarder les modifications';
 $string['qcm_not_found'] = 'Aucun QCM trouvé';
 $string['create_qcm'] = 'Je crée mon QCM';
 
 // QCM 
 $string['question'] = 'Question';
+$string['context'] = 'Contexte';
+$string['global_comment'] = 'Explication globale';
 $string['answer'] = 'Réponse';
 $string['explanation'] = 'Explication';
 $string['correct_answer'] = 'Réponse vraie';
@@ -50,12 +54,21 @@ $string['competency'] = 'Compétence';
 $string['subcompetency'] = 'Sous-compétence';
 $string['keywords'] = 'Mots-clés';
 $string['addmore'] = 'Ajouter + ';
+$string['qcm_saved'] = 'QCM enregistré !';
 
 $string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
 $string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
 $string['atleastonekeyword'] = 'Veuillez saisir au moins un mot-clé.';
 
-$string['your_qcms'] = "QCM";
-$string['edit'] = "Modifier";
-$string['confirm_delete'] = "Supprimer";
-$string['delete'] = "Supprimer";
+$string['your_qcms'] = 'QCM';
+$string['edit'] = 'Modifier';
+
+// Evaluations
+
+$string['evaluate'] = 'Évaluer';
+$string['no_assigned_prod'] = 'Aucune production ne vous a été assigné pour l\'instant.';
+$string['assigned_prod_list'] = "Vos productions assignées";
+
+$string['message_delete'] = 'Confirmer la suppression';
+$string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer ce QCM ? Cette action est irréversible';
+$string['delete'] = 'Supprimer';
