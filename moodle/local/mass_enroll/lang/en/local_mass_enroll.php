@@ -211,3 +211,6 @@ $string['unenroll'] = 'Unenrol them from my course';
 $string['userfullname'] = 'User fullname';
 $string['userid'] = 'User ID';
 $string['username'] = 'Username';
+$string['choosecourse'] = 'Choose a course';
+$string['go'] = 'Go';
+

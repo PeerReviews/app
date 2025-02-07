@@ -245,3 +245,5 @@ $string['pluginname'] = 'Inscriptions massives';
 $string['roleassign'] = 'Inscrire comme';
 $string['unenroll'] = 'Les désincrire de mon cours';
 $string['username'] = 'Login';
+$string['choosecourse'] = 'Choisir un cours';
+$string['go'] = 'Aller';

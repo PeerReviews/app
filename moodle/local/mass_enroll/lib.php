@@ -107,10 +107,20 @@ function mass_enroll($cir, $course, $context, $data) {
     $result .= get_string('im:using_role', 'local_mass_enroll', $role->name) . "\n";
 
     $plugin = enrol_get_plugin('manual');
+
+    
+
     // Moodle 2.x enrolment and role assignment are different.
     // Assure course has manual enrolment plugin instance we are going to use.
     // Only one instance is allowed; see enrol/manual/lib.php get_new_instance().
     $instance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => 'manual']);
+
+
+    if (empty($course->id)) {
+        debugging('Course object is not valid', DEBUG_DEVELOPER);
+        print_object($course);
+        return;
+    }
     if (empty($instance)) {
         // Only add an enrol instance to the course if non-existent.
         $enrolid = $plugin->add_instance($course);

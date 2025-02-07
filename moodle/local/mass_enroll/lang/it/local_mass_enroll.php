@@ -256,3 +256,5 @@ $string['pluginname'] = 'Iscrizione massiva';
 $string['roleassign'] = 'Iscrivi come';
 $string['unenroll'] = 'Disiscrivili dal mio corso';
 $string['username'] = 'username';
+$string['choosecourse'] = 'Scegli un corso';
+$string['go'] = 'Vai';

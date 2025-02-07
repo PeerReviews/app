@@ -83,6 +83,6 @@ if ($hassiteconfig) {
 
     $ADMIN->add('localplugins', $settings);
     $ADMIN->add('accounts', new admin_externalpage('local_mass_enroll', get_string('mass_enroll', 'local_mass_enroll'),
-    new moodle_url('/local/mass_enroll/massenrol.php', ['id' => 1])));
+    new moodle_url('/local/mass_enroll/massenrol.php')));
 
 }

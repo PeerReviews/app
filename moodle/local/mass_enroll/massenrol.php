@@ -34,45 +34,69 @@
 require(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 // Get params.
-$id = required_param('id', PARAM_INT);
-if (!$course = $DB->get_record('course', ['id' => $id])) {
-    throw new \moodle_exception("Course is misconfigured");
-}
+$id = optional_param('id', 0, PARAM_INT);
+if($id <= 0) {
+    echo $OUTPUT->header();
+    
+    
 
-// Security and access check.
-require_course_login($course);
-$context = context_course::instance($course->id);
-require_capability('local/mass_enroll:enrol', $context);
+    echo html_writer::tag('p', get_string('choosecourse', 'local_mass_enroll'));
 
-// Start making page.
-$strinscriptions = get_string('mass_enroll', 'local_mass_enroll');
-$PAGE->set_pagelayout('incourse');
-$PAGE->set_url(new moodle_url($CFG->wwwroot . '/local/mass_enroll/massenrol.php', ['id' => $id]));
-$PAGE->set_title($course->fullname . ': ' . $strinscriptions);
-$PAGE->set_heading($course->fullname . ': ' . $strinscriptions);
+    $courses = get_courses(); 
+    $options = [];
+    foreach ($courses as $c) {
+        $options[$c->id] = $c->fullname;
+    }
 
-$course = $PAGE->course;
-$renderer = $PAGE->get_renderer('local_mass_enroll');
+    echo html_writer::start_tag('form', ['method' => 'get', 'action' => new moodle_url('/local/mass_enroll/massenrol.php')]);
+    echo html_writer::select($options, 'id', $id, ['' => get_string('choosecourse', 'local_mass_enroll')]);
+    echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('go')]);
+    echo html_writer::end_tag('form');
 
-$form = new \local_mass_enroll\local\forms\massenrol(new moodle_url($PAGE->url), [
-    'course' => $course,
-    'context' => $context,
-]);
-$result = $form->process();
+    echo $OUTPUT->footer();
 
-if ($result) {
-    \core\notification::success(get_string('process:massenrol:success', 'local_mass_enroll'));
-    redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
 } else {
-    echo $renderer->header();
-    echo $renderer->get_tabs($context, 'massenrol', ['id' => $course->id]);
-    echo $renderer->heading_with_help($strinscriptions, 'mass_enroll', 'local_mass_enroll',
-                'icon', get_string('mass_enroll', 'local_mass_enroll'));
-    echo $renderer->box(get_string('mass_enroll_info', 'local_mass_enroll'), 'center');
-    echo $form->render();
-    echo $renderer->footer();
+    if (!$course = $DB->get_record('course', ['id' => $id])) {
+        throw new \moodle_exception("Course is misconfigured");
+    }
+    
+    // Security and access check.
+    require_course_login($course);
+    $context = context_course::instance($course->id);
+    require_capability('local/mass_enroll:enrol', $context);
+    
+    // Start making page.
+    $strinscriptions = get_string('mass_enroll', 'local_mass_enroll');
+    $PAGE->set_pagelayout('incourse');
+    $PAGE->set_url(new moodle_url($CFG->wwwroot . '/local/mass_enroll/massenrol.php', ['id' => $id]));
+    $PAGE->set_title($course->fullname . ': ' . $strinscriptions);
+    $PAGE->set_heading($course->fullname . ': ' . $strinscriptions);
+    
+    $course = $PAGE->course;
+    $renderer = $PAGE->get_renderer('local_mass_enroll');
+    
+    $form = new \local_mass_enroll\local\forms\massenrol(new moodle_url($PAGE->url), [
+        'course' => $course,
+        'context' => $context,
+    ]);
+    $result = $form->process();
+    
+    if ($result) {
+        \core\notification::success(get_string('process:massenrol:success', 'local_mass_enroll'));
+        redirect(new moodle_url('/course/view.php', ['id' => $course->id]));
+    } else {
+        echo $renderer->header();
+        echo $renderer->get_tabs($context, 'massenrol', ['id' => $course->id]);
+        echo $renderer->heading_with_help($strinscriptions, 'mass_enroll', 'local_mass_enroll',
+                    'icon', get_string('mass_enroll', 'local_mass_enroll'));
+        echo $renderer->box(get_string('mass_enroll_info', 'local_mass_enroll'), 'center');
+        echo $form->render();
+        echo $renderer->footer();
+    }
+    $enrol_manual = enrol_get_plugin('manual');
+    if (!$enrol_manual) {
+        throw new moodle_exception('Enrolment plugin not found or not enabled.');
+    }
+    
 }
-$enrol_manual = enrol_get_plugin('manual');
-if (!$enrol_manual) {
-    throw new moodle_exception('Enrolment plugin not found or not enabled.');
-}
+

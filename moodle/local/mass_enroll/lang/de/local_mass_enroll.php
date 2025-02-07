@@ -188,3 +188,5 @@ $string['pluginname'] = 'Mass enrolments';
 $string['roleassign'] = 'Zuzuweisende Rolle';
 $string['unenroll'] = 'Aus meinem Kurs austragen';
 $string['username'] = 'Login';
+$string['choosecourse'] = 'Wählen Sie einen Kurs';
+$string['go'] = 'Los';
