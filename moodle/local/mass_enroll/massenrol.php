@@ -40,7 +40,8 @@ if($id <= 0) {
     
     
 
-    echo html_writer::tag('p', get_string('choosecourse', 'local_mass_enroll'));
+    echo html_writer::tag('h1', get_string('choosecourse', 'local_mass_enroll'));
+    //echo html_writer::tag('p', get_string('choosecoursedescription', 'local_mass_enroll'));
 
     $courses = get_courses(); 
     $options = [];
@@ -48,10 +49,21 @@ if($id <= 0) {
         $options[$c->id] = $c->fullname;
     }
 
+    echo html_writer::start_tag('div', ['style' => 'display: flex; justify-content: center; margin-top:10px']);
+    echo html_writer::start_tag('div', ['style' => 'background-color: #d4edda; padding: 20px; border: 2px solid #c3e6cb; border-radius: 8px; text-align: center;']);
+    
+    echo html_writer::tag('p', get_string('choosecourse', 'local_mass_enroll'));
+    
     echo html_writer::start_tag('form', ['method' => 'get', 'action' => new moodle_url('/local/mass_enroll/massenrol.php')]);
-    echo html_writer::select($options, 'id', $id, ['' => get_string('choosecourse', 'local_mass_enroll')]);
-    echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('go')]);
+    
+    echo html_writer::select($options, 'id', $id, ['' => get_string('choosecourse', 'local_mass_enroll')], ['style' => 'margin-bottom: 10px; padding: 5px; width: 100%; max-width: 300px;']);
+    echo html_writer::empty_tag('br');
+    echo html_writer::empty_tag('input', ['type' => 'submit', 'value' => get_string('go'), 'style' => 'background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;']);
     echo html_writer::end_tag('form');
+    
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+    
 
     echo $OUTPUT->footer();
 
