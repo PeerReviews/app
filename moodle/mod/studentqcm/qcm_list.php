@@ -73,13 +73,13 @@ if ($qcms) {
             // Compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-bookmark text-orange-500'></i>";
-            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
+            echo "<span>" . get_string('competency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
             echo "</p>";
 
             // Sous-compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-award text-purple-500'></i>";
-            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
             echo "</p>";
 
             echo "</div>";
@@ -131,7 +131,6 @@ echo $OUTPUT->footer();
 <script>
     const deleteModal = document.getElementById('delete-modal');
     const closeModalBtn = document.getElementById('close-delete-modal');
-    const cancelBtn = document.getElementById('cancel-delete-btn');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
 
     let qcmToDeleteId = null;
@@ -142,10 +141,6 @@ echo $OUTPUT->footer();
     }
 
     closeModalBtn.addEventListener('click', function () {
-        deleteModal.classList.add('hidden');
-    });
-
-    cancelBtn.addEventListener('click', function () {
         deleteModal.classList.add('hidden');
     });
 

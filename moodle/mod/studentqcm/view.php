@@ -12,7 +12,6 @@ require_login($course, true, $cm);
 
 
 $PAGE->set_url('/mod/studentqcm/view.php', array('id' => $id));
-$PAGE->set_pagelayout('standard');
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 

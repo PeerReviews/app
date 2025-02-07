@@ -72,3 +72,5 @@ $string['assigned_prod_list'] = "Vos productions assignées";
 $string['message_delete'] = 'Confirmer la suppression';
 $string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer ce QCM ? Cette action est irréversible';
 $string['delete'] = 'Supprimer';
+
+$string['qcm_deleted'] = 'QCM Supprimé';
