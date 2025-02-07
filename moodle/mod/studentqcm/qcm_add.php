@@ -246,6 +246,24 @@ $(document).ready(function() {
         }
     });
 
+    $('#subcompetency').change(function() {
+        var subcompetencyId = $(this).val();
+        $('#keywords').html('<option>Chargement...</option>');
+
+        if (subcompetencyId) {
+            $.ajax({
+                url: 'fetch_keywords.php',
+                type: 'POST',
+                data: { subcompetency: subcompetencyId },
+                success: function(response) {
+                    $('#keywords').html(response);
+                }
+            });
+        } else {
+            $('#keywords').html('<option value="">Sélectionnez une sous-compétence d\'abord</option>');
+        }
+    });
+
     // Validation avant soumission du formulaire
     $('form').on('submit', function(e) {
         var isValid = true;
