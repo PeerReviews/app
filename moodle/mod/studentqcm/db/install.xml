@@ -89,9 +89,11 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="word" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Mot-clé"/>
+        <FIELD NAME="subcompetency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Sous-compétence"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency" REFTABLE="subcompetency" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
 
@@ -106,19 +108,6 @@
         <KEY NAME="foreign_keyword" TYPE="foreign" FIELDS="keyword_id" REFTABLE="keyword" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-
-    <TABLE NAME="subcompetency_keywords" COMMENT="Relation entre mots-clés et sous-compétences">
-      <FIELDS>
-        <FIELD NAME="keyword_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
-        <FIELD NAME="subcompetency_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="keyword_id, subcompetency_id"/>
-        <KEY NAME="foreign_keyword" TYPE="foreign" FIELDS="keyword_id" REFTABLE="keyword" REFFIELDS="id"/>
-        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency_id" REFTABLE="subcompetency" REFFIELDS="id"/>
-      </KEYS>
-    </TABLE>
-
 
   </TABLES>
 </XMLDB>

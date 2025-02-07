@@ -73,16 +73,12 @@ echo "<div class='mt-8'>";
 
     echo "</div>";
 
-    // Mots-clés
+    // Sélection des mots clés
     echo "<div class='rounded-3xl bg-lime-200 my-2 p-4'>";
-    echo "<label for='keywords_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('keywords', 'mod_studentqcm') . " :</label>";
-    $keywords = $DB->get_records('keyword');
-    foreach ($keywords as $keyword) {
-        echo "<div class='flex items-center'>";
-        echo "<input type='checkbox' id='keyword_1_{$keyword->id}' name='questions[1][keywords][]' value='{$keyword->id}' class='mr-2'>";
-        echo "<label for='keyword_1_{$keyword->id}' class='text-gray-700'>{$keyword->word}</label>";
-        echo "</div>";
-    }
+    echo "<label class='block font-semibold text-gray-700 text-lg'>" . get_string('keywords', 'mod_studentqcm') . " :</label>";
+    echo "<div id='keywords_list_1'>";
+    echo "<p class='text-gray-500'>Sélectionnez une sous-compétence pour voir les mots-clés.</p>";
+    echo "</div>";
     echo "</div>";
 
     // Context
@@ -246,23 +242,36 @@ $(document).ready(function() {
         }
     });
 
-    $('#subcompetency').change(function() {
+    // Mise à jour de la liste des mots-clés pour la sous-compétence sélectionnée
+    $('#subcompetency_1').change(function() {
         var subcompetencyId = $(this).val();
-        $('#keywords').html('<option>Chargement...</option>');
+        $('#keywords_list_1').html('<p class="text-gray-500">Chargement...</p>');
 
         if (subcompetencyId) {
-            $.ajax({
-                url: 'fetch_keywords.php',
-                type: 'POST',
-                data: { subcompetency: subcompetencyId },
-                success: function(response) {
-                    $('#keywords').html(response);
+            // Utilisation de $.getJSON() pour récupérer les mots-clés
+            $.getJSON('fetch_keywords.php', { subcompetency_id: subcompetencyId }, function(data) {
+                if (data.length > 0) {
+                    var checkboxes = '';
+                    $.each(data, function(index, keyword) {
+                        checkboxes += `
+                            <div class="flex items-center mb-2">
+                                <input type="checkbox" id="keyword_${keyword.id}" name="questions[1][keywords][]" value="${keyword.id}" class="mr-2">
+                                <label for="keyword_${keyword.id}" class="text-gray-700">${keyword.word}</label>
+                            </div>
+                        `;
+                    });
+                    $('#keywords_list_1').html(checkboxes); // Mettre à jour le div avec les checkboxes
+                } else {
+                    $('#keywords_list_1').html('<p class="text-gray-500">Aucun mot-clé disponible</p>');
                 }
+            }).fail(function() {
+                // En cas d'erreur AJAX, on affiche un message d'erreur
+                $('#keywords_list_1').html('<p class="text-red-500">Erreur de chargement des mots-clés</p>');
             });
-        } else {
-            $('#keywords').html('<option value="">Sélectionnez une sous-compétence d\'abord</option>');
         }
     });
+
+
 
     // Validation avant soumission du formulaire
     $('form').on('submit', function(e) {
@@ -291,10 +300,10 @@ $(document).ready(function() {
         }
 
         // Vérification des mots-clés (au moins un mot-clé doit être sélectionné)
-        // if ($('input[name="questions[1][keywords][]"]:checked').length === 0) {
-        //     isValid = false;
-        //     $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');
-        // }
+        if ($('input[name="questions[1][keywords][]"]:checked').length === 0) {
+            isValid = false;
+            $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');
+        }
 
         // Vérification du champ contexte
         if ($('#context_1').val().trim() === "") {
@@ -337,17 +346,9 @@ $(document).ready(function() {
         }
     });
 
-
     // Fermer le modal
     $('#close-modal, #close-modal-btn').on('click', function() {
         $('#error-modal').addClass('hidden');
     });
 });
-
 </script>
-
-
-
-
-
-
