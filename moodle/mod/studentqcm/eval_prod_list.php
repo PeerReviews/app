@@ -19,7 +19,7 @@ $user_id = $USER->id;
 $assigned_qcms = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $user_id));
 
 // Définir l'URL de la page et les informations de la page
-$PAGE->set_url('/mod/studentqcm/eval_list.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/eval_prod_list.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
@@ -43,19 +43,20 @@ echo "</div>";
 
 if ($assigned_qcms) {
     echo "<div class='space-y-4 mt-4'>";
-    
+    $nb = 1;
     foreach (['prod1_id', 'prod2_id', 'prod3_id'] as $index => $qcm_field) {
         if (!empty($assigned_qcms->$qcm_field)) {
+            $prod_id = $assigned_qcms->$qcm_field;
             echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
                 echo "<p class='font-semibold text-xl text-gray-700 flex items-center gap-2'>";
                 echo "<i class='fas fa-question-circle text-blue-500'></i>";
-                echo "Production " . ($index + 1);
+                echo "Production " . ($nb++);
                 echo "</p>";
 
                 // Bouton d'évaluation
                 echo "<div>";
-                echo "<a href='eval_view.php?id={$assigned_qcms->$qcm_field}' class='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600'>";
-                echo "<i class='fas fa-check'></i> " . get_string('evaluate', 'mod_studentqcm');
+                echo "<a href='eval_qcm_list.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600'>";
+                echo "<i class='fas fa-square-check'></i> " . get_string('evaluate', 'mod_studentqcm');
                 echo "</a>";
                 echo "</div>";
             echo "</div>";
