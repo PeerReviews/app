@@ -29,21 +29,26 @@ $string['newkeyword'] = 'Mot-clé';
 
 $string['phase1'] = 'PHASE 1';
 $string['phase2'] = 'PHASE 2';
-$string['phase3'] = 'PHASE 2';
+$string['phase3'] = 'PHASE 3';
 $string['phase_start'] = 'Début';
 $string['phase_available'] = 'Commencer';
 $string['phase_unavailable'] = 'Indisponible';
 $string['phase1_title'] = 'Création de QCMs';
 $string['phase2_title'] = 'Évaluation de QCMs';
-$string['phase3_title'] = 'Modification des QCMs';
+$string['phase3_title'] = 'Valorisation des QCMs';
 
 $string['back'] = 'Retour';
 
 $string['qcm_list'] = 'Ma liste de QCMs';
 $string['add_qcm'] = 'Ajouter un QCM';
+$string['add_qcu'] = 'Ajouter un QCU';
+$string['add_tcs'] = 'Ajouter un TCS';
+$string['add_pop'] = 'Ajouter un POP';
 $string['edit_qcm'] = 'Modifier un QCM';
+$string['edit_qcu'] = 'Modifier un QCU';
+$string['edit_tcs'] = 'Modifier un TCS';
+$string['edit_pop'] = 'Modifier un POP';
 $string['save_changes'] = 'Sauvegarder les modifications';
-$string['qcm_not_found'] = 'Aucun QCM trouvé';
 $string['create_qcm'] = 'Je crée mon QCM';
 
 // QCM 
@@ -67,6 +72,18 @@ $string['atleastonekeyword'] = 'Veuillez saisir au moins un mot-clé.';
 
 $string['your_qcms'] = 'QCM';
 $string['edit'] = 'Modifier';
+
+$string['qcm_not_found'] = 'Aucun QCM trouvé.';
+$string['qcu_not_found'] = 'Aucun QCU trouvé.';
+$string['tcs_not_found'] = 'Aucun TCS trouvé.';
+$string['pop_not_found'] = 'Aucun POP trouvé.';
+$string['completed_qcms'] = 'QCMs complétés';
+$string['completed_qcus'] = 'QCUs complétés';
+
+$string['completed_tcss'] = 'TCSs complétés';
+
+$string['completed_pops'] = 'POPs complétés';
+
 
 // Evaluations
 

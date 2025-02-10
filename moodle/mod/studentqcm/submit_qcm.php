@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../config.php');
 
 // Récupérer l'ID du module de cours
 $id = required_param('id', PARAM_INT);
+$type = required_param('type', PARAM_TEXT);
 
 // Récupérer les informations du module et vérifier l'accès
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -28,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->referentiel = clean_param($question['referentiel'], PARAM_INT);
             $question_record->competency = clean_param($question['competency'], PARAM_INT);
             $question_record->subcompetency = clean_param($question['subcompetency'], PARAM_INT);
+            $question_record->type = $type;
 
             // Insérer la question et récupérer son ID
             $question_id = $DB->insert_record('studentqcm_question', $question_record);
