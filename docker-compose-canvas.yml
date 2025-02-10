@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   canvas:
-    image: instructure/canvas-lms:latest
+    image: instructure/canvas-lms:master
     container_name: canvas
     restart: always
     depends_on:
