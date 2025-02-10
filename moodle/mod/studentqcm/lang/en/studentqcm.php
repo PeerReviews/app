@@ -80,13 +80,13 @@ $string['choice_etu_title'] = 'Choix étudiants';
 $string['choice_etu_tt_title'] = 'Choix étudiants avec tiers-temps';
 $string['import_etu'] = 'Importer liste étudiants';
 $string['selected_etu'] = 'Etudiants sélectionnés:';
-$string['add_etu'] = 'Ajouter un étudiant';
+$string['add_etu'] = 'Ajouter un étudiant manuellement';
 $string['info_etu'] = 'Informations sur l’étudiant:';
 
 $string['choice_prof_title'] = 'Choix professeurs';
 $string['import_prof'] = 'Importer liste professeurs';
 $string['selected_prof'] = 'Professeurs sélectionnés:';
-$string['add_prof'] = 'Ajouter un professeur';
+$string['add_prof'] = 'Ajouter un professeur manuellement';
 $string['info_prof'] = 'Informations sur le professeur:';
 
 // Choix types eval
