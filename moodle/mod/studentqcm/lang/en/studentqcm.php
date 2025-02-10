@@ -79,3 +79,9 @@ $string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer ce QCM ? Cette
 $string['delete'] = 'Supprimer';
 
 $string['qcm_deleted'] = 'QCM Supprimé';
+
+// Productions
+
+$string['production1'] = 'Contenu de la production 1';
+$string['production2'] = 'Contenu de la production 2';
+$string['production3'] = 'Contenu de la production 3';
