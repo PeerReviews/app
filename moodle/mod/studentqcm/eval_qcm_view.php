@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../../config.php');
 
 $id = required_param('id', PARAM_INT);
+$prod_id = required_param('prod_id', PARAM_INT);
 $qcm_id = required_param('qcm_id', PARAM_INT);
 
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -33,7 +34,7 @@ $keywords_str = !empty($keywords_list) ? implode(', ', $keywords_list) : 'N/A';
 
 require_login($course, true, $cm);
 
-$PAGE->set_url('/mod/studentqcm/eval_qcm_view.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/eval_qcm_view.php', array('id' => $id, 'prod_id' => $prod_id, 'qcm_id' => $qcm_id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
@@ -68,10 +69,17 @@ foreach ($reponses as $reponse) {
 echo "<p><strong>Commentaire global :</strong> " . $question->global_comment . "</p>";
 echo "</div>";
 
-echo "<h3>Commentaire d'évaluation :</h3>";
-echo "<textarea id='evaluation-comment' rows='4' cols='50'></textarea>";
-echo $OUTPUT->footer();
+echo '<h3>Commentaire d\'évaluation :</h3>';
+echo '<form method="post" action="submit_evaluation.php?id=' . $id . '">';
+echo '<textarea name="evaluation_comment" rows="4" cols="50"></textarea><br>';
+// Ajout d'un champ caché pour transmettre l'ID de la question
+echo '<input type="hidden" name="question_id" value="' . $question->id . '">';
+echo '<input type="hidden" name="prod_id" value="' . $prod_id . '">';
+echo '<input type="submit" name="submit_evaluation" value="Enregistrer">';
+echo '</form>';
 
+
+echo $OUTPUT->footer();
 ?>
 
 <script>
