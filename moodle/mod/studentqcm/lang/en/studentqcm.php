@@ -92,6 +92,11 @@ $string['completed_tcss'] = 'TCSs complétés';
 $string['completed_pops'] = 'POPs complétés';
 
 $string['new_subcompetency'] = 'Ajouter une nouvelle sous-compétence';
+$string['new_keyword'] = 'Ajouter un nouveau mot clé';
+
+$string['select_referentiel'] = 'Sélectionnez un référentiel';
+$string['select_competency'] = 'Sélectionnez une compétence';
+$string['select_subcompetency'] = 'Sélectionnez une sous-compétence';
 
 
 // Evaluations
@@ -120,3 +125,7 @@ $string['evaluate_comment'] = 'Mon commentaire sur cette question';
 
 $string['submit_evaluation'] = 'Envoyer';
 $string['evaluation_saved'] = 'Évaluation enregistrée';
+
+
+
+$string['add'] = 'Ajouter';

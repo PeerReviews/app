@@ -42,13 +42,13 @@ echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence
-    echo "<div class='grid grid-cols-3 gap-4'>";
+    echo "<div class='grid grid-cols-1 lg:grid-cols-3 gap-4'>";
 
         // Sélection du référentiel
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
-        echo "<option value=''>Sélectionnez un référentiel</option>";
+        echo "<option value=''>" . get_string('select_referentiel', 'mod_studentqcm') . "</option>";
         $referentiels = $DB->get_records('referentiel');
         foreach ($referentiels as $referentiel) {
             echo "<option value='{$referentiel->id}'>{$referentiel->name}</option>";
@@ -60,35 +60,52 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='competency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('competency', 'mod_studentqcm') . " :</label>";
         echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
-        echo "<option value=''>Sélectionnez une compétence</option>";
+        echo "<option value=''>" . get_string('select_competency', 'mod_studentqcm') . "</option>";
         echo "</select>";
         echo "</div>";
 
-        // Sélection de la sous-compétence
+        // Sélection de la sous-compétence avec bouton + pour ajouter une nouvelle sous-compétence
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='subcompetency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('subcompetency', 'mod_studentqcm') . " :</label>";
+        echo "<div class='flex items-center space-x-2'>";
         echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
-        echo "<option value=''>Sélectionnez une sous-compétence </option>";
+        echo "<option value=''>" . get_string('select_subcompetency', 'mod_studentqcm') . "</option>";
         echo "</select>";
+        echo "<button type='button' id='show_new_subcompetency' class='flex items-center justify-center w-9 h-9 mt-2 bg-lime-400 text-white rounded-lg hover:bg-lime-500'>";
+        echo "<i class='fas fa-plus'></i>";
+        echo "</button>";
         echo "</div>";
 
-        // Ajouter une nouvelle sous-compétence (zone de saisie)
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
-        echo "<label for='new_subcompetency' class='block font-semibold text-gray-700 text-lg'>" . get_string('new_subcompetency', 'mod_studentqcm') . " :</label>";
-        echo "<input type='text' id='new_subcompetency' name='new_subcompetency' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' placeholder='Ajoutez une nouvelle sous-compétence'>";
-        echo "<button type='button' id='add_new_subcompetency' class='mt-2 inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500'>Ajouter</button>";
+
+        // Champ de saisie pour ajouter une nouvelle sous-compétence (initialement masqué)
+        echo "<div id='new_subcompetency_field' class='mt-2 hidden flex items-center space-x-2'>";
+        echo "<input type='text' id='new_subcompetency' name='new_subcompetency' class='w-full px-3 py-2 border border-gray-300 rounded-lg' placeholder='Ajoutez une sous-compétence'>";
+        echo "<button type='button' id='add_new_subcompetency' class='px-3 py-2 font-semibold rounded-lg bg-lime-400 hover:bg-lime-500 text-white'>";
+        echo get_string('add', 'mod_studentqcm');
+        echo "</button>";
         echo "</div>";
 
+        echo "</div>";
 
     echo "</div>";
 
     // Sélection des mots clés
     echo "<div class='rounded-3xl bg-lime-200 my-2 p-4'>";
     echo "<label class='block font-semibold text-gray-700 text-lg'>" . get_string('keywords', 'mod_studentqcm') . " :</label>";
-    echo "<div id='keywords_list_1'>";
-    echo "<p class='text-gray-500'>Sélectionnez une sous-compétence pour voir les mots-clés.</p>";
+    echo "<div id='keywords_list_1' class='flex flex-wrap gap-4 items-center'>";
+    echo "<p class='text-gray-500 col-span-6'>Sélectionnez une sous-compétence pour voir les mots-clés.</p>";
     echo "</div>";
+
+    // Champ de saisie pour ajouter un nouveau mot-clé (initialement masqué)
+    echo "<div id='new_keyword_field' class='mt-2 hidden flex items-center space-x-2'>";
+    echo "<input type='text' id='new_keyword' name='new_keyword' class='w-full px-3 py-2 border border-gray-300 rounded-lg' placeholder='Ajoutez un mot-clé'>";
+    echo "<button type='button' id='add_new_keyword' class='px-3 py-2 font-semibold rounded-lg bg-lime-400 hover:bg-lime-500 text-white'>";
+    echo get_string('add', 'mod_studentqcm');
+    echo "</button>";
     echo "</div>";
+
+    echo "</div>";
+
 
     // Context
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
@@ -215,6 +232,18 @@ echo $OUTPUT->footer();
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+
+document.getElementById('show_new_subcompetency').addEventListener('click', function() {
+    var newSubcompetencyField = document.getElementById('new_subcompetency_field');
+    // Alterne la visibilité du champ de saisie
+    if (newSubcompetencyField.classList.contains('hidden')) {
+        newSubcompetencyField.classList.remove('hidden');
+    } else {
+        newSubcompetencyField.classList.add('hidden');
+    }
+});
+
+
 $(document).ready(function() {
     // Filtrer les compétences en fonction du référentiel sélectionné
     $('#referentiel_1').change(function() {
@@ -291,36 +320,125 @@ $(document).ready(function() {
     });
 
 
-
     // Mise à jour de la liste des mots-clés pour la sous-compétence sélectionnée
     $('#subcompetency_1').change(function() {
         var subcompetencyId = $(this).val();
         $('#keywords_list_1').html('<p class="text-gray-500">Chargement...</p>');
 
         if (subcompetencyId) {
-            // Utilisation de $.getJSON() pour récupérer les mots-clés
             $.getJSON('fetch_keywords.php', { subcompetency_id: subcompetencyId }, function(data) {
+                var buttons = '';
+                
                 if (data.length > 0) {
-                    var checkboxes = '';
                     $.each(data, function(index, keyword) {
-                        checkboxes += `
-                            <div class="flex items-center mb-2">
-                                <input type="checkbox" id="keyword_${keyword.id}" name="questions[1][keywords][]" value="${keyword.id}" class="mr-2">
-                                <label for="keyword_${keyword.id}" class="text-gray-700">${keyword.word}</label>
+                        buttons += `
+                            <div class="flex justify-center items-center col-span-1">
+                                <button type="button" class="keyword-btn px-4 py-2 border border-indigo-400 text-indigo-400 rounded-2xl transition-all w-full"
+                                    data-id="${keyword.id}">
+                                    ${keyword.word}
+                                </button>
                             </div>
                         `;
                     });
-                    $('#keywords_list_1').html(checkboxes); // Mettre à jour le div avec les checkboxes
                 } else {
-                    $('#keywords_list_1').html('<p class="text-gray-500">Aucun mot-clé disponible</p>');
+                    buttons = '<p class="text-gray-500">Aucun mot-clé disponible</p>';
                 }
+
+                buttons += `
+                    <div class="flex justify-center items-center col-span-1">
+                        <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full h-9 bg-lime-400 text-white rounded-lg hover:bg-lime-500 px-3 py-2">
+                            <i class="fas fa-plus mr-2"></i>
+                            Ajouter un mot clé
+                        </button>
+                    </div>
+                `;
+
+                $('#keywords_list_1').html(buttons);
             }).fail(function() {
-                // En cas d'erreur AJAX, on affiche un message d'erreur
                 $('#keywords_list_1').html('<p class="text-red-500">Erreur de chargement des mots-clés</p>');
             });
         }
     });
 
+    // Gestion du clic sur les boutons pour sélectionner/désélectionner un mot-clé
+    $(document).on('click', '.keyword-btn', function() {
+        var button = $(this);
+        var keywordId = button.data('id');
+        var hiddenInput = $('#hidden_inputs input[value="' + keywordId + '"]');
+
+        if (hiddenInput.length > 0) {
+            hiddenInput.remove();
+            button.removeClass('bg-indigo-400 text-white').addClass('border-indigo-400 bg-indigo-100 text-indigo-400');
+        } else {
+            if ($('#hidden_inputs').length === 0) {
+                $('#keywords_list_1').append('<div id="hidden_inputs" style="display:none;"></div>');
+            }
+            $('#hidden_inputs').append(`
+                <input type="hidden" name="questions[1][keywords][]" value="${keywordId}">
+            `);
+            button.removeClass('border-indigo-400 bg-indigo-100 text-indigo-400').addClass('bg-indigo-400 text-white');
+        }
+    });
+
+    $(document).on('click', '#show_new_keyword', function() {
+        var newKeywordField = $('#new_keyword_field');
+        
+        if (newKeywordField.hasClass('hidden')) {
+            newKeywordField.removeClass('hidden');
+        } else {
+            newKeywordField.addClass('hidden');
+        }
+    });
+
+    // Fonction pour ajouter un mot clé personnalisé
+    $('#add_new_keyword').on('click', function() {
+        var keyword = $('#new_keyword').val().trim();
+        var subcompetencyId = $('#subcompetency_1').val();
+
+        if (keyword && subcompetencyId) {
+            $.post('add_keyword.php', 
+                { word: keyword, subcompetency_id: subcompetencyId }, 
+                function(response) {
+                    if (response.success) {
+                        // Supprimer le bouton "+" avant d'ajouter le mot-clé
+                        $('#keywords_list_1').find('#show_new_keyword').parent().remove();
+
+                        var newKeywordButton = `
+                            <div class="flex justify-center items-center col-span-1">
+                                <button type="button" class="keyword-btn px-4 py-2 border border-indigo-400 text-indigo-400 rounded-2xl transition-all w-full"
+                                    data-id="${response.id}">
+                                    ${response.word}
+                                </button>
+                            </div>
+                        `;
+
+                        $('#keywords_list_1').append(newKeywordButton);
+
+                        $('#keywords_list_1').append(`
+                            <div class="flex justify-center items-center col-span-1">
+                                <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full h-9 bg-lime-400 text-white rounded-lg hover:bg-lime-500 px-3 py-2">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Ajouter un mot clé
+                                </button>
+                            </div>
+                        `);
+
+                        // Réinitialiser le champ de texte
+                        $('#new_keyword').val('');
+
+                        // Afficher un message de confirmation
+                        alert('Mot-clé ajouté avec succès !');
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                }, 'json'
+            ).fail(function(xhr, status, error) {
+                alert("Erreur lors de l'ajout du mot-clé : " + xhr.responseText);
+            });
+        } else {
+            alert('Veuillez entrer un mot-clé.');
+        }
+    });
 
 
     // Validation avant soumission du formulaire
@@ -329,6 +447,8 @@ $(document).ready(function() {
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);
         var qcmType = urlParams.get('qcm_type');
+
+        console.log('Mots-clés sélectionnés :', $('input[name="questions[1][keywords][]"]').serializeArray());
 
         // Réinitialiser la liste d'erreurs
         $('#error-messages').empty();
@@ -352,7 +472,7 @@ $(document).ready(function() {
         }
 
         // Vérification des mots-clés (au moins un mot-clé doit être sélectionné)
-        if ($('input[name="questions[1][keywords][]"]:checked').length === 0) {
+        if ($('#hidden_inputs input').length === 0) {
             isValid = false;
             $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');
         }
