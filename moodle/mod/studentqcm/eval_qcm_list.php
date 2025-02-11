@@ -97,7 +97,7 @@ if ($qcms) {
 
             // Partie droite (boutons)
             echo "<div class='flex space-x-2'>";
-                echo "<a href='qcm_view.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                echo "<a href='eval_qcm_view.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
                 echo "<i class='fas fa-square-check'></i>";
                 echo "</a>";
 
