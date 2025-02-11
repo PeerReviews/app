@@ -50,6 +50,9 @@ $string['edit_tcs'] = 'Modifier un TCS';
 $string['edit_pop'] = 'Modifier un POP';
 $string['save_changes'] = 'Sauvegarder les modifications';
 $string['create_qcm'] = 'Je crée mon QCM';
+$string['create_qcu'] = 'Je crée mon QCU';
+$string['create_tcs'] = 'Je crée mon TCS';
+$string['create_pop'] = 'Je crée mon POP';
 
 // QCM 
 $string['question'] = 'Question';
@@ -69,6 +72,10 @@ $string['qcm_saved'] = 'QCM enregistré !';
 $string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
 $string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
 $string['atleastonekeyword'] = 'Veuillez saisir au moins un mot-clé.';
+
+$string['qcu_not_valid'] = 'Il doit y avoir exactement une réponse correcte pour les questions de type QCU et TCS.';
+$string['context_required'] = 'Le contexte est requis.';
+$string['question_required'] = 'La question est requise.';
 
 $string['your_qcms'] = 'QCM';
 $string['edit'] = 'Modifier';
