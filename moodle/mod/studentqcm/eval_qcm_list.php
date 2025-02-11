@@ -62,11 +62,63 @@ if ($qcms) {
         $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
         $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
 
-        echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
+        // Vérifier si ce QCM a déjà été évalué par l'utilisateur
+        $evaluation = $DB->get_record('studentqcm_evaluation', array('question_id' => $qcm->id, 'userid' => $USER->id));
+
+        if ($evaluation && $evaluation->status == 1) {
+            // Si le QCM a été évalué
+            $buttonText = get_string('evaluated', 'mod_studentqcm');
+            $buttonIcon = 'fa-regular fa-square-check';
+            $buttonColor = 'bg-lime-400 hover:bg-lime-500';
+            $buttonTextColor = 'text-white';
+        } else {
+            // Si le QCM n'a pas été évalué
+            $buttonText = get_string('to_be_evaluated', 'mod_studentqcm');
+            $buttonIcon = 'fas fa-pen-to-square';
+            $buttonColor = 'bg-indigo-400 hover:bg-indigo-500';
+            $buttonTextColor = 'text-white';
+        }
+
+        echo "<div class='bg-white rounded-3xl shadow flex items-center justify-between'>";
 
             // Partie gauche (question + infos)
-            echo "<div>";
-            echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
+            echo "<div class='flex items-stretch gap-x-4'>";
+
+            // Définir les couleurs en fonction du type de question
+            switch ($qcm->type) {
+                case 'QCM':
+                    $bgColor = 'bg-indigo-200';
+                    $textColor = 'text-indigo-400';
+                    break;
+                case 'QCU':
+                    $bgColor = 'bg-lime-200';
+                    $textColor = 'text-lime-400';
+                    break;
+                case 'TCS':
+                    $bgColor = 'bg-sky-200';
+                    $textColor = 'text-sky-400';
+                    break;
+                case 'POP':
+                    $bgColor = 'bg-green-200';
+                    $textColor = 'text-green-700';
+                    break;
+                default:
+                    $bgColor = 'bg-indigo-200';
+                    $textColor = 'text-indigo-400';
+            }
+
+            // Type de question
+            echo "<div class='{$bgColor} rounded-l-3xl py-4 px-2 flex items-center w-16 justify-center'>"; 
+            echo "<p class='font-semibold text-2xl {$textColor} flex items-center gap-2 -rotate-90 text-center'>";
+            echo format_string(ucfirst($qcm->type));
+            echo "</p>";
+            echo "</div>";
+
+
+            // Div contenant la question et les infos
+            echo "<div class='flex flex-col justify-between p-4'>";
+
+            echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-2'>";
             echo format_string(ucfirst($qcm->question));
             echo "</p>";
 
@@ -91,19 +143,16 @@ if ($qcms) {
             echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
             echo "</p>";
 
+            echo "</div>"; // Fin de div contenant la question et les infos
+            echo "</div>"; // Fin de flex container
+
+            echo "</div>"; // Fin de la partie gauche
+
+            echo "<div class='flex space-x-2 p-4'>";
+            echo "<a href='eval_qcm_view.php?id={$id}&prod_id={$prod_id}&qcm_id={$qcm->id}' class='px-4 py-2 min-w-40 {$buttonColor} {$buttonTextColor} text-lg font-semibold rounded-2xl hover:{$buttonColor}'>";
+            echo "<i class='{$buttonIcon} mr-2'></i> {$buttonText}";
+            echo "</a>";
             echo "</div>";
-            echo "</div>";
-
-
-            // Partie droite (boutons)
-            echo "<div class='flex space-x-2'>";
-                echo "<a href='eval_qcm_view.php?id={$id}&prod_id={$prod_id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
-                echo "<i class='fas fa-square-check'></i>";
-                echo "</a>";
-
-            echo "</div>";
-
-
         echo "</div>";
     }
     
@@ -112,4 +161,5 @@ if ($qcms) {
     echo "<p class='text-center text-lg text-gray-600'>" . get_string('qcm_not_found', 'mod_studentqcm') . "</p>";
 }
 
+echo $OUTPUT->footer();
 ?>

@@ -109,3 +109,12 @@ $string['qcm_deleted'] = 'QCM Supprimé';
 $string['production1'] = 'Contenu de la production 1';
 $string['production2'] = 'Contenu de la production 2';
 $string['production3'] = 'Contenu de la production 3';
+
+$string['to_be_evaluated'] = 'À évaluer';
+$string['evaluated'] = 'Évalué';
+
+$string['show_answer'] = 'Afficher les réponses';
+$string['evaluate_comment'] = 'Mon commentaire sur cette question';
+
+$string['submit_evaluation'] = 'Envoyer';
+$string['evaluation_saved'] = 'Évaluation enregistrée';

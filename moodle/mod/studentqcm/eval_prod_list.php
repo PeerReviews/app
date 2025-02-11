@@ -34,7 +34,7 @@ echo "<div class='mx-auto'>";
 echo "</div>";
 
 // Bouton de retour
-echo "<div class='flex mt-16 text-lg justify-start'>";
+echo "<div class='flex mt-8 text-lg justify-start'>";
     echo "<a href='view.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
     echo "<i class='fas fa-arrow-left mr-2'></i>";
     echo get_string('back', 'mod_studentqcm');
@@ -48,15 +48,15 @@ if ($assigned_qcms) {
         if (!empty($assigned_qcms->$qcm_field)) {
             $prod_id = $assigned_qcms->$qcm_field;
             echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
-                echo "<p class='font-semibold text-xl text-gray-700 flex items-center gap-2'>";
-                echo "<i class='fas fa-question-circle text-blue-500'></i>";
+                echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2'>";
+                echo "<i class='fas fa-clipboard text-indigo-400 mr-2'></i>";
                 echo "Production " . ($nb++);
                 echo "</p>";
 
                 // Bouton d'évaluation
                 echo "<div>";
-                echo "<a href='eval_qcm_list.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600'>";
-                echo "<i class='fas fa-square-check'></i> " . get_string('evaluate', 'mod_studentqcm');
+                echo "<a href='eval_qcm_list.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-indigo-400 text-white text-lg font-semibold rounded-2xl hover:bg-indigo-500'>";
+                echo "<i class='fas fa-pen-to-square mr-2'></i> " . get_string('evaluate', 'mod_studentqcm');
                 echo "</a>";
                 echo "</div>";
             echo "</div>";
