@@ -51,7 +51,6 @@ echo "<div class='flex mt-8 text-lg justify-between'>";
     echo "<i class='fas fa-arrow-left mr-2'></i>";
     echo get_string('back', 'mod_studentqcm');
     echo "</a>";
-
 echo "</div>";
 
 if ($qcms) {

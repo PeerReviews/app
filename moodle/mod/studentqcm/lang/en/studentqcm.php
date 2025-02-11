@@ -91,6 +91,8 @@ $string['completed_tcss'] = 'TCSs complétés';
 
 $string['completed_pops'] = 'POPs complétés';
 
+$string['new_subcompetency'] = 'Ajouter une nouvelle sous-compétence';
+
 
 // Evaluations
 

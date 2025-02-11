@@ -72,6 +72,14 @@ echo "<div class='mt-8'>";
         echo "</select>";
         echo "</div>";
 
+        // Ajouter une nouvelle sous-compétence (zone de saisie)
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<label for='new_subcompetency' class='block font-semibold text-gray-700 text-lg'>" . get_string('new_subcompetency', 'mod_studentqcm') . " :</label>";
+        echo "<input type='text' id='new_subcompetency' name='new_subcompetency' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' placeholder='Ajoutez une nouvelle sous-compétence'>";
+        echo "<button type='button' id='add_new_subcompetency' class='mt-2 inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500'>Ajouter</button>";
+        echo "</div>";
+
+
     echo "</div>";
 
     // Sélection des mots clés
@@ -226,23 +234,63 @@ $(document).ready(function() {
         var competencyId = $(this).val();
         $('#subcompetency_1').html('<option value="" disabled selected>Chargement...</option>').prop('disabled', true);
 
+        // Afficher ou masquer la zone d'ajout de sous-compétence
         if (competencyId) {
+            $('#new_subcompetency_container').show(); // Montrer la zone d'ajout dynamique
+
             $.getJSON('fetch_subcompetencies.php', { competency_id: competencyId }, function(data) {
                 if (data.length > 0) {
                     var options = '<option value="" disabled selected>Sélectionnez une sous-compétence</option>';
                     $.each(data, function(index, subcompetency) {
-                        options += `<option value="${subcompetency.id}">${subcompetency.name}</option>`;
+                        var customClass = subcompetency.is_custom ? 'custom-subcompetency' : ''; // Appliquer une classe pour les sous-compétences personnalisées
+                        options += `<option value="${subcompetency.id}" class="${customClass}">${subcompetency.name}</option>`;
                     });
                     $('#subcompetency_1').html(options).prop('disabled', false);
                 } else {
                     $('#subcompetency_1').html('<option value="" disabled selected>Aucune sous-compétence disponible</option>').prop('disabled', true);
                 }
             }).fail(function() {
-                // En cas d'erreur AJAX, on désactive la liste déroulante
+                // En cas d'erreur AJAX
                 $('#subcompetency_1').html('<option value="" disabled selected>Erreur de chargement</option>').prop('disabled', true);
             });
+        } else {
+            $('#new_subcompetency_container').hide(); // Masquer la zone d'ajout si aucune compétence n'est sélectionnée
         }
     });
+
+    // Fonction pour ajouter une sous-compétence personnalisée
+    $('#add_new_subcompetency').on('click', function() {
+        var subcompetencyName = $('#new_subcompetency').val().trim();
+        var competencyId = $('#competency_1').val();
+
+        if (subcompetencyName && competencyId) {
+            $.post('add_subcompetency.php', 
+                { name: subcompetencyName, competency_id: competencyId }, 
+                function(response) {
+                    if (response.success) {
+                        // Ajouter la nouvelle sous-compétence directement dans la liste déroulante
+                        $('#subcompetency_1').append(
+                            `<option value="${response.id}" class="custom-subcompetency">${response.name}</option>`
+                        ).prop('disabled', false);
+
+                        // Réinitialiser le champ de texte
+                        $('#new_subcompetency').val('');
+
+                        // Afficher un message de confirmation
+                        alert('Sous-compétence ajoutée avec succès !');
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                }, 'json'
+            ).fail(function() {
+                alert("Erreur lors de l'ajout de la sous-compétence.");
+            });
+        } else {
+            alert('Veuillez entrer un nom pour la sous-compétence.');
+        }
+    });
+
+
 
     // Mise à jour de la liste des mots-clés pour la sous-compétence sélectionnée
     $('#subcompetency_1').change(function() {
