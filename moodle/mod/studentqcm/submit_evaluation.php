@@ -22,6 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $record = new stdClass();
         $record->question_id = $question_id;
         $record->explanation = $explanation;
+        $record->userid = $USER->id;
+        $record->status = 1;
 
         $DB->insert_record('studentqcm_evaluation', $record);
         echo "Évaluation enregistrée avec succès !";
