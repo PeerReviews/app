@@ -52,10 +52,14 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='mr-4 text-4xl font-semibold'> " . count($qcms) . "/" . $studentqcm->nbqcm . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_qcms', 'mod_studentqcm') . "</p>";
     echo "</div>";
-    echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-        echo "<i class='fas fa-plus mr-2'></i>";
-        echo get_string('add_qcm', 'mod_studentqcm');
-    echo "</a>";
+
+    if (count($qcms) != $studentqcm->nbqcm){
+        echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+            echo "<i class='fas fa-plus mr-2'></i>";
+            echo get_string('add_qcm', 'mod_studentqcm');
+        echo "</a>";
+    }
+   
 echo "</div>";
 
 if ($qcms) {
@@ -122,10 +126,12 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='mr-4 text-4xl font-semibold'> " . count($qcus) . "/" . $studentqcm->nbqcu . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_qcus', 'mod_studentqcm') . "</p>";
     echo "</div>";
-    echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-        echo "<i class='fas fa-plus mr-2'></i>";
-        echo get_string('add_qcu', 'mod_studentqcm');
-    echo "</a>";
+    if (count($qcus) != $studentqcm->nbqcu){
+        echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+            echo "<i class='fas fa-plus mr-2'></i>";
+            echo get_string('add_qcu', 'mod_studentqcm');
+        echo "</a>";
+    }
 echo "</div>";
 
 if ($qcus) {
@@ -193,10 +199,14 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='mr-4 text-4xl font-semibold'> " . count($tcss) . "/" . $studentqcm->nbtcs . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_tcss', 'mod_studentqcm') . "</p>";
     echo "</div>";
-    echo "<a href='qcm_add.php?id={$id}&qcm_type=TCS' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-        echo "<i class='fas fa-plus mr-2'></i>";
-        echo get_string('add_tcs', 'mod_studentqcm');
-    echo "</a>";
+
+    if (count($tcss) != $studentqcm->nbtcs){
+        echo "<a href='qcm_add.php?id={$id}&qcm_type=TCS' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+            echo "<i class='fas fa-plus mr-2'></i>";
+            echo get_string('add_tcs', 'mod_studentqcm');
+        echo "</a>";
+    }
+    
 echo "</div>";
 
 if ($tcss) {
