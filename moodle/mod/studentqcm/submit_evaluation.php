@@ -29,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($existing_evaluation) {
             // Mise à jour de l'évaluation existante
             $existing_evaluation->explanation = $explanation;
-            $existing_evaluation->timemodified = time();
             $DB->update_record('studentqcm_evaluation', $existing_evaluation);
         } else {
             // Création d'une nouvelle évaluation
@@ -38,8 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $record->explanation = $explanation;
             $record->userid = $userid;
             $record->status = 1;
-            $record->timecreated = time();
-            $record->timemodified = time();
 
             $DB->insert_record('studentqcm_evaluation', $record);
         }
