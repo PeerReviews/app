@@ -115,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
 }
 
-// if (isset($_POST['submit'])) {
-//     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
-// }
+if (isset($_POST['submit'])) {
+    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+}
 
-// // // Si la requête n'est pas un POST, rediriger
-// redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+// // Si la requête n'est pas un POST, rediriger
+redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

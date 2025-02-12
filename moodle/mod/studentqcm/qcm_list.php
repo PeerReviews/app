@@ -271,7 +271,7 @@ if ($tcss) {
     }
     echo "</div>";
 } else {
-    echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('qcm_not_found', 'mod_studentqcm') . "</p>";
+    echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('tcs_not_found', 'mod_studentqcm') . "</p>";
 }
 
 
