@@ -272,14 +272,12 @@ $(document).ready(function() {
     $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', !referentielId);
     $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
 
-    if (referentielId) {
-        $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
-            $('#competency_1').html(data).prop('disabled', false); // Activer la compétence une fois le référentiel sélectionné
-        });
-    }
-});
-
-
+        if (referentielId) {
+            $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
+                $('#competency_1').html(data).prop('disabled', false).trigger('change');
+            });
+        }
+    });
 
     // Mettre à jour les sous-compétences en fonction de la compétence sélectionnée
     $('#competency_1').on('change', function() {
@@ -288,14 +286,15 @@ $(document).ready(function() {
 
         // Afficher ou masquer la zone d'ajout de sous-compétence
         if (competencyId) {
-            $('#new_subcompetency_container').show(); // Montrer la zone d'ajout dynamique
+            $('#new_subcompetency_container').show();
 
             $.getJSON('fetch_subcompetencies.php', { competency_id: competencyId }, function(data) {
+                console.log(data);
                 if (data.length > 0) {
                     var options = '<option value="" disabled selected>Sélectionnez une sous-compétence</option>';
                     $.each(data, function(index, subcompetency) {
-                        var customClass = subcompetency.is_custom ? 'custom-subcompetency' : ''; // Appliquer une classe pour les sous-compétences personnalisées
-                        options += `<option value="${subcompetency.id}" class="${customClass}">${subcompetency.name}</option>`;
+                        var customText = subcompetency.isCustom ? ' (Personnalisée)' : '';
+                        options += `<option value="${subcompetency.id}">${subcompetency.name}${customText}</option>`;
                     });
                     options += "<option value='new'>Ajouter une nouvelle sous-compétence...</option>"; // Option pour ajouter une nouvelle sous-compétence
                     $('#subcompetency_1').html(options).prop('disabled', false);
@@ -307,7 +306,7 @@ $(document).ready(function() {
                 $('#subcompetency_1').html('<option value="" disabled selected>Erreur de chargement</option>').prop('disabled', true);
             });
         } else {
-            $('#new_subcompetency_container').hide(); // Masquer la zone d'ajout si aucune compétence n'est sélectionnée
+            $('#new_subcompetency_container').hide();
         }
     });
 
@@ -323,7 +322,7 @@ $(document).ready(function() {
                     if (response.success) {
                         // Ajouter la nouvelle sous-compétence directement dans la liste déroulante
                         $('#subcompetency_1').append(
-                            `<option value="${response.id}" class="custom-subcompetency">${response.name}</option>`
+                            `<option value="${response.id}" class="custom-subcompetency">${response.name} (Personnalisée)</option>`
                         ).prop('disabled', false);
 
                         // Réinitialiser le champ de texte
@@ -344,6 +343,7 @@ $(document).ready(function() {
     });
 
 
+
     // Mise à jour de la liste des mots-clés pour la sous-compétence sélectionnée
     $('#subcompetency_1').change(function() {
         var subcompetencyId = $(this).val();
@@ -355,11 +355,14 @@ $(document).ready(function() {
                 
                 if (data.length > 0) {
                     $.each(data, function(index, keyword) {
+
+                        var customIcon = keyword.isCustom ? '<i class="fas fa-pen ml-2"></i>' : '';
+
                         buttons += `
                             <div class="flex justify-center items-center col-span-1">
-                                <button type="button" class="keyword-btn px-4 py-2 border border-indigo-400 text-indigo-400 rounded-2xl transition-all w-full"
+                                <button type="button" class="keyword-btn px-4 py-2 border border-lime-400 text-indigo-400 rounded-2xl transition-all w-full bg-lime-100 hover:bg-indigo-400 hover:text-white"
                                     data-id="${keyword.id}">
-                                    ${keyword.word}
+                                    ${keyword.word} ${customIcon}
                                 </button>
                             </div>
                         `;
@@ -370,7 +373,7 @@ $(document).ready(function() {
 
                 buttons += `
                     <div class="flex justify-center items-center col-span-1">
-                        <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full h-9 bg-lime-400 text-white rounded-lg hover:bg-lime-500 px-3 py-2">
+                        <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full bg-lime-400 text-white rounded-2xl hover:bg-lime-500 px-4 py-2">
                             <i class="fas fa-plus mr-2"></i>
                             Ajouter un mot clé
                         </button>
@@ -394,7 +397,7 @@ $(document).ready(function() {
 
         if (hiddenInput.length > 0) {
             hiddenInput.remove();
-            button.removeClass('bg-indigo-400 text-white').addClass('border-indigo-400 bg-indigo-100 text-indigo-400');
+            button.removeClass('bg-indigo-400 text-white').addClass('border-lime-400 bg-lime-100 text-indigo-400');
         } else {
             if ($('#hidden_inputs').length === 0) {
                 $('#keywords_list_1').append('<div id="hidden_inputs" style="display:none;"></div>');
@@ -402,7 +405,7 @@ $(document).ready(function() {
             $('#hidden_inputs').append(`
                 <input type="hidden" name="questions[1][keywords][]" value="${keywordId}">
             `);
-            button.removeClass('border-indigo-400 bg-indigo-100 text-indigo-400').addClass('bg-indigo-400 text-white');
+            button.removeClass('border-lime-400 bg-lime-100 text-indigo-400').addClass('bg-indigo-400 text-white');
         }
     });
 
@@ -429,11 +432,13 @@ $(document).ready(function() {
                         // Supprimer le bouton "+" avant d'ajouter le mot-clé
                         $('#keywords_list_1').find('#show_new_keyword').parent().remove();
 
+                        var customIcon = '<i class="fas fa-pen ml-2"></i>';
+
                         var newKeywordButton = `
                             <div class="flex justify-center items-center col-span-1">
-                                <button type="button" class="keyword-btn px-4 py-2 border border-indigo-400 text-indigo-400 rounded-2xl transition-all w-full"
+                                <button type="button" class="keyword-btn px-4 py-2 border border-lime-400 text-indigo-400 rounded-2xl transition-all w-full bg-lime-100 hover:bg-indigo-400 hover:text-white"
                                     data-id="${response.id}">
-                                    ${response.word}
+                                    ${response.word} ${customIcon}
                                 </button>
                             </div>
                         `;
@@ -442,7 +447,7 @@ $(document).ready(function() {
 
                         $('#keywords_list_1').append(`
                             <div class="flex justify-center items-center col-span-1">
-                                <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full h-9 bg-lime-400 text-white rounded-lg hover:bg-lime-500 px-3 py-2">
+                                <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full bg-lime-400 text-white rounded-2xl hover:bg-lime-500 px-4 py-2">
                                     <i class="fas fa-plus mr-2"></i>
                                     Ajouter un mot clé
                                 </button>
