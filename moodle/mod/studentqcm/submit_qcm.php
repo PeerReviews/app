@@ -22,14 +22,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Préparer l'enregistrement de la question
             $question_record = new stdClass();
             $question_record->userid = $USER->id;
-            $question_record->question = clean_param($question['question'], PARAM_TEXT);
-            $question_record->indexation = 1;
-            $question_record->global_comment = clean_param($question['global_comment'], PARAM_TEXT);
-            $question_record->context = clean_param($question['context'], PARAM_TEXT);
-            $question_record->referentiel = clean_param($question['referentiel'], PARAM_INT);
-            $question_record->competency = clean_param($question['competency'], PARAM_INT);
-            $question_record->subcompetency = clean_param($question['subcompetency'], PARAM_INT);
+            
+            $question_record->question = (!empty($question['question'])) 
+            ? clean_param($question['question'], PARAM_TEXT) 
+            : null;
+
+            $question_record->global_comment = (!empty($question['global_comment'])) 
+            ? clean_param($question['global_comment'], PARAM_TEXT) 
+            : null;
+            
+            $question_record->context = (!empty($question['context'])) 
+            ? clean_param($question['context'], PARAM_TEXT) 
+            : null;
+
+            $question_record->referentiel = (!empty($question['referentiel']) && $question['referentiel'] > 0) 
+            ? clean_param($question['referentiel'], PARAM_INT) 
+            : null;
+            $question_record->competency = (!empty($question['competency']) && $question['competency'] > 0) 
+            ? clean_param($question['competency'], PARAM_INT) 
+            : null;
+            $question_record->subcompetency = (!empty($question['subcompetency']) && $question['subcompetency'] > 0) 
+            ? clean_param($question['subcompetency'], PARAM_INT) 
+            : null;
+            
+            $question_record->status = isset($_POST['submit']) ? 1 : 0;
             $question_record->type = $type;
+            $question_record->ispop = ($type === "POP") ? 1 : 0;
 
             // Insérer la question et récupérer son ID
             $question_id = $DB->insert_record('studentqcm_question', $question_record);
@@ -93,9 +111,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    // Redirection après l'enregistrement
-    // redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+   
 }
 
-// Si la requête n'est pas un POST, rediriger
+if (isset($_POST['submit'])) {
+    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+}
+
+// // Si la requête n'est pas un POST, rediriger
 redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

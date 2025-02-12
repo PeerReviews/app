@@ -85,34 +85,36 @@ if ($qcms) {
             // Référentiel
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-book text-green-500'></i>";
-            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
             echo "</p>";
 
             // Compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-bookmark text-orange-500'></i>";
-            echo "<span>" . get_string('competency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
+            echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
             echo "</p>";
 
             // Sous-compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-award text-purple-500'></i>";
-            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
             echo "</p>";
 
             echo "</div>";
             echo "</div>";
 
             // Partie droite (boutons)
-            echo "<div class='flex space-x-2'>";
-                echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
-                echo "<i class='fas fa-edit'></i>";
-                echo "</a>";
+            if ($qcm->status == 0){
+                echo "<div class='flex space-x-2'>";
+                    echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                    echo "<i class='fas fa-edit'></i>";
+                    echo "</a>";
 
-                echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcm->id}); return false;'>";
-                echo "<i class='fas fa-trash'></i>";
-                echo "</a>";
-            echo "</div>";
+                    echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcm->id}); return false;'>";
+                    echo "<i class='fas fa-trash'></i>";
+                    echo "</a>";
+                echo "</div>";
+            }
         echo "</div>";
     }
     echo "</div>";
@@ -157,34 +159,37 @@ if ($qcus) {
             // Référentiel
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-book text-green-500'></i>";
-            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
             echo "</p>";
 
             // Compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-bookmark text-orange-500'></i>";
-            echo "<span>" . get_string('competency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
+            echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
             echo "</p>";
 
             // Sous-compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-award text-purple-500'></i>";
-            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
             echo "</p>";
 
             echo "</div>";
             echo "</div>";
 
             // Partie droite (boutons)
-            echo "<div class='flex space-x-2'>";
-                echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcu->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
-                echo "<i class='fas fa-edit'></i>";
-                echo "</a>";
+            if ($qcu->status == 0){
+                echo "<div class='flex space-x-2'>";
+                    echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcu->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                    echo "<i class='fas fa-edit'></i>";
+                    echo "</a>";
 
-                echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcu->id}); return false;'>";
-                echo "<i class='fas fa-trash'></i>";
-                echo "</a>";
-            echo "</div>";
+                    echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcu->id}); return false;'>";
+                    echo "<i class='fas fa-trash'></i>";
+                    echo "</a>";
+                echo "</div>";
+            }
+            
         echo "</div>";
     }
     echo "</div>";
@@ -232,34 +237,36 @@ if ($tcss) {
             // Référentiel
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-book text-green-500'></i>";
-            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+            echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
             echo "</p>";
 
             // Compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-bookmark text-orange-500'></i>";
-            echo "<span>" . get_string('competency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
+            echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
             echo "</p>";
 
             // Sous-compétence
             echo "<p class='flex items-center gap-2'>";
             echo "<i class='fas fa-award text-purple-500'></i>";
-            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+            echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
             echo "</p>";
 
             echo "</div>";
             echo "</div>";
 
             // Partie droite (boutons)
-            echo "<div class='flex space-x-2'>";
-                echo "<a href='qcm_edit.php?id={$id}&qcm_id={$tcs->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
-                echo "<i class='fas fa-edit'></i>";
-                echo "</a>";
+            if ($tcs->status == 0){
+                echo "<div class='flex space-x-2'>";
+                    echo "<a href='qcm_edit.php?id={$id}&qcm_id={$tcs->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                    echo "<i class='fas fa-edit'></i>";
+                    echo "</a>";
 
-                echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$tcs->id}); return false;'>";
-                echo "<i class='fas fa-trash'></i>";
-                echo "</a>";
-            echo "</div>";
+                    echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$tcs->id}); return false;'>";
+                    echo "<i class='fas fa-trash'></i>";
+                    echo "</a>";
+                echo "</div>";
+            }
         echo "</div>";
     }
     echo "</div>";

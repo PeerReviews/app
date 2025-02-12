@@ -68,9 +68,39 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
         echo "<label for='subcompetency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('subcompetency', 'mod_studentqcm') . " :</label>";
         echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
-        echo "<option value=''>Sélectionnez une sous-compétence </option>";
+        echo "<option value=''>Sélectionnez une sous-compétence</option>";
+
+        // Ajouter les options de sous-compétences existantes (exemple)
+        $subcompetencies = ['Sous-compétence 1', 'Sous-compétence 2', 'Sous-compétence 3']; // Vous pouvez remplacer cela par un tableau dynamique provenant de la base de données
+        foreach ($subcompetencies as $subcompetency) {
+            echo "<option value='$subcompetency'>$subcompetency</option>";
+        }
+
+        // Ajouter une option pour "Ajouter une nouvelle sous-compétence"
+        echo "<option value='new'>Ajouter une nouvelle sous-compétence...</option>";
+
         echo "</select>";
+
+        // Afficher un champ de saisie si l'utilisateur sélectionne "Ajouter une nouvelle sous-compétence"
+        echo "<div id='new_subcompetency_input' class='mt-2' style='display:none;'>";
+        echo "<input type='text' name='questions[1][new_subcompetency]' placeholder='Entrez une nouvelle sous-compétence' class='w-full p-2 border border-gray-300 rounded-lg'>";
         echo "</div>";
+
+        echo "</div>";
+
+        // Ajouter un script JavaScript pour afficher le champ de texte lorsque l'option "Ajouter une nouvelle sous-compétence" est sélectionnée
+        echo "<script>
+        document.getElementById('subcompetency_1').addEventListener('change', function() {
+            var value = this.value;
+            var newSubcompetencyInput = document.getElementById('new_subcompetency_input');
+            if (value === 'new') {
+                newSubcompetencyInput.style.display = 'block';
+            } else {
+                newSubcompetencyInput.style.display = 'none';
+            }
+        });
+        </script>";
+
 
     echo "</div>";
 
@@ -141,11 +171,12 @@ echo "<div class='mt-8'>";
 echo "</div>";
 
 echo "<div class='mb-4 mt-4 flex justify-end space-x-4'>";
-    echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-blue-200 hover:bg-blue-300 cursor-pointer text-blue-700 no-underline text-lg'>" .
+    echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
         get_string('save', 'mod_studentqcm') . "</button>";
     echo "<button type='submit' name='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
         get_string('submit', 'mod_studentqcm') . "</button>";
 echo "</div>";
+
 
 
 echo "</form>";
@@ -214,16 +245,19 @@ echo $OUTPUT->footer();
 $(document).ready(function() {
     // Filtrer les compétences en fonction du référentiel sélectionné
     $('#referentiel_1').change(function() {
-        var referentielId = $(this).val();
-        $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', true);
-        $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
+    var referentielId = $(this).val();
+    // Désactiver la compétence jusqu'à ce qu'un référentiel soit sélectionné
+    $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', !referentielId);
+    $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
 
-        if (referentielId) {
-            $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
-                $('#competency_1').html(data).prop('disabled', false).trigger('change'); // Déclenche un événement 'change' pour charger les sous-compétences
-            });
-        }
-    });
+    if (referentielId) {
+        $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
+            $('#competency_1').html(data).prop('disabled', false); // Activer la compétence une fois le référentiel sélectionné
+        });
+    }
+});
+
+
 
     // Mettre à jour les sous-compétences en fonction de la compétence sélectionnée
     $('#competency_1').on('change', function() {
@@ -237,6 +271,7 @@ $(document).ready(function() {
                     $.each(data, function(index, subcompetency) {
                         options += `<option value="${subcompetency.id}">${subcompetency.name}</option>`;
                     });
+                    options += "<option value='new'>Ajouter une nouvelle sous-compétence...</option>"; // Option pour ajouter une nouvelle sous-compétence
                     $('#subcompetency_1').html(options).prop('disabled', false);
                 } else {
                     $('#subcompetency_1').html('<option value="" disabled selected>Aucune sous-compétence disponible</option>').prop('disabled', true);
@@ -245,6 +280,19 @@ $(document).ready(function() {
                 // En cas d'erreur AJAX, on désactive la liste déroulante
                 $('#subcompetency_1').html('<option value="" disabled selected>Erreur de chargement</option>').prop('disabled', true);
             });
+        } else {
+            $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
+        }
+    });
+
+    // Afficher un champ de saisie si l'utilisateur sélectionne "Ajouter une nouvelle sous-compétence"
+    $('#subcompetency_1').change(function() {
+        var subcompetencyId = $(this).val();
+        var newSubcompetencyInput = $('#new_subcompetency_input');
+        if (subcompetencyId === 'new') {
+            newSubcompetencyInput.show();  // Afficher le champ pour une nouvelle sous-compétence
+        } else {
+            newSubcompetencyInput.hide();  // Masquer le champ
         }
     });
 
@@ -253,8 +301,7 @@ $(document).ready(function() {
         var subcompetencyId = $(this).val();
         $('#keywords_list_1').html('<p class="text-gray-500">Chargement...</p>');
 
-        if (subcompetencyId) {
-            // Utilisation de $.getJSON() pour récupérer les mots-clés
+        if (subcompetencyId && subcompetencyId !== 'new') {
             $.getJSON('fetch_keywords.php', { subcompetency_id: subcompetencyId }, function(data) {
                 if (data.length > 0) {
                     var checkboxes = '';
@@ -271,11 +318,12 @@ $(document).ready(function() {
                     $('#keywords_list_1').html('<p class="text-gray-500">Aucun mot-clé disponible</p>');
                 }
             }).fail(function() {
-                // En cas d'erreur AJAX, on affiche un message d'erreur
                 $('#keywords_list_1').html('<p class="text-red-500">Erreur de chargement des mots-clés</p>');
             });
         }
     });
+});
+
 
 
 
