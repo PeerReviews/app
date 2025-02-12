@@ -12,16 +12,18 @@ if ($subcompetencies) {
     foreach ($subcompetencies as $subcompetency) {
         $subcompetency_data[] = [
             'id' => $subcompetency->id,
-            'name' => $subcompetency->name
+            'name' => $subcompetency->name,
+            'isCustom' => (int) $subcompetency->iscustom
         ];
     }
 } else {
     $subcompetency_data[] = [
         'id' => '',
-        'name' => 'Aucune sous-compétence disponible'
+        'name' => 'Aucune sous-compétence disponible',
+        'isCustom' => 0
     ];
 }
 
-// Envoyer les données au format JSON
 header('Content-Type: application/json');
 echo json_encode($subcompetency_data);
+?>

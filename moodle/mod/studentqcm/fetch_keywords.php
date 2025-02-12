@@ -11,13 +11,15 @@ if ($keywords) {
     foreach ($keywords as $keyword) {
         $keyword_data[] = [
             'id' => $keyword->id,
-            'word' => $keyword->word // Assurez-vous que la propriété de la base de données s'appelle 'word'
+            'word' => $keyword->word,
+            'isCustom' => (int) $keyword->iscustom
         ];
     }
 } else {
     $keyword_data[] = [
         'id' => '',
-        'word' => 'Aucun mot clé disponible'
+        'word' => 'Aucun mot clé disponible',
+        'isCustom' => 0
     ];
 }
 
