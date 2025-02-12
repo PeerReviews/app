@@ -56,13 +56,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
 
-            // Insérer les réponses associées
+
+
             if (!empty($question['answers'])) {
                 foreach ($question['answers'] as $answer) {
                     if (!empty(trim($answer['answer']))) {
                         $answer_record = new stdClass();
                         $answer_record->question_id = $question_id;
-                        $answer_record->answer = clean_param($answer['answer'], PARAM_TEXT);
+                        $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
                         $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
                         $answer_record->isTrue = isset($answer['correct']) && $answer['correct'] == '1' ? 1 : 0;
 
@@ -114,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
 }
 
-if (isset($_POST['submit'])) {
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
-}
+// if (isset($_POST['submit'])) {
+//     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+// }
 
-// // Si la requête n'est pas un POST, rediriger
-redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+// // // Si la requête n'est pas un POST, rediriger
+// redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

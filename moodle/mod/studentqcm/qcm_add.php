@@ -120,10 +120,9 @@ echo "<div class='mt-8'>";
 
     // Question
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
-    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " :</label>";
+    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " <span class='text-red-500'>*</span> :</label>";
     echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
     echo "</div>";
-
 
     // Réponses
     for ($i = 1; $i <= 5; $i++) {
