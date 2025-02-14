@@ -6,6 +6,7 @@ require_once(__DIR__ . '/../../config.php');
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
 $type = required_param('qcm_type', PARAM_TEXT);
+$popTypeId = optional_param('pop_type_id', null, PARAM_INT);
 
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -38,7 +39,7 @@ echo "</a>";
 echo "</div>";
 
 // Formulaire
-echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}'>";
+echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}&pop_type_id={$popTypeId}'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence
@@ -295,7 +296,6 @@ $(document).ready(function() {
                         var customText = subcompetency.isCustom ? ' (Personnalisée)' : '';
                         options += `<option value="${subcompetency.id}">${subcompetency.name}${customText}</option>`;
                     });
-                    options += "<option value='new'>Ajouter une nouvelle sous-compétence...</option>"; // Option pour ajouter une nouvelle sous-compétence
                     $('#subcompetency_1').html(options).prop('disabled', false);
                 } else {
                     $('#subcompetency_1').html('<option value="" disabled selected>Aucune sous-compétence disponible</option>').prop('disabled', true);

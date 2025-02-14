@@ -5,6 +5,7 @@ require_once(__DIR__ . '/../../config.php');
 // Récupérer l'ID du module de cours
 $id = required_param('id', PARAM_INT);
 $type = required_param('type', PARAM_TEXT);
+$pop_type_id = optional_param('pop_type_id', 0, PARAM_INT);
 
 // Récupérer les informations du module et vérifier l'accès
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -46,16 +47,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             : null;
             
             $question_record->status = isset($_POST['submit']) ? 1 : 0;
+
+
+            // Gestion du type de la question/POP
             $question_record->type = $type;
-            $question_record->ispop = ($type === "POP") ? 1 : 0;
+            $question_record->poptypeid = $pop_type_id;
+            $question_record->ispop = ($pop_type_id !== 0) ? 1 : 0;
+
+            echo "La valeur de type est : " . htmlspecialchars($question_record->type) . "<br>";
+            echo "La valeur de poptypeid est : " . htmlspecialchars($question_record->poptypeid) . "<br>";
+            echo "La valeur de ispop est : " . htmlspecialchars($question_record->ispop) . "<br>";
+                        
+            // Ajout dans mdl_studentqcm_pop
+            if ($pop_type_id !== 0){
+
+                $pop_record = new stdClass();
+                $pop_record->userid = $USER->id;
+                $pop_record->poptypeid = $pop_type_id;
+
+                $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
+                if (!$pop_id) {
+                    throw new moodle_exception('insertfailed', 'studentqcm_question');
+                }
+                
+                $question_record->popid = $pop_id;
+            }
 
             // Insérer la question et récupérer son ID
             $question_id = $DB->insert_record('studentqcm_question', $question_record);
+            echo "Après insertion : " . $question_record->ispop;
             if (!$question_id) {
                 throw new moodle_exception('insertfailed', 'studentqcm_question');
             }
-
-
 
 
             if (!empty($question['answers'])) {
@@ -115,9 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
 }
 
-if (isset($_POST['submit'])) {
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
-}
+// if (isset($_POST['submit'])) {
+//     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+// }
 
-// // Si la requête n'est pas un POST, rediriger
-redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+// // // Si la requête n'est pas un POST, rediriger
+// redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

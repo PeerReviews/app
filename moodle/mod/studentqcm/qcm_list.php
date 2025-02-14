@@ -7,15 +7,18 @@ $id = required_param('id', PARAM_INT);
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
+$required_pops = $DB->get_records('question_pop', array('refId' => $cm->instance));
 
 $userid = $USER->id;
 
 // Récupérer toutes les questions créées par l'utilisateur
 $questions = $DB->get_records('studentqcm_question', array('userid' => $userid), 'id DESC');
 
-$qcms = array_filter($questions, fn($q) => $q->type === 'QCM');
-$qcus = array_filter($questions, fn($q) => $q->type === 'QCU');
-$tcss = array_filter($questions, fn($q) => $q->type === 'TCS');
+$qcms = array_filter($questions, fn($q) => $q->type === 'QCM'); // && $q->ispop === 0);
+$qcus = array_filter($questions, fn($q) => $q->type === 'QCU'); // && $q->ispop === 0);
+$tcss = array_filter($questions, fn($q) => $q->type === 'TCS'); // && $q->ispop === 0);
+$pops = array_filter($questions, fn($q) => $q->ispop === 1);
+
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
 $referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
@@ -52,7 +55,7 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='text-3xl'> " . get_string('completed_qcms', 'mod_studentqcm') . "</p>";
     echo "</div>";
 
-    if (count($qcms) != $studentqcm->nbqcm){
+    if (count($qcms) < $studentqcm->nbqcm){
         echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
             echo "<i class='fas fa-plus mr-2'></i>";
             echo get_string('add_qcm', 'mod_studentqcm');
@@ -127,7 +130,7 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='mr-4 text-4xl font-semibold'> " . count($qcus) . "/" . $studentqcm->nbqcu . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_qcus', 'mod_studentqcm') . "</p>";
     echo "</div>";
-    if (count($qcus) != $studentqcm->nbqcu){
+    if (count($qcus) < $studentqcm->nbqcu){
         echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
             echo "<i class='fas fa-plus mr-2'></i>";
             echo get_string('add_qcu', 'mod_studentqcm');
@@ -204,7 +207,7 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='text-3xl'> " . get_string('completed_tcss', 'mod_studentqcm') . "</p>";
     echo "</div>";
 
-    if (count($tcss) != $studentqcm->nbtcs){
+    if (count($tcss) < $studentqcm->nbtcs){
         echo "<a href='qcm_add.php?id={$id}&qcm_type=TCS' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
             echo "<i class='fas fa-plus mr-2'></i>";
             echo get_string('add_tcs', 'mod_studentqcm');
@@ -273,6 +276,184 @@ if ($tcss) {
     echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('tcs_not_found', 'mod_studentqcm') . "</p>";
 }
 
+// Affichage des pops
+echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
+    echo "<div class='flex text-center text-gray-500 items-end'>";
+        echo "<p class='mr-4 text-4xl font-semibold'> " . count($pops) . "/" . $studentqcm->nbpop . "</p>";
+        echo "<p class='text-3xl'> " . get_string('completed_pops', 'mod_studentqcm') . "</p>";
+    echo "</div>";
+
+    // if (count($pops) < $studentqcm->nbpop){
+    //     echo "<a href='qcm_add.php?id={$id}&qcm_type=POP' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+    //         echo "<i class='fas fa-plus mr-2'></i>";
+    //         echo get_string('add_pop', 'mod_studentqcm');
+    //     echo "</a>";
+    // }
+    
+echo "</div>";
+
+if ($required_pops){
+
+    echo "<div class='space-y-4 mt-4'>";
+
+    foreach ($required_pops as $required_pop) {
+        $nbqcm = $required_pop->nbqcm;
+        $nbqcu = $required_pop->nbqcu;
+        $nb = 1;
+        $popTypeId = $required_pop->id;
+
+        // Les POPs de type $PopId créés par l'étudiant courant
+        $popsFiltered = array_filter($pops, fn($q) => $q->popTypeId === $popTypeId);
+
+        $qcmText = $nbqcm > 0 ? $nbqcm . " QCM" . ($nbqcm > 1 ? "s" : "") : "";
+        $qcuText = $nbqcu > 0 ? $nbqcu . " QCU" . ($nbqcu > 1 ? "s" : "") : "";
+        $popText = trim($qcmText . ($qcmText && $qcuText ? ", " : "") . $qcuText);
+
+        echo "<div class='flex text-center text-gray-500 items-end'>";
+            echo "<p class='mr-4 text-2xl font-semibold'> " . count($popsFiltered) . "/" . $nb . "</p>";
+            echo "<p class='text-xl'> " . " POPs (" . $popText . ") complétés </p>";
+        echo "</div>";
+
+        $qcmDone = array_filter($popsFiltered, fn($q) => $q->type === "QCM");
+        $qcuDone = array_filter($popsFiltered, fn($q) => $q->type === "QCU");
+
+        if (count($qcmDone) < $nbqcm){
+            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+                echo "<i class='fas fa-plus mr-2'></i>";
+                echo get_string('add_qcm', 'mod_studentqcm');
+            echo "</a>";
+        }
+
+        if (count($qcuDone) < $nbqcu){
+            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU&pop_type_id={$popTypeId}&' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+                echo "<i class='fas fa-plus mr-2'></i>";
+                echo get_string('add_qcu', 'mod_studentqcm');
+            echo "</a>";
+        }
+
+
+        if ($qcmDone || $qcuDone){
+            if ($qcmDone){
+                foreach ($qcmDone as $currentQcmId){
+
+                    $qcm = array_filter($qcmDone, fn($q) => $q->id === $currentQcmId);
+
+                    $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
+                    $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
+                    $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
+
+                    echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
+
+                        // Partie gauche (question + infos)
+                        echo "<div>";
+                        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
+                        echo format_string(ucfirst($qcm->question));
+                        echo "</p>";
+
+                        // Informations sur le référentiel, compétence et sous-compétence
+                        echo "<div class='mt-2 text-gray-600 text-sm flex flex-col space-y-1'>";
+
+                        // Référentiel
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-book text-green-500'></i>";
+                        echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+                        echo "</p>";
+
+                        // Compétence
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-bookmark text-orange-500'></i>";
+                        echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
+                        echo "</p>";
+
+                        // Sous-compétence
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-award text-purple-500'></i>";
+                        echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+                        echo "</p>";
+
+                        echo "</div>";
+                        echo "</div>";
+
+                        // Partie droite (boutons)
+                        if ($qcm->status == 0){
+                            echo "<div class='flex space-x-2'>";
+                                echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                                echo "<i class='fas fa-edit'></i>";
+                                echo "</a>";
+
+                                echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcm->id}); return false;'>";
+                                echo "<i class='fas fa-trash'></i>";
+                                echo "</a>";
+                            echo "</div>";
+                        }
+                    echo "</div>";
+                }
+            }
+
+            if ($qcuDone){
+                foreach ($qcuDone as $currentQcuId){
+
+                    $qcu = array_filter($qcuDone, fn($q) => $q->id === $currentQcuId);
+
+                    $nom_referentiel = isset($referentiels[$qcu->referentiel]) ? $referentiels[$qcu->referentiel] : get_string('unknown', 'mod_studentqcm');
+                    $nom_competency = isset($competencies[$qcu->competency]) ? $competencies[$qcu->competency] : get_string('unknown', 'mod_studentqcm');
+                    $nom_subcompetency = isset($subcompetencies[$qcu->subcompetency]) ? $subcompetencies[$qcu->subcompetency] : get_string('unknown', 'mod_studentqcm');
+
+                    echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
+
+                        // Partie gauche (question + infos)
+                        echo "<div>";
+                        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
+                        echo format_string(ucfirst($qcu->question));
+                        echo "</p>";
+
+                        // Informations sur le référentiel, compétence et sous-compétence
+                        echo "<div class='mt-2 text-gray-600 text-sm flex flex-col space-y-1'>";
+
+                        // Référentiel
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-book text-green-500'></i>";
+                        echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+                        echo "</p>";
+
+                        // Compétence
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-bookmark text-orange-500'></i>";
+                        echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
+                        echo "</p>";
+
+                        // Sous-compétence
+                        echo "<p class='flex items-center gap-2'>";
+                        echo "<i class='fas fa-award text-purple-500'></i>";
+                        echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+                        echo "</p>";
+
+                        echo "</div>";
+                        echo "</div>";
+
+                        // Partie droite (boutons)
+                        if ($qcu->status == 0){
+                            echo "<div class='flex space-x-2'>";
+                                echo "<a href='qcm_edit.php?id={$id}&qcm_id={$qcu->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
+                                echo "<i class='fas fa-edit'></i>";
+                                echo "</a>";
+
+                                echo "<a href='#' class='px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600' onclick='showDeleteModal({$qcu->id}); return false;'>";
+                                echo "<i class='fas fa-trash'></i>";
+                                echo "</a>";
+                            echo "</div>";
+                        }
+                    echo "</div>";
+                }
+            }
+        }
+        else {
+            echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('pop_not_found', 'mod_studentqcm') . "</p>";
+        }
+        
+    }
+    echo "</div>";
+}
 
 
 ?>
