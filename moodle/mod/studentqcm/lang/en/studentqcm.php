@@ -68,6 +68,7 @@ $string['subcompetency'] = 'Sous-compétence';
 $string['keywords'] = 'Mots-clés';
 $string['addmore'] = 'Ajouter + ';
 $string['qcm_saved'] = 'QCM enregistré !';
+$string['qcm_updated'] = 'QCM modifié !';
 
 $string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
 $string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
