@@ -28,7 +28,7 @@ $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => ti
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_question', 'mod_studentqcm') . " " . $type . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";

@@ -277,7 +277,11 @@ if ($tcss) {
     echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('tcs_not_found', 'mod_studentqcm') . "</p>";
 }
 
-$popTypeCounts = array_count_values(array_map(fn($q) => $q->poptypeid, $pops));
+$popTypeCounts = array_count_values(array_filter(
+    array_map(fn($q) => isset($q->poptypeid) ? (string) $q->poptypeid : null, $pops),
+    fn($v) => !is_null($v)
+));
+
 
 // Affichage des pops
 echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
@@ -290,7 +294,7 @@ echo "</div>";
 
 if ($required_pops){
 
-    echo "<div class='space-y-4 mt-4 space'>";
+    echo "<div class='space-y-8 mt-4'>";
 
     foreach ($required_pops as $required_pop) {
         $nbqcm = $required_pop->nbqcm;
@@ -310,24 +314,29 @@ if ($required_pops){
 
         $pop_completed = (($nbqcm + $nbqcu) === count($popsFiltered)) ? 1 : 0;
 
-        echo "<div class='flex text-center text-gray-500 items-end'>";
-            echo "<p class='mr-4 text-2xl font-semibold'> " . $pop_completed . "/" . $nb . "</p>";
-            echo "<p class='text-xl'> " . " POP (" . $popText . ") complété </p>";
+        echo "<div class='flex justify-between items-center text-gray-500 mx-16 pb-2 mt-8 border-b'>";
+            echo "<div class='flex items-end'>";
+                echo "<p class='mr-4 text-2xl font-semibold'> " . $pop_completed . "/" . $nb . "</p>";
+                echo "<p class='text-xl'> POP (" . $popText . ") complété </p>";
+            echo "</div>";
+
+            echo "<div class='flex space-x-4'>";
+                if (count($qcmDone) < $nbqcm){
+                    echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+                        echo "<i class='fas fa-plus mr-2'></i>";
+                        echo get_string('add_qcm', 'mod_studentqcm');
+                    echo "</a>";
+                }
+
+                if (count($qcuDone) < $nbqcu){
+                    echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+                        echo "<i class='fas fa-plus mr-2'></i>";
+                        echo get_string('add_qcu', 'mod_studentqcm');
+                    echo "</a>";
+                }
+            echo "</div>";
         echo "</div>";
 
-        if (count($qcmDone) < $nbqcm){
-            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-                echo "<i class='fas fa-plus mr-2'></i>";
-                echo get_string('add_qcm', 'mod_studentqcm');
-            echo "</a>";
-        }
-
-        if (count($qcuDone) < $nbqcu){
-            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-                echo "<i class='fas fa-plus mr-2'></i>";
-                echo get_string('add_qcu', 'mod_studentqcm');
-            echo "</a>";
-        }
 
 
         if ($qcmDone || $qcuDone){
