@@ -141,15 +141,25 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         // Réponse
-        echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
-        echo "<div class='col-span-10 w-full'>";
-        echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
-        echo "</div>";
-        echo "</div>";
+        if ($type != "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "</div>";
+            echo "</div>";
+        }
+        if ($type = "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<input type='text' id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></input>";
+            echo "</div>";
+            echo "</div>";
+        }
 
+        // Explication
         if($type != "TCS") {
-            // Explication
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='explanation_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $i :</label>";
             echo "<div class='col-span-10 w-full'>";

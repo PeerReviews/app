@@ -30,7 +30,6 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 // Afficher l'en-tête de la page
-// Afficher l'en-tête de la page
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
@@ -145,13 +144,23 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
     
         // Réponse
-        echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
-        echo "<div class='col-span-10 w-full'>";
-        echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
-        echo "</div>";
-        echo "</div>";
-    
+        if ($type != "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
+            echo "</div>";
+            echo "</div>";
+        }
+        if ($type = "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<input type='text' id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required value='{$answer->answer}'</input>";
+            echo "</div>";
+            echo "</div>";
+        }
+        
         if($type != "TCS") {
             // Explication
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
