@@ -49,33 +49,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->status = isset($_POST['submit']) ? 1 : 0;
 
 
-            // Gestion du type de la question/POP
-            $question_record->type = $type;
-            $question_record->poptypeid = $pop_type_id;
-            $question_record->ispop = ($pop_type_id !== 0) ? 1 : 0;
-
-            echo "La valeur de type est : " . htmlspecialchars($question_record->type) . "<br>";
-            echo "La valeur de poptypeid est : " . htmlspecialchars($question_record->poptypeid) . "<br>";
-            echo "La valeur de ispop est : " . htmlspecialchars($question_record->ispop) . "<br>";
-                        
             // Ajout dans mdl_studentqcm_pop
             if ($pop_type_id !== 0){
 
                 $pop_record = new stdClass();
                 $pop_record->userid = $USER->id;
-                $pop_record->poptypeid = $pop_type_id;
+                $pop_record->popTypeId = $pop_type_id;
+
+                // echo "La valeur de poptypeid est : " . htmlspecialchars($pop_type_id) . "<br>";
+
 
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
                 if (!$pop_id) {
                     throw new moodle_exception('insertfailed', 'studentqcm_question');
                 }
                 
-                $question_record->popid = $pop_id;
+                $question_record->type = $type;
+                $question_record->popTypeId = $pop_type_id;
+                $question_record->isPop = ($pop_type_id !== 0) ? 1 : 0;
+                $question_record->popId = $pop_id;
+
             }
 
             // Insérer la question et récupérer son ID
             $question_id = $DB->insert_record('studentqcm_question', $question_record);
-            echo "Après insertion : " . $question_record->ispop;
+
             if (!$question_id) {
                 throw new moodle_exception('insertfailed', 'studentqcm_question');
             }
@@ -138,9 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
 }
 
-// if (isset($_POST['submit'])) {
-//     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
-// }
+if (isset($_POST['submit'])) {
+    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+}
 
-// // // Si la requête n'est pas un POST, rediriger
-// redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+// // Si la requête n'est pas un POST, rediriger
+redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

@@ -14,10 +14,11 @@ $userid = $USER->id;
 // Récupérer toutes les questions créées par l'utilisateur
 $questions = $DB->get_records('studentqcm_question', array('userid' => $userid), 'id DESC');
 
-$qcms = array_filter($questions, fn($q) => $q->type === 'QCM'); // && $q->ispop === 0);
-$qcus = array_filter($questions, fn($q) => $q->type === 'QCU'); // && $q->ispop === 0);
-$tcss = array_filter($questions, fn($q) => $q->type === 'TCS'); // && $q->ispop === 0);
-$pops = array_filter($questions, fn($q) => $q->ispop === 1);
+$qcms = array_filter($questions, fn($q) => $q->type === 'QCM' && !$q->ispop);
+$qcus = array_filter($questions, fn($q) => $q->type === 'QCU' && !$q->ispop);
+$tcss = array_filter($questions, fn($q) => $q->type === 'TCS' && !$q->ispop);
+$pops = array_filter($questions, fn($q) => $q->ispop);
+// Affichage de la variable $question
 
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
@@ -303,7 +304,7 @@ if ($required_pops){
         $popTypeId = $required_pop->id;
 
         // Les POPs de type $PopId créés par l'étudiant courant
-        $popsFiltered = array_filter($pops, fn($q) => $q->popTypeId === $popTypeId);
+        $popsFiltered = array_filter($pops, fn($q) => $q->poptypeid === $popTypeId);
 
         $qcmText = $nbqcm > 0 ? $nbqcm . " QCM" . ($nbqcm > 1 ? "s" : "") : "";
         $qcuText = $nbqcu > 0 ? $nbqcu . " QCU" . ($nbqcu > 1 ? "s" : "") : "";
@@ -325,7 +326,7 @@ if ($required_pops){
         }
 
         if (count($qcuDone) < $nbqcu){
-            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU&pop_type_id={$popTypeId}&' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
+            echo "<a href='qcm_add.php?id={$id}&qcm_type=QCU&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
                 echo "<i class='fas fa-plus mr-2'></i>";
                 echo get_string('add_qcu', 'mod_studentqcm');
             echo "</a>";
@@ -334,9 +335,7 @@ if ($required_pops){
 
         if ($qcmDone || $qcuDone){
             if ($qcmDone){
-                foreach ($qcmDone as $currentQcmId){
-
-                    $qcm = array_filter($qcmDone, fn($q) => $q->id === $currentQcmId);
+                foreach ($qcmDone as $qcm){
 
                     $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
                     $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
