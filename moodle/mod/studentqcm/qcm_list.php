@@ -277,10 +277,12 @@ if ($tcss) {
     echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('tcs_not_found', 'mod_studentqcm') . "</p>";
 }
 
+$popTypeCounts = array_count_values(array_map(fn($q) => $q->poptypeid, $pops));
+
 // Affichage des pops
 echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
     echo "<div class='flex text-center text-gray-500 items-end'>";
-        echo "<p class='mr-4 text-4xl font-semibold'> " . count($pops) . "/" . $studentqcm->nbpop . "</p>";
+        echo "<p class='mr-4 text-4xl font-semibold'> " . count($popTypeCounts) . "/" . $studentqcm->nbpop . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_pops', 'mod_studentqcm') . "</p>";
     echo "</div>";
     
@@ -303,13 +305,15 @@ if ($required_pops){
         $qcuText = $nbqcu > 0 ? $nbqcu . " QCU" . ($nbqcu > 1 ? "s" : "") : "";
         $popText = trim($qcmText . ($qcmText && $qcuText ? ", " : "") . $qcuText);
 
-        echo "<div class='flex text-center text-gray-500 items-end'>";
-            echo "<p class='mr-4 text-2xl font-semibold'> " . count($popsFiltered) . "/" . $nb . "</p>";
-            echo "<p class='text-xl'> " . " POPs (" . $popText . ") complétés </p>";
-        echo "</div>";
-
         $qcmDone = array_filter($popsFiltered, fn($q) => $q->type === "QCM");
         $qcuDone = array_filter($popsFiltered, fn($q) => $q->type === "QCU");
+
+        $pop_completed = (($nbqcm + $nbqcu) === count($popsFiltered)) ? 1 : 0;
+
+        echo "<div class='flex text-center text-gray-500 items-end'>";
+            echo "<p class='mr-4 text-2xl font-semibold'> " . $pop_completed . "/" . $nb . "</p>";
+            echo "<p class='text-xl'> " . " POP (" . $popText . ") complété </p>";
+        echo "</div>";
 
         if (count($qcmDone) < $nbqcm){
             echo "<a href='qcm_add.php?id={$id}&qcm_type=QCM&pop_type_id={$popTypeId}' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";

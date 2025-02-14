@@ -56,11 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $pop_record->userId = $USER->id;
                 $pop_record->popTypeId = $pop_type_id;
 
-                echo "La valeur de poptypeid est : " . htmlspecialchars($pop_type_id) . "<br>";
-                echo "La valeur de poptypeid est : " . htmlspecialchars($pop_record->popTypeId) . "<br>";
-
-
-
+ 
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
                 if (!$pop_id) {
                     throw new moodle_exception('insertfailed', 'studentqcm_pop');
