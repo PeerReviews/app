@@ -43,7 +43,7 @@ $string['qcm_list'] = 'Ma liste de QCMs';
 $string['add_qcm'] = 'Ajouter un QCM';
 $string['add_qcu'] = 'Ajouter un QCU';
 $string['add_tcs'] = 'Ajouter un TCS';
-$string['add_pop'] = 'Ajouter un POP';
+$string['add_pop'] = 'Créer un POP de ce type';
 $string['edit_qcm'] = 'Modifier un QCM';
 $string['edit_qcu'] = 'Modifier un QCU';
 $string['edit_tcs'] = 'Modifier un TCS';
@@ -84,12 +84,11 @@ $string['edit'] = 'Modifier';
 $string['qcm_not_found'] = 'Aucun QCM trouvé.';
 $string['qcu_not_found'] = 'Aucun QCU trouvé.';
 $string['tcs_not_found'] = 'Aucun TCS trouvé.';
-$string['pop_not_found'] = 'Aucun POP trouvé.';
+$string['pop_not_found'] = 'Aucun POP de ce type trouvé.';
+
 $string['completed_qcms'] = 'QCMs complétés';
 $string['completed_qcus'] = 'QCUs complétés';
-
 $string['completed_tcss'] = 'TCSs complétés';
-
 $string['completed_pops'] = 'POPs complétés';
 
 $string['new_subcompetency'] = 'Ajouter une nouvelle sous-compétence';
