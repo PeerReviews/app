@@ -275,7 +275,6 @@ document.getElementById('show_new_subcompetency').addEventListener('click', func
 $(document).ready(function() {
     // Activer les champs competency et subcompetency avant la soumission du formulaire
     $('form').on('submit', function() {
-        // Activer les champs
         $('#competency_1').prop('disabled', false);
         $('#subcompetency_1').prop('disabled', false);
     });
@@ -290,26 +289,15 @@ $(document).ready(function() {
     if (preselectedSubcompetency) {
         $.getJSON('fetch_keywords.php', { subcompetency_id: preselectedSubcompetency }, function(allKeywords) {
             $.getJSON('fetch_selected_keywords.php', { question_id: questionId }, function(selectedKeywords) {
-                console.log("All keywords: ", allKeywords);
-                console.log("Selected keywords: ", selectedKeywords);
 
-                // Transformer l'objet selectedKeywords en tableau d'IDs
                 const selectedKeywordIds = Object.values(selectedKeywords);
 
                 var buttons = '';
 
                 // Ajouter les mots-clés sélectionnés dans les inputs cachés
-                $('#hidden_inputs').empty();  // Nettoyer les inputs cachés avant d'ajouter les nouveaux
+                $('#hidden_inputs').empty();
                 $.each(selectedKeywordIds, function(index, keywordId) {
-                    // Créer un input caché pour chaque mot-clé sélectionné
                     $('#hidden_inputs').append(`<input type="hidden" name="questions[1][keywords][]" value="${keywordId}">`);
-                    // Loguer chaque input ajouté pour vérifier
-                    console.log("Input ajouté : ", `<input type="hidden" name="questions[1][keywords][]" value="${keywordId}">`);
-                });
-
-                // Vérifier tous les inputs dans #hidden_inputs
-                $('#hidden_inputs input').each(function() {
-                    console.log("Mot-clé dans #hidden_inputs : ", $(this).val());
                 });
 
                 $.each(allKeywords, function(index, keyword) {
@@ -320,7 +308,6 @@ $(document).ready(function() {
                     buttons += `<button type="button" class="keyword-btn px-4 py-2 border border-lime-400 rounded-2xl hover:bg-indigo-400 hover:text-white ${selectedClass}" data-id="${keyword.id}">${keyword.word} ${customIcon}</button>`;
                 });
 
-                // Ajouter un bouton pour ajouter un mot clé si nécessaire
                 buttons += `
                     <div class="flex justify-center items-center col-span-1">
                         <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full bg-lime-400 text-white rounded-2xl hover:bg-lime-500 px-4 py-2">
@@ -330,7 +317,6 @@ $(document).ready(function() {
                     </div>
                 `;
 
-                // Afficher les mots-clés et le bouton dans le DOM
                 $('#keywords_list_1').html(buttons);
             });
         });
@@ -362,7 +348,6 @@ $(document).ready(function() {
             $('#new_subcompetency_container').show();
 
             $.getJSON('fetch_subcompetencies.php', { competency_id: competencyId }, function(data) {
-                console.log(data);
                 if (data.length > 0) {
                     var options = '<option value="" disabled selected>Sélectionnez une sous-compétence</option>';
                     $.each(data, function(index, subcompetency) {
@@ -570,9 +555,6 @@ $(document).ready(function() {
             $('#error-messages').append('<li>La sous-compétence est requise.</li>');
         }
 
-        // Vérification des mots-clés (au moins un mot-clé doit être sélectionné)
-        console.log('Mots-clés dans #hidden_inputs :', $('#hidden_inputs input').length);
-
         if ($('#hidden_inputs input').length === 0) {
             isValid = false;
             $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');
@@ -608,7 +590,6 @@ $(document).ready(function() {
             // Vérification des réponses pour les autres types de QCM (par exemple, QCM à choix multiples)
             var atLeastOneCorrectAnswer = false;
             for (var i = 1; i <= 5; i++) {
-                console.log("Vérification de: ", '#correct_answer_1_' + i, "Existe:", $('#correct_answer_1_' + i).length, "Checked:", $('#correct_answer_1_' + i).prop('checked'));
                 if ($('#correct_answer_1_' + i).prop('checked')) {
                     atLeastOneCorrectAnswer = true;
                     break;

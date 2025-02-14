@@ -17,17 +17,10 @@ require_login($course, true, $cm);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $questions = $_POST['questions'];
 
-    // Préparer les données à envoyer en JavaScript
     $json_data = json_encode($questions);
-
-    // Afficher les données dans la console du navigateur avec un script
-    echo "<script type='text/javascript'>
-        console.log('Données reçues:', " . $json_data . ");
-    </script>";
 
     foreach ($questions as $q_id => $question) {
         if (!empty(trim($question['question']))) {
-            // Utilisation de l'ID de la question passé dans l'URL
             $q_id = $qcm_id;
 
             // Vérifier si la question existe déjà dans la base de données
@@ -36,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new moodle_exception('invalidquestion', 'mod_studentqcm');
             }
 
-            // Préparer l'enregistrement de la question
             $question_record = new stdClass();
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
@@ -47,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->competency = clean_param($question['competency'], PARAM_INT);
             $question_record->subcompetency = clean_param($question['subcompetency'], PARAM_INT);
             $question_record->type = $type;
-            
-            // Mettre à jour la question existante avec l'ID de la question passé dans l'URL
+
             $question_record->id = $q_id;
             $DB->update_record('studentqcm_question', $question_record);
 
@@ -66,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         if ($a_id > 0) {
                             $existing_answer = $DB->get_record('studentqcm_answer', ['id' => $a_id, 'question_id' => $q_id]);
                             if ($existing_answer) {
-                                // Mise à jour de la réponse existante
                                 $answer_record->id = $existing_answer->id;
                                 $DB->update_record('studentqcm_answer', $answer_record);
                             }
@@ -79,45 +69,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             // Gestion des mots-clés
-            // Gestion des mots-clés
-// Gestion des mots-clés
-if (!empty($question['keywords']) && is_array($question['keywords'])) {
-    // Récupérer les mots-clés envoyés sous "keywords[]" (anciens mots-clés)
-    $old_keywords = isset($_POST['keywords']) ? $_POST['keywords'] : [];
-
-    // Fusionner les anciens et nouveaux mots-clés
-    $all_keywords = array_unique(array_merge($old_keywords, $question['keywords']));
-
-    // Récupérer les mots-clés existants pour la question
-    $existing_keywords = $DB->get_records('question_keywords', ['question_id' => $q_id]);
-    $existing_keyword_ids = array_map(function($keyword) {
-        return $keyword->keyword_id;
-    }, $existing_keywords);
-
-    // Mots-clés à ajouter (ceux qui ne sont pas déjà présents)
-    $keywords_to_add = array_diff($all_keywords, $existing_keyword_ids);
-
-    // Mots-clés à supprimer (ceux qui ne sont plus dans la liste envoyée)
-    $keywords_to_remove = array_diff($existing_keyword_ids, $all_keywords);
-
-    // Ajouter les nouveaux mots-clés
-    foreach ($keywords_to_add as $keyword_id) {
-        if (!empty(trim($keyword_id))) {
-            $existing_keyword = $DB->get_record('keyword', ['id' => $keyword_id]);
-            if ($existing_keyword) {
-                $relation_record = new stdClass();
-                $relation_record->question_id = $q_id;
-                $relation_record->keyword_id = $keyword_id;
-                $DB->insert_record('question_keywords', $relation_record);
+            if (!empty($question['keywords']) && is_array($question['keywords'])) {
+                // Récupérer les mots-clés existants pour la question
+                $existing_keywords = $DB->get_records('question_keywords', ['question_id' => $q_id]);
+                $existing_keyword_ids = array_map(function($keyword) {
+                    return $keyword->keyword_id;
+                }, $existing_keywords);
+            
+                // Nouveaux mots-clés envoyés par l'utilisateur
+                $new_keywords = $question['keywords'];
+            
+                // Mots-clés à ajouter (ceux qui ne sont pas déjà présents)
+                $keywords_to_add = array_diff($new_keywords, $existing_keyword_ids);
+            
+                // Mots-clés à supprimer (ceux qui ne sont plus dans la liste envoyée)
+                $keywords_to_remove = array_diff($existing_keyword_ids, $new_keywords);
+            
+                // Ajouter les nouveaux mots-clés
+                foreach ($keywords_to_add as $keyword_id) {
+                    if (!empty(trim($keyword_id))) {
+                        $existing_keyword = $DB->get_record('keyword', ['id' => $keyword_id]);
+                        if ($existing_keyword) {
+                            $relation_record = new stdClass();
+                            $relation_record->question_id = $q_id;
+                            $relation_record->keyword_id = $keyword_id;
+                            $DB->insert_record('question_keywords', $relation_record);
+                        }
+                    }
+                }
+            
+                // Supprimer les mots-clés obsolètes
+                foreach ($keywords_to_remove as $keyword_id) {
+                    // Supprimer uniquement les mots-clés qui sont dans la base de données
+                    $DB->delete_records('question_keywords', ['question_id' => $q_id, 'keyword_id' => $keyword_id]);
+                }
             }
-        }
-    }
-
-    // Supprimer les mots-clés obsolètes
-    foreach ($keywords_to_remove as $keyword_id) {
-        $DB->delete_records('question_keywords', ['question_id' => $q_id, 'keyword_id' => $keyword_id]);
-    }
-}
 
 
         }

@@ -268,7 +268,6 @@ $(document).ready(function() {
             $('#new_subcompetency_container').show();
 
             $.getJSON('fetch_subcompetencies.php', { competency_id: competencyId }, function(data) {
-                console.log(data);
                 if (data.length > 0) {
                     var options = '<option value="" disabled selected>Sélectionnez une sous-compétence</option>';
                     $.each(data, function(index, subcompetency) {
@@ -454,8 +453,6 @@ $(document).ready(function() {
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);
         var qcmType = urlParams.get('qcm_type');
-
-        console.log('Mots-clés sélectionnés :', $('input[name="questions[1][keywords][]"]').serializeArray());
 
         // Réinitialiser la liste d'erreurs
         $('#error-messages').empty();
