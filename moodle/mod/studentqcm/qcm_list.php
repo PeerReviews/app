@@ -390,9 +390,7 @@ if ($required_pops){
             }
 
             if ($qcuDone){
-                foreach ($qcuDone as $currentQcuId){
-
-                    $qcu = array_filter($qcuDone, fn($q) => $q->id === $currentQcuId);
+                foreach ($qcuDone as $qcu){
 
                     $nom_referentiel = isset($referentiels[$qcu->referentiel]) ? $referentiels[$qcu->referentiel] : get_string('unknown', 'mod_studentqcm');
                     $nom_competency = isset($competencies[$qcu->competency]) ? $competencies[$qcu->competency] : get_string('unknown', 'mod_studentqcm');
