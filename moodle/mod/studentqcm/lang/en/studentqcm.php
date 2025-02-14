@@ -43,7 +43,7 @@ $string['qcm_list'] = 'Ma liste de QCMs';
 $string['add_qcm'] = 'Ajouter un QCM';
 $string['add_qcu'] = 'Ajouter un QCU';
 $string['add_tcs'] = 'Ajouter un TCS';
-$string['add_pop'] = 'Ajouter un POP';
+$string['add_pop'] = 'Créer un POP de ce type';
 $string['edit_qcm'] = 'Modifier un QCM';
 $string['edit_qcu'] = 'Modifier un QCU';
 $string['edit_tcs'] = 'Modifier un TCS';
@@ -54,6 +54,8 @@ $string['create_qcu'] = 'Je crée mon QCU';
 $string['create_tcs'] = 'Je crée mon TCS';
 $string['create_pop'] = 'Je crée mon POP';
 
+$string['edit_question'] = 'Je modifie mon';
+
 // QCM 
 $string['question'] = 'Question';
 $string['context'] = 'Contexte';
@@ -61,7 +63,8 @@ $string['global_comment'] = 'Explication globale';
 $string['answer'] = 'Réponse';
 $string['explanation'] = 'Explication';
 $string['correct_answer'] = 'Réponse vraie';
-$string['submit'] = 'Envoyer le QCM';
+$string['submit'] = 'Envoyer';
+$string['save'] = 'Sauvegarder';
 $string['referentiel'] = 'Référentiel';
 $string['competency'] = 'Compétence';
 $string['subcompetency'] = 'Sous-compétence';
@@ -84,12 +87,11 @@ $string['edit'] = 'Modifier';
 $string['qcm_not_found'] = 'Aucun QCM trouvé.';
 $string['qcu_not_found'] = 'Aucun QCU trouvé.';
 $string['tcs_not_found'] = 'Aucun TCS trouvé.';
-$string['pop_not_found'] = 'Aucun POP trouvé.';
+$string['pop_not_found'] = 'Aucun POP de ce type trouvé.';
+
 $string['completed_qcms'] = 'QCMs complétés';
 $string['completed_qcus'] = 'QCUs complétés';
-
 $string['completed_tcss'] = 'TCSs complétés';
-
 $string['completed_pops'] = 'POPs complétés';
 
 $string['new_subcompetency'] = 'Ajouter une nouvelle sous-compétence';
@@ -117,6 +119,9 @@ $string['qcm_deleted'] = 'QCM Supprimé';
 $string['production1'] = 'Contenu de la production 1';
 $string['production2'] = 'Contenu de la production 2';
 $string['production3'] = 'Contenu de la production 3';
+
+// Error
+$string['unknown'] = 'Non renseigné';
 
 $string['to_be_evaluated'] = 'À évaluer';
 $string['evaluated'] = 'Évalué';

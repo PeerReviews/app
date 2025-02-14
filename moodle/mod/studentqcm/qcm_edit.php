@@ -22,16 +22,19 @@ $answers = $DB->get_records('studentqcm_answer', array('question_id' => $qcm_id)
 // Définir l'URL de la page et les informations de la page
 $PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
+$PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
+$PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 // Charger les fichiers CSS nécessaires
 $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 // Afficher l'en-tête de la page
+// Afficher l'en-tête de la page
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('edit_question', 'mod_studentqcm') . " " . $type . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";
@@ -256,7 +259,6 @@ echo "<script>
 
 <?php
 echo $OUTPUT->footer();
-
 ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

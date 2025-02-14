@@ -6,6 +6,7 @@ require_once(__DIR__ . '/../../config.php');
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
 $type = required_param('qcm_type', PARAM_TEXT);
+$popTypeId = optional_param('pop_type_id', null, PARAM_INT);
 
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -38,7 +39,7 @@ echo "</a>";
 echo "</div>";
 
 // Formulaire
-echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}'>";
+echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}&pop_type_id={$popTypeId}'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence
@@ -87,6 +88,22 @@ echo "<div class='mt-8'>";
 
         echo "</div>";
 
+        echo "</div>";
+
+        // Ajouter un script JavaScript pour afficher le champ de texte lorsque l'option "Ajouter une nouvelle sous-compétence" est sélectionnée
+        echo "<script>
+        document.getElementById('subcompetency_1').addEventListener('change', function() {
+            var value = this.value;
+            var newSubcompetencyInput = document.getElementById('new_subcompetency_input');
+            if (value === 'new') {
+                newSubcompetencyInput.style.display = 'block';
+            } else {
+                newSubcompetencyInput.style.display = 'none';
+            }
+        });
+        </script>";
+
+
     echo "</div>";
 
     // Sélection des mots clés
@@ -115,10 +132,9 @@ echo "<div class='mt-8'>";
 
     // Question
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
-    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " :</label>";
+    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " <span class='text-red-500'>*</span> :</label>";
     echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
     echo "</div>";
-
 
     // Réponses
     for ($i = 1; $i <= 5; $i++) {
@@ -165,9 +181,14 @@ echo "<div class='mt-8'>";
 
 echo "</div>";
 
-echo "<div class='mb-4 mt-4 flex justify-end'>";
-echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . get_string('submit', 'mod_studentqcm') . "</button>";
-echo "</div>";  
+echo "<div class='mb-4 mt-4 flex justify-end space-x-4'>";
+    echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
+        get_string('save', 'mod_studentqcm') . "</button>";
+    echo "<button type='submit' name='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
+        get_string('submit', 'mod_studentqcm') . "</button>";
+echo "</div>";
+
+
 
 echo "</form>";
 
@@ -247,9 +268,10 @@ document.getElementById('show_new_subcompetency').addEventListener('click', func
 $(document).ready(function() {
     // Filtrer les compétences en fonction du référentiel sélectionné
     $('#referentiel_1').change(function() {
-        var referentielId = $(this).val();
-        $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', true);
-        $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
+    var referentielId = $(this).val();
+    // Désactiver la compétence jusqu'à ce qu'un référentiel soit sélectionné
+    $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', !referentielId);
+    $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
 
         if (referentielId) {
             $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
@@ -364,6 +386,8 @@ $(document).ready(function() {
         }
     });
 
+    
+
     // Gestion du clic sur les boutons pour sélectionner/désélectionner un mot-clé
     $(document).on('click', '.keyword-btn', function() {
         var button = $(this);
@@ -449,6 +473,13 @@ $(document).ready(function() {
 
     // Validation avant soumission du formulaire
     $('form').on('submit', function(e) {
+
+        var submitterName = e.originalEvent.submitter.name;
+
+        if (submitterName === "save") {
+            return;
+        }
+
         var isValid = true;
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);
