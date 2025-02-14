@@ -54,6 +54,8 @@ $string['create_qcu'] = 'Je crée mon QCU';
 $string['create_tcs'] = 'Je crée mon TCS';
 $string['create_pop'] = 'Je crée mon POP';
 
+$string['edit_question'] = 'Je modifie mon';
+
 // QCM 
 $string['question'] = 'Question';
 $string['context'] = 'Contexte';

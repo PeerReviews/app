@@ -16,7 +16,6 @@ $questions = $DB->get_records('studentqcm_question', array('userid' => $userid),
 $qcms = array_filter($questions, fn($q) => $q->type === 'QCM');
 $qcus = array_filter($questions, fn($q) => $q->type === 'QCU');
 $tcss = array_filter($questions, fn($q) => $q->type === 'TCS');
-$pops = array_filter($questions, fn($q) => $q->type === 'POP');
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
 $referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');

@@ -34,8 +34,7 @@ $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => ti
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('edit_question', 'mod_studentqcm') . " " . $type . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";
@@ -206,58 +205,7 @@ echo "</form>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
-echo "<script>
     tinymce.init({
-    selector: 'textarea',
-    plugins: ['image', 'media', 'link', 'table'],
-    toolbar: 'undo redo | bold italic underline | image media | link | table | uploadimage',
-    image_advtab: true,
-    media_dimensions: true,
-    height: 180,
-    images_upload_url: 'upload.php',
-    automatic_uploads: true,
-    file_picker_callback: function(callback, value, meta) {
-        if (meta.filetype === 'image') {
-            var input = document.createElement('input');
-            input.setAttribute('type', 'file');
-            input.setAttribute('accept', 'image/*');
-            input.onchange = function() {
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var base64 = reader.result.split(',')[1];
-                    callback('data:image/png;base64,' + base64, {alt: file.name});
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        }
-    },
-    setup: function (editor) {
-        editor.on('init', function () {
-            editor.getContainer().closest('form').setAttribute('novalidate', true);
-        });
-    }
-});
-
-
-</script>";
-
-?>
-
-<!-- Modal for error messages -->
-<div id="error-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
-    <div class="bg-white rounded-3xl py-4 px-16 max-w-lg w-full">
-        <div class="flex justify-between items-center">
-            <h3 class="text-2xl font-semibold text-red-600">Erreur de validation</h3>
-            <button id="close-modal" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
-        </div>
-        <div id="error-messages" class="mt-4 text-gray-700"></div>
-        <div class="mt-2 text-right">
-            <button id="close-modal-btn" class="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">Fermer</button>
-        </div>
-    </div>
-</div>
     selector: 'textarea',
     plugins: ['image', 'media', 'link', 'table'],
     toolbar: 'undo redo | bold italic underline | image media | link | table | uploadimage',
@@ -311,8 +259,6 @@ echo "<script>
 
 <?php
 echo $OUTPUT->footer();
-
-
 ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
