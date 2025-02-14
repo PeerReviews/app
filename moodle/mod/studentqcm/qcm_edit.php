@@ -197,8 +197,11 @@ echo "</div>";
 
 echo "<div id='hidden_inputs'></div>";
 
-echo "<div class='mb-4 mt-4 flex justify-end'>";
-echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . get_string('submit', 'mod_studentqcm') . "</button>";
+echo "<div class='mb-4 mt-4 flex justify-end space-x-2'>";
+    echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
+        get_string('save', 'mod_studentqcm') . "</button>";
+    echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
+        get_string('submit', 'mod_studentqcm') . "</button>";
 echo "</div>";  
 
 echo "</form>";
@@ -531,6 +534,13 @@ $(document).ready(function() {
 
     // Validation avant soumission du formulaire
     $('form').on('submit', function(e) {
+
+        var submitterName = e.originalEvent.submitter.name;
+
+        if (submitterName === "save") {
+            return;
+        }
+
         var isValid = true;
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);
