@@ -283,19 +283,12 @@ echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
         echo "<p class='mr-4 text-4xl font-semibold'> " . count($pops) . "/" . $studentqcm->nbpop . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_pops', 'mod_studentqcm') . "</p>";
     echo "</div>";
-
-    // if (count($pops) < $studentqcm->nbpop){
-    //     echo "<a href='qcm_add.php?id={$id}&qcm_type=POP' class='inline-block px-4 py-2 text-lg font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline min-w-52'>";
-    //         echo "<i class='fas fa-plus mr-2'></i>";
-    //         echo get_string('add_pop', 'mod_studentqcm');
-    //     echo "</a>";
-    // }
     
 echo "</div>";
 
 if ($required_pops){
 
-    echo "<div class='space-y-4 mt-4'>";
+    echo "<div class='space-y-4 mt-4 space'>";
 
     foreach ($required_pops as $required_pop) {
         $nbqcm = $required_pop->nbqcm;
@@ -390,9 +383,7 @@ if ($required_pops){
             }
 
             if ($qcuDone){
-                foreach ($qcuDone as $currentQcuId){
-
-                    $qcu = array_filter($qcuDone, fn($q) => $q->id === $currentQcuId);
+                foreach ($qcuDone as $qcu){
 
                     $nom_referentiel = isset($referentiels[$qcu->referentiel]) ? $referentiels[$qcu->referentiel] : get_string('unknown', 'mod_studentqcm');
                     $nom_competency = isset($competencies[$qcu->competency]) ? $competencies[$qcu->competency] : get_string('unknown', 'mod_studentqcm');

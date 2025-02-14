@@ -53,21 +53,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($pop_type_id !== 0){
 
                 $pop_record = new stdClass();
-                $pop_record->userid = $USER->id;
+                $pop_record->userId = $USER->id;
                 $pop_record->popTypeId = $pop_type_id;
 
-                // echo "La valeur de poptypeid est : " . htmlspecialchars($pop_type_id) . "<br>";
+                echo "La valeur de poptypeid est : " . htmlspecialchars($pop_type_id) . "<br>";
+                echo "La valeur de poptypeid est : " . htmlspecialchars($pop_record->popTypeId) . "<br>";
+
 
 
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
                 if (!$pop_id) {
-                    throw new moodle_exception('insertfailed', 'studentqcm_question');
+                    throw new moodle_exception('insertfailed', 'studentqcm_pop');
                 }
                 
                 $question_record->type = $type;
                 $question_record->popTypeId = $pop_type_id;
                 $question_record->isPop = ($pop_type_id !== 0) ? 1 : 0;
                 $question_record->popId = $pop_id;
+                echo "La valeur de poptypeid est : " . htmlspecialchars($question_record->popTypeId) . "<br>";
 
             }
 
@@ -140,5 +143,5 @@ if (isset($_POST['submit'])) {
     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
 }
 
-// // Si la requête n'est pas un POST, rediriger
+// Si la requête n'est pas un POST, rediriger
 redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
