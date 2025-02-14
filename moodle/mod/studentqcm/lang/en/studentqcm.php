@@ -61,7 +61,8 @@ $string['global_comment'] = 'Explication globale';
 $string['answer'] = 'Réponse';
 $string['explanation'] = 'Explication';
 $string['correct_answer'] = 'Réponse vraie';
-$string['submit'] = 'Envoyer le QCM';
+$string['submit'] = 'Envoyer';
+$string['save'] = 'Sauvegarder';
 $string['referentiel'] = 'Référentiel';
 $string['competency'] = 'Compétence';
 $string['subcompetency'] = 'Sous-compétence';
@@ -117,6 +118,9 @@ $string['qcm_deleted'] = 'QCM Supprimé';
 $string['production1'] = 'Contenu de la production 1';
 $string['production2'] = 'Contenu de la production 2';
 $string['production3'] = 'Contenu de la production 3';
+
+// Error
+$string['unknown'] = 'Non renseigné';
 
 $string['to_be_evaluated'] = 'À évaluer';
 $string['evaluated'] = 'Évalué';
