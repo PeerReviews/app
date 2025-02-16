@@ -136,3 +136,10 @@ $string['evaluation_saved'] = 'Évaluation enregistrée';
 
 
 $string['add'] = 'Ajouter';
+
+
+// PHASE 3
+
+$string['value_list'] = 'Je valorise mes QCMs';
+$string['student_evaluation'] = 'Évaluation';
+$string['no_evaluation_found'] = "Aucune évaluation trouvée";

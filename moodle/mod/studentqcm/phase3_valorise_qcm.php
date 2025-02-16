@@ -19,10 +19,10 @@ $question = $DB->get_record('studentqcm_question', array('id' => $qcm_id), '*', 
 $type = $question->type;
 $answers = $DB->get_records('studentqcm_answer', array('question_id' => $qcm_id));
 
+$evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm_id));
+
 // Définir l'URL de la page et les informations de la page
-$PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
-$PAGE->set_title(format_string($studentqcm->name));
-$PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/phase3_valorise_qcm.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
@@ -37,13 +37,14 @@ echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('ed
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";
-echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
+echo "<a href='phase3_qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
 echo "<i class='fas fa-arrow-left mr-2'></i>";
 echo get_string('back', 'mod_studentqcm');
 echo "</a>";
 echo "</div>";
 
 // Formulaire
+echo "<div class='grid grid-cols-2 gap-4'>";
 echo "<form method='post' action='qcm_edit_process.php?id={$id}&qcm_id={$qcm_id}&type={$type}'>";
 echo "<div class='mt-8'>";
 
@@ -51,7 +52,7 @@ echo "<div class='mt-8'>";
     echo "<div class='grid grid-cols-1 lg:grid-cols-3 gap-4'>";
 
         // Sélection du référentiel
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
         echo "<option value=''>" . get_string('select_referentiel', 'mod_studentqcm') . "</option>";
@@ -64,7 +65,7 @@ echo "<div class='mt-8'>";
         echo "</div>";
 
         // Sélection de la compétence
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='competency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('competency', 'mod_studentqcm') . " :</label>";
         echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
         echo "<option value=''>" . get_string('select_competency', 'mod_studentqcm') . "</option>";
@@ -77,7 +78,7 @@ echo "<div class='mt-8'>";
         echo "</div>";
 
         // Sélection de la sous-compétence avec bouton + pour ajouter une nouvelle sous-compétence
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='subcompetency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('subcompetency', 'mod_studentqcm') . " :</label>";
         echo "<div class='flex items-center space-x-2'>";
         echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
@@ -107,7 +108,7 @@ echo "<div class='mt-8'>";
     echo "</div>";
 
     // Sélection des mots clés
-    echo "<div class='rounded-3xl bg-lime-200 my-2 p-4'>";
+    echo "<div class='rounded-3xl bg-lime-200 my-2 p-4 shadow-md'>";
     echo "<label class='block font-semibold text-gray-700 text-lg'>" . get_string('keywords', 'mod_studentqcm') . " :</label>";
     echo "<div id='keywords_list_1' class='flex flex-wrap gap-4 items-center'>";
     echo "<p class='text-gray-500 col-span-6'>Sélectionnez une sous-compétence pour voir les mots-clés.</p>";
@@ -125,14 +126,14 @@ echo "<div class='mt-8'>";
 
 
     // Context
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
     echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
     echo "</div>";
 
 
     // Question
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
     echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " :</label>";
     echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required value='{$question->question}'>";
     echo "</div>";
@@ -141,7 +142,7 @@ echo "<div class='mt-8'>";
     // Réponses
     $counter = 1;
     foreach ($answers as $index => $answer) {
-        echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
+        echo "<div class='rounded-3xl bg-sky-100 my-4 p-4 shadow-md'>";
     
         // Réponse
         if ($type !== "TCS") {
@@ -196,7 +197,7 @@ echo "<div class='mt-8'>";
     
 
     // Commentaire / explication globale
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
     echo "<label for='global_comment' class='block font-semibold text-gray-700 text-lg'>" . get_string('global_comment', 'mod_studentqcm') . " :</label>";
     echo "<input type='text' id='global_comment' name='questions[1][global_comment]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required value='{$question->global_comment}'>";
     echo "</div>";
@@ -214,6 +215,30 @@ echo "<div class='mb-4 mt-4 flex justify-end space-x-2'>";
 echo "</div>";  
 
 echo "</form>";
+
+// Affichage des évaluations 
+echo "<div class='sticky top-4 h-fit mt-8'>";
+
+if (empty($evaluations)) {
+    echo "<div class='rounded-3xl shadow-md p-4 mb-4 bg-gray-100 text-gray-600 text-center'>";
+    echo "<p class='font-semibold text-xl'>" . get_string('no_evaluation_found', 'mod_studentqcm') . "</p>";
+    echo "</div>";
+} else {
+    $index = 1;
+    foreach ($evaluations as $evaluation) {
+        echo "<div class='rounded-3xl shadow-md p-4 mb-4 bg-indigo-50'>";
+        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>" .
+            get_string('student_evaluation', 'mod_studentqcm') . " " . $index . "</p>";
+        echo "<p>{$evaluation->explanation}</p>";
+        echo "</div>";  
+        $index++;
+    }
+}
+
+echo "</div>";
+ 
+
+echo "</div>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
