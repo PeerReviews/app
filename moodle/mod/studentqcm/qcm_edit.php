@@ -141,48 +141,85 @@ echo "<div class='mt-8'>";
 
     // Réponses
     $counter = 1;
-    foreach ($answers as $index => $answer) {
+    for ($index = 0; $index < 5; $index++) {
+
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
-    
-        // Réponse
-        echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
-        echo "<div class='col-span-10 w-full'>";
-        echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
-        echo "</div>";
-        echo "</div>";
-    
-        if($type != "TCS") {
-            // Explication
+
+        if($answer = current($answers)){
+        
+            // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
-            echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $counter :</label>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
             echo "</div>";
             echo "</div>";
+        
+            if($type != "TCS") {
+                // Explication
+                echo "<div class='py-2 grid grid-cols-12 w-full'>";
+                echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $counter :</label>";
+                echo "<div class='col-span-10 w-full'>";
+                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
+                echo "</div>";
+                echo "</div>";
+            }
+        
+            // Ajouter un champ hidden pour la valeur par défaut de `correct` (0)
+            echo "<input type='hidden' name='questions[1][answers][{$index}][correct]' value='0'>";
+        
+            // Champ checkbox pour marquer la réponse correcte
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='correct_answer_1_{$counter}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
+            echo "<div class='col-span-10 w-full flex items-center'>";
+            echo "<label class='relative inline-flex items-center cursor-pointer'>";
+        
+            // On vérifie si la réponse est correcte et on coche la case si c'est le cas
+            $checked = ((int)$answer->istrue === 1) ? "checked" : "";
+            echo "<input type='checkbox' id='correct_answer_1_{$counter}' name='questions[1][answers][{$index}][correct]' value='1' class='sr-only peer' $checked>";
+        
+            echo "<span class='w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-lime-400 peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-\"\" after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all'></span>";
+            echo "</label>";
+            echo "</div>";
+            echo "</div>";
+
+            next($answers);
+        
+        }
+        else {
+            // Réponse
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $index :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "</div>";
+            echo "</div>";
+
+            if($type != "TCS") {
+                // Explication
+                echo "<div class='py-2 grid grid-cols-12 w-full'>";
+                echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $index :</label>";
+                echo "<div class='col-span-10 w-full'>";
+                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+                echo "</div>";
+                echo "</div>";
+            }
+
+            // Champ checkbox pour marquer la réponse correcte
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='correct_answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
+            echo "<div class='col-span-10 w-full flex items-center'>";
+            echo "<label class='relative inline-flex items-center cursor-pointer'>";
+            echo "<input type='checkbox' id='correct_answer_1_{$index}' name='questions[1][answers][{$index}][correct]' value='1' class='sr-only peer'>";
+            echo "<span class='w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-lime-400 peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-\"\" after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all'></span>";
+            echo "</label>";
+            echo "</div>";
+            echo "</div>";
+
         }
     
-        // Ajouter un champ hidden pour la valeur par défaut de `correct` (0)
-        echo "<input type='hidden' name='questions[1][answers][{$index}][correct]' value='0'>";
-    
-        // Champ checkbox pour marquer la réponse correcte
-        echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='correct_answer_1_{$counter}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
-        echo "<div class='col-span-10 w-full flex items-center'>";
-        echo "<label class='relative inline-flex items-center cursor-pointer'>";
-    
-        // On vérifie si la réponse est correcte et on coche la case si c'est le cas
-        $checked = ((int)$answer->istrue === 1) ? "checked" : "";
-        echo "<input type='checkbox' id='correct_answer_1_{$counter}' name='questions[1][answers][{$index}][correct]' value='1' class='sr-only peer' $checked>";
-    
-        echo "<span class='w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-lime-400 peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-\"\" after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all'></span>";
-        echo "</label>";
-        echo "</div>";
-        echo "</div>";
-    
-        echo "</div>";
-    
         $counter++;
+        echo "</div>";
     }
     
 
@@ -197,39 +234,57 @@ echo "</div>";
 
 echo "<div id='hidden_inputs'></div>";
 
-echo "<div class='mb-4 mt-4 flex justify-end'>";
-echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . get_string('submit', 'mod_studentqcm') . "</button>";
-echo "</div>";  
+echo "<div class='mb-4 mt-4 flex justify-end space-x-4'>";
+    echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
+        get_string('save', 'mod_studentqcm') . "</button>";
+    echo "<button type='submit' name='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
+        get_string('submit', 'mod_studentqcm') . "</button>";
+echo "</div>";
 
 echo "</form>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
-    tinymce.init({
+tinymce.init({
     selector: 'textarea',
     plugins: ['image', 'media', 'link', 'table'],
-    toolbar: 'undo redo | bold italic underline | image media | link | table | uploadimage',
+    toolbar: 'undo redo | bold italic underline | image media | link | table',
     image_advtab: true,
     media_dimensions: true,
     height: 180,
-    images_upload_url: 'upload.php',
+    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
     automatic_uploads: true,
     file_picker_callback: function(callback, value, meta) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        
+        // Gère l’upload des images, vidéos et sons
         if (meta.filetype === 'image') {
-            var input = document.createElement('input');
-            input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/*');
-            input.onchange = function() {
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var base64 = reader.result.split(',')[1];
-                    callback('data:image/png;base64,' + base64, {alt: file.name});
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
+        } else if (meta.filetype === 'media') {
+            input.setAttribute('accept', 'audio/*,video/*');
         }
+        
+        input.onchange = function() {
+            var file = this.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.location) {
+                    callback(data.location, {alt: file.name});
+                } else {
+                    alert('Erreur lors du téléchargement du fichier.');
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        };
+        input.click();
     },
     setup: function (editor) {
         editor.on('init', function () {
@@ -237,8 +292,6 @@ echo "<script>
         });
     }
 });
-
-
 </script>";
 
 ?>
@@ -531,6 +584,13 @@ $(document).ready(function() {
 
     // Validation avant soumission du formulaire
     $('form').on('submit', function(e) {
+
+        var submitterName = e.originalEvent.submitter.name;
+
+        if (submitterName === "save") {
+            return;
+        }
+
         var isValid = true;
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);

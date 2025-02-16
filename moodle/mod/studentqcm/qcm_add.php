@@ -194,31 +194,46 @@ echo "</form>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
-    tinymce.init({
+tinymce.init({
     selector: 'textarea',
     plugins: ['image', 'media', 'link', 'table'],
-    toolbar: 'undo redo | bold italic underline | image media | link | table | uploadimage',
+    toolbar: 'undo redo | bold italic underline | image media | link | table',
     image_advtab: true,
     media_dimensions: true,
     height: 180,
-    images_upload_url: 'upload.php',
+    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
     automatic_uploads: true,
     file_picker_callback: function(callback, value, meta) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        
+        // Gère l’upload des images, vidéos et sons
         if (meta.filetype === 'image') {
-            var input = document.createElement('input');
-            input.setAttribute('type', 'file');
             input.setAttribute('accept', 'image/*');
-            input.onchange = function() {
-                var file = this.files[0];
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var base64 = reader.result.split(',')[1];
-                    callback('data:image/png;base64,' + base64, {alt: file.name});
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
+        } else if (meta.filetype === 'media') {
+            input.setAttribute('accept', 'audio/*,video/*');
         }
+        
+        input.onchange = function() {
+            var file = this.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.location) {
+                    callback(data.location, {alt: file.name});
+                } else {
+                    alert('Erreur lors du téléchargement du fichier.');
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        };
+        input.click();
     },
     setup: function (editor) {
         editor.on('init', function () {
@@ -226,8 +241,6 @@ echo "<script>
         });
     }
 });
-
-
 </script>";
 
 ?>

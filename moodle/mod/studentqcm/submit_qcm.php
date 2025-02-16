@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($pop_type_id !== 0){
 
                 $pop_record = new stdClass();
-                $pop_record->userId = $USER->id;
-                $pop_record->popTypeId = $pop_type_id;
+                $pop_record->userid = $USER->id;
+                $pop_record->popTypeID = $pop_type_id;
 
  
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
