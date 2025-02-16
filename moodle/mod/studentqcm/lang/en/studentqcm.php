@@ -54,6 +54,7 @@ $string['create_qcu'] = 'Je crée mon QCU';
 $string['create_tcs'] = 'Je crée mon TCS';
 $string['create_pop'] = 'Je crée mon POP';
 
+$string['create_question'] = 'Je crée mon';
 $string['edit_question'] = 'Je modifie mon';
 
 // QCM 
@@ -135,3 +136,10 @@ $string['evaluation_saved'] = 'Évaluation enregistrée';
 
 
 $string['add'] = 'Ajouter';
+
+
+// PHASE 3
+
+$string['value_list'] = 'Je valorise mes QCMs';
+$string['student_evaluation'] = 'Évaluation';
+$string['no_evaluation_found'] = "Aucune évaluation trouvée";

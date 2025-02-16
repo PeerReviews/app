@@ -28,7 +28,7 @@ $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => ti
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_qcm', 'mod_studentqcm') . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_question', 'mod_studentqcm') . " " . $type . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";
@@ -141,15 +141,25 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         // Réponse
-        echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
-        echo "<div class='col-span-10 w-full'>";
-        echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
-        echo "</div>";
-        echo "</div>";
+        if ($type != "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "</div>";
+            echo "</div>";
+        }
+        if ($type = "TCS") {
+            echo "<div class='py-2 grid grid-cols-12 w-full'>";
+            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<div class='col-span-10 w-full'>";
+            echo "<input type='text' id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></input>";
+            echo "</div>";
+            echo "</div>";
+        }
 
+        // Explication
         if($type != "TCS") {
-            // Explication
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='explanation_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $i :</label>";
             echo "<div class='col-span-10 w-full'>";
@@ -181,7 +191,7 @@ echo "<div class='mt-8'>";
 
 echo "</div>";
 
-echo "<div class='mb-4 mt-4 flex justify-end space-x-4'>";
+echo "<div class='mb-4 mt-4 flex justify-end space-x-2'>";
     echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
         get_string('save', 'mod_studentqcm') . "</button>";
     echo "<button type='submit' name='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 

@@ -45,6 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->subcompetency = (!empty($question['subcompetency']) && $question['subcompetency'] > 0) 
             ? clean_param($question['subcompetency'], PARAM_INT) 
             : null;
+
+            $question_record->type = $type;
             
             $question_record->status = isset($_POST['submit']) ? 1 : 0;
 
@@ -62,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     throw new moodle_exception('insertfailed', 'studentqcm_pop');
                 }
                 
-                $question_record->type = $type;
                 $question_record->popTypeId = $pop_type_id;
                 $question_record->isPop = ($pop_type_id !== 0) ? 1 : 0;
                 $question_record->popId = $pop_id;
