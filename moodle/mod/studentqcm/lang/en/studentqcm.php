@@ -12,6 +12,7 @@ $string['description'] = 'Description';
 $string['intro'] = 'Introduction';
 $string['pluginname'] = 'Student QCM';
 $string['pluginadministration'] = 'Administration du module Student QCM';
+$string['choice_courses'] = 'Choix des cours à ajouter';
 
 // Ajouter les chaînes pour les nouveaux champs de date
 $string['phases_title'] = 'Choix dates des phases';

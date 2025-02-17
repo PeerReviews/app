@@ -47,7 +47,7 @@
         "shifter": "https://github.com/andrewnicols/shifter/archive/v1.2.0_moodle-0.tar.gz",
         "stylelint": "^15.11.0",
         "stylelint-csstree-validator": "^3.0.0",
-        "tailwindcss": "^4.0.3",
+        "tailwindcss": "^4.0.0",
         "xpath": "0.0.32"
       },
       "engines": {

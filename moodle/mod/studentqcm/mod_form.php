@@ -39,7 +39,14 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         
         $mform->addElement('html', '<div id="add_competences-container"></div>');
 
-        $mform->addElement('html', '<script>
+        $mform->addElement('hidden', 'competences_data');
+        $mform->setType('competences_data', PARAM_RAW);
+
+
+        $mform->addElement('html', '
+        <div id="hidden_files_competences"></div>
+        
+        <script>
             let compteur_competence = 0;
             let compteur_subcompetence = 0;
             let compteur_keyword = 0;
@@ -78,7 +85,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                 let fieldHTML = `
                     <div id="subcompetences-container${index_competence}${compteur_subcompetence}" class="subcompetence-block p-4 border border-gray-300 rounded-lg mt-4">
-                        <h3 class="text-2xl font-bold">' . get_string('subcompetences_title', 'mod_studentqcm') . '</h3>
+                            <h3 class="text-2xl font-bold">' . get_string('subcompetences_title', 'mod_studentqcm') . '</h3>
                         <label>' . get_string('name_subcompetence', 'mod_studentqcm') . '</label>
                         <input type="text" id="subcompetence-name${index_competence}${compteur_subcompetence}" name="name_subcompetence[]" class="form-control p-2 border rounded w-full" required>
 
@@ -143,24 +150,29 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                 });
 
                 let competenceData = {
+                    id: index_competence,
                     name: competenceName,
                     subCompetences: subCompetences
                 };
 
                 competencesData.push(competenceData);
 
+                let hiddenCompetences = document.getElementById("hidden_files_competences");
+                hiddenCompetences.innerHTML = "";
+                hiddenCompetences.insertAdjacentHTML("beforeend", `<input type="hidden" name="competences[]" value="${JSON.stringify(competencesData).replace(/"/g, "&quot;")}">`);
+
                 // Supprimer la section et afficher les données sous forme de texte
                 document.getElementById(`competence-container${index_competence}`).remove();
-                displayValidatedCompetences();
+                displayValidatedCompetences(index_competence);
             }
 
-            function displayValidatedCompetences() {
+            function displayValidatedCompetences(index_competence) {
                 let validatedContainer = document.getElementById("validated_competences-container");
                 validatedContainer.innerHTML = "";
 
                 competencesData.forEach((competence, index) => {
                     let html = `
-                        <div class="p-4 border border-green-500 rounded-lg mt-4 bg-green-100">
+                        <div id="competencesContainer${index_competence}" class="p-4 border border-gray-300 rounded-lg mt-4 bg-white">
                             <h3 class="text-2xl font-bold text-green-700">${competence.name}</h3>
                             <ul class="mt-2">
                                 ${competence.subCompetences.map(sub => `
@@ -172,103 +184,93 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                                     </li>
                                 `).join("")}
                             </ul>
+                            <button onclick="deleteCompetences(${index_competence})"> Delete </button>
+
                         </div>
                     `;
                     validatedContainer.insertAdjacentHTML("beforeend", html);
                 });
             }
 
+            function deleteCompetences(indexComp) {
+                let competencesContainer = document.getElementById(`competencesContainer${indexComp}`);
+                competencesContainer.remove();
+
+                competencesData = competencesData.filter(comp => comp.id !== indexComp);
+                let hiddenCompetences = document.getElementById("hidden_files_competences");
+                hiddenCompetences.innerHTML = "";
+                hiddenCompetences.insertAdjacentHTML("beforeend", `<input type="hidden" name="competences[]" value="${JSON.stringify(competencesData).replace(/"/g, "&quot;")}">`);
+            }
+
         </script>');
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('Choix des cours à ajouter', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_courses', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('html', '
-            <div id="drop-area-courses" class="drop-area">
-                <p>Déposez la liste des étudiants ici ou cliquez pour en sélectionner.</p>
-                <input type="file" id="fileInputEtu" multiple hidden>
+        <div id="drop-area-courses" class="drop-area">
+            <p>Cliquez pour en sélectionner.</p>
+            <div
+                id="drop_zone"
+                ondrop="dropHandlerCourses(event);"
+                ondragleave="dragLeaveHandlerCourses(event);"
+                ondragover="dragOverHandlerCourses(event);">
+                <p>Drag one or more files to this <i>drop zone</i>.</p>
             </div>
-            <div id="file-list"></div>
+            <input type="file" id="fileInputCourses" multiple hidden>
+        </div>
+        <div id="file-list-courses"></div>
+        <div id="hidden_files_courses"></div>
 
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    const dropArea = document.getElementById("drop-area-prof");
-                    const fileInput = document.getElementById("fileInput");
-                    const fileList = document.getElementById("file-list");
-                    let uploadedFiles = [];
+        <script>
+            let indexFileCourses = 0;
+                const dropAreaCourses = document.getElementById("drop-area-courses");
+                const fileInputCourses = document.getElementById("fileInputCourses");
+                const fileListCourses = document.getElementById("file-list-courses");
+                const hiddenFilesCourses = document.getElementById("hidden_files_courses");
 
-                    dropArea.addEventListener("click", () => fileInput.click());
+                function dragOverHandlerCourses(e) {
+                    e.preventDefault();
+                    dropAreaCourses.style.backgroundColor = "#e9ecef";
+                };
 
-                    fileInput.addEventListener("change", function (event) {
-                        handleFiles(event.target.files);
-                    });
+                function dragLeaveHandlerCourses(e) {
+                    dropAreaCourses.style.backgroundColor = "#f8f9fa"; 
+                };
 
-                    dropArea.addEventListener("dragover", (event) => {
-                        event.preventDefault();
-                        dropArea.classList.add("drag-over");
-                    });
+                function dropHandlerCourses(e) {
+                    e.preventDefault();
+                    dropAreaCourses.style.backgroundColor = "#f8f9fa";
+                    handleFilesCourses(e.dataTransfer.files);
+                };
 
-                    dropArea.addEventListener("dragleave", () => {
-                        dropArea.classList.remove("drag-over");
-                    });
-
-                    dropArea.addEventListener("drop", (event) => {
-                        event.preventDefault();
-                        dropArea.classList.remove("drag-over");
-                        handleFiles(event.dataTransfer.files);
-                    });
-
-                    function handleFiles(files) {
-                        for (let file of files) {
-                            uploadedFiles.push(file);
-                            let listItem = document.createElement("div");
-                            listItem.className = "file-item";
-                            listItem.textContent = file.name;
-                            fileList.appendChild(listItem);
-                        }
-
-                        // Mise à jour du champ caché pour stocker les noms des fichiers
-                        document.getElementById("id_uploaded_files").value = uploadedFiles.map(f => f.name).join(",");
-                    }
+                dropAreaCourses.addEventListener("click", function () {
+                    fileInputCourses.click();
+                    
                 });
-            </script>
-        ');
 
-        $mform->addElement('filemanager', 'filemanager', get_string('uploadfile', 'mod_studentqcm'), null, [
-            'maxbytes' => 10485760, // 10MB
-            'subdirs' => 0,
-            'maxfiles' => 10, // Autoriser jusqu'à 10 fichiers
-            'accepted_types' => ['.jpg', '.png', '.pdf', '.docx', '*']
-        ]);
+                fileInputCourses.addEventListener("change", function (e) {
+                    handleFilesCourses(e.target.files);
+                });
 
-        $mform->addElement('hidden', 'uploaded_files_etu', '');
-        $mform->setType('uploaded_files_etu', PARAM_RAW);
+                function handleFilesCourses(files) {
+                    let fileNames = [];
+
+                    for (let file of files) {
+                        let fileItem = document.createElement("div");
+                        fileItem.classList.add("file-item");
+                        fileItem.textContent = file.name;
+                        fileListCourses.appendChild(fileItem);
+                        fileNames.push(file.name);
+                        console.log("file :", file);
+                            
+                        hiddenFilesCourses.insertAdjacentHTML("beforeend", `<input type="hidden" name="coursesFiles${indexFileCourses}[]" value="${file}">`);
+                        indexFileCourses++;
+                    }
+                }
+        </script>
+    ');
 
         $mform->addElement('html', '</div>');
-
-        // $mform->addElement('date_selector', 'date_field', get_string('date', 'mod_studentqcm'));
-
-        // $mform->addElement('html', '
-        //     <label for="date-slider">Choisissez une date :</label>
-        //     <input type="range" id="date-slider" min="1704067200" max="1735689600" step="86400">
-        //     <input type="text" id="date-display" readonly>
-        //     <script>
-        //         document.addEventListener("DOMContentLoaded", function() {
-        //             const slider = document.getElementById("date-slider");
-        //             const display = document.getElementById("date-display");
-
-        //             function formatDate(timestamp) {
-        //                 const date = new Date(timestamp * 1000);
-        //                 return date.toISOString().split("T")[0]; // Format YYYY-MM-DD
-        //             }
-
-        //             slider.addEventListener("input", function() {
-        //                 display.value = formatDate(slider.value);
-        //             });
-
-        //             display.value = formatDate(slider.value);
-        //         });
-        //     </script>
-        // ');
 
       
         $mform->addElement('html', '<div class="m-8 rounded-2xl p-4  bg-gray-200">');
@@ -309,24 +311,71 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_etu_tt_title', 'mod_studentqcm') . '</h2>');
 
-        $mform->addElement('static', 'import_etu', get_string('import_etu', 'mod_studentqcm'), null);
-        
+        // Ajout du champ caché pour stocker les fichiers sélectionnés  
+
         $mform->addElement('html', '
             <div id="drop-area-etu" class="drop-area">
-                <p>Déposez la liste des étudiants ici ou cliquez pour en sélectionner.</p>
+                <p>Cliquez pour en sélectionner.</p>
+                <div
+                    id="drop_zone"
+                    ondrop="dropHandlerEtu(event);"
+                    ondragleave="dragLeaveHandlerEtu(event);"
+                    ondragover="dragOverHandlerEtu(event);">
+                    <p>Drag one or more files to this <i>drop zone</i>.</p>
+                </div>
                 <input type="file" id="fileInputEtu" multiple hidden>
             </div>
             <div id="file-list-etu"></div>
+            <div id="hidden_files_etu"></div>
+
+            <script>
+                let indexFileEtu = 0;
+                    const dropAreaEtu = document.getElementById("drop-area-etu");
+                    const fileInputEtu = document.getElementById("fileInputEtu");
+                    const fileListEtu = document.getElementById("file-list-etu");
+                    const hiddenFilesEtu = document.getElementById("hidden_files_etu");
+
+                    function dragOverHandlerEtu(e) {
+                        e.preventDefault();
+                        dropAreaEtu.style.backgroundColor = "#e9ecef";
+                    };
+
+                    function dragLeaveHandlerEtu(e) {
+                        dropAreaEtu.style.backgroundColor = "#f8f9fa"; 
+                    };
+
+                    function dropHandlerEtu(e) {
+                        e.preventDefault();
+                        dropAreaEtu.style.backgroundColor = "#f8f9fa";
+                        handleFilesEtu(e.dataTransfer.files);
+                    };
+
+                    dropAreaEtu.addEventListener("click", function () {
+                        fileInputEtu.click();
+                        
+                    });
+
+                    fileInputEtu.addEventListener("change", function (e) {
+                        handleFilesEtu(e.target.files);
+                    });
+
+                    function handleFilesEtu(files) {
+                        let fileNames = [];
+
+                        for (let file of files) {
+                            let fileItem = document.createElement("div");
+                            fileItem.classList.add("file-item");
+                            fileItem.textContent = file.name;
+                            fileListEtu.appendChild(fileItem);
+                            fileNames.push(file.name);
+                            console.log("file :", file);
+
+                            hiddenFilesEtu.insertAdjacentHTML("beforeend", `<input type="hidden" name="etuFiles${indexFileEtu}[]" value="${file}">`);
+                            indexFileEtu++;
+                        }
+                    }
+            </script>
         ');
-
-        $mform->addElement('hidden', 'uploaded_files_etu', '');
-        $mform->setType('uploaded_files_etu', PARAM_RAW);
-
-        // Ajout du champ de sélection de fichiers Moodle (optionnel)
-        $mform->addElement('filepicker', 'file', get_string('uploadfile', 'mod_studentqcm'), null, [
-            'maxbytes' => 10485760, // 10MB
-            'accepted_types' => 'csv'
-        ]);
 
         $mform->addElement('button', 'add_etu', get_string('add_etu', 'mod_studentqcm'), array('type' => 'button', 'onclick' => 'addEtuField()'));
         
@@ -336,14 +385,19 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<div id="add_etu-container"></div>');
 
-        $mform->addElement('html', '<script>
+        $mform->addElement('html', '
+        <div id="hidden_etu"></div>
 
-            let infoEtus = []
+        <script>
+
+            let infoEtus = [];
+            let indexEtu = 0;
             function addEtuField() {
                 let etuContainer = document.getElementById("add_etu-container");
                 etuContainer.innerHTML = "";
 
                 let html = `
+
                     <div id="info_etu-container" class="p-4 border border-gray-300 rounded-lg mt-4 bg-white">
                         <h3 class="text-2xl font-bold text-green-700">' . get_string('info_etu', 'mod_studentqcm') . '</h3>
                         <label>' . get_string('surname', 'mod_studentqcm') . '</label>
@@ -383,14 +437,23 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     return;
                 }
 
-                let infoEtu = [];
-                infoEtu.push({
+                infoEtu = {
+                    id: indexEtu,
                     name: etuName,
                     surname: etuSurname,
                     mail: etuMail
-                });
+                };
 
                 infoEtus.push(infoEtu);
+                indexEtu++;
+
+                let etuContainer = document.getElementById("hidden_etu");
+                etuContainer.innerHTML = "";
+                etuContainer.insertAdjacentHTML("beforeend", `<input type="hidden" name="etu[]" value="${JSON.stringify(infoEtus).replace(/"/g, "&quot;")}">`);
+
+                document.querySelector("form").addEventListener("submit", function () {
+                    document.getElementById("id_add_etus_data").value = JSON.stringify(infoEtu);
+                });
 
                 document.getElementById("info_etu-container").remove();
                 displayValidatedEtu(infoEtu);
@@ -398,13 +461,23 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
             function displayValidatedEtu(infoEtu) {
                 let validatedContainer = document.getElementById("validate_etu-container");
-                console.log("infoEtu: ", infoEtu);
                 let html = `
-                    <div class="p-4-lg mt-4">
-                        <p class="text-2xl">${infoEtu[0].name} ${infoEtu[0].surname} ${infoEtu[0].mail}</p>
+                    <div id="etuContainer${infoEtu.id}" class="p-4-lg mt-4">
+                        <p class="text-2xl">${infoEtu.name} ${infoEtu.surname} ${infoEtu.mail}</p>
+                        <button onclick="deleteEtu(${infoEtu.id})"> Delete </button>
                     </div>
                     `;
                     validatedContainer.insertAdjacentHTML("beforeend", html);
+            }
+
+            function deleteEtu(index_etu) {
+                let etuContainer = document.getElementById(`etuContainer${index_etu}`);
+                etuContainer.remove();
+
+                infoEtus = infoEtus.filter(etu => etu.id !== index_etu);
+                let etuContainerHidden = document.getElementById("hidden_etu");
+                etuContainerHidden.innerHTML = "";
+                etuContainerHidden.insertAdjacentHTML("beforeend", `<input type="hidden" name="etu[]" value="${JSON.stringify(infoEtus).replace(/"/g, "&quot;")}">`);
             }
 
         </script>');
@@ -418,74 +491,70 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_prof_title', 'mod_studentqcm') . '</h2>');
 
+        // Ajout du champ caché pour stocker les fichiers sélectionnés
+
         $mform->addElement('html', '
             <div id="drop-area-prof" class="drop-area">
-                <p>Déposez vos fichiers ici ou cliquez pour en sélectionner.</p>
-                <input type="file" id="fileInput" multiple hidden>
+                <p>Cliquez pour en sélectionner.</p>
+                <div
+                    id="drop_zone"
+                    ondrop="dropHandlerProf(event);"
+                    ondragleave="dragLeaveHandlerProf(event);"
+                    ondragover="dragOverHandlerProf(event);">
+                    <p>Drag one or more files to this <i>drop zone</i>.</p>
+                </div>
+                <input type="file" id="fileInputProf" multiple hidden>
             </div>
-            <div id="file-list"></div>
-        ');
+            <div id="file-list-prof"></div>
+            <div id="hidden_files_prof"></div>
 
-        // Ajout du champ caché pour stocker les fichiers sélectionnés
-        $mform->addElement('hidden', 'uploaded_files', '');
-        $mform->setType('uploaded_files', PARAM_RAW);
+            <script>
+                let indexFileProf = 0;
+                    const dropAreaProf = document.getElementById("drop-area-prof");
+                    const fileInputProf = document.getElementById("fileInputProf");
+                    const fileListProf = document.getElementById("file-list-prof");
+                    const hiddenFilesProf = document.getElementById("hidden_files_prof");
 
-        // Ajout du champ de sélection de fichiers Moodle (optionnel)
-        $mform->addElement('filepicker', 'file', get_string('uploadfile', 'mod_studentqcm'), null, [
-            'maxbytes' => 10485760, // 10MB
-            'accepted_types' => '*'
-        ]);
+                    function dragOverHandlerProf(e) {
+                        e.preventDefault();
+                        dropAreaProf.style.backgroundColor = "#e9ecef";
+                    };
 
-        $mform->addElement('html', '<script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const dropArea = document.getElementById("drop-area");
-                const fileInput = document.getElementById("fileInput");
-                const fileList = document.getElementById("file-list");
-                const uploadedFilesField = document.querySelector("input[name="uploaded_files"]");
+                    function dragLeaveHandlerProf(e) {
+                        dropAreaProf.style.backgroundColor = "#f8f9fa"; 
+                    };
 
-                dropArea.addEventListener("dragover", function (e) {
-                    e.preventDefault();
-                    dropArea.style.backgroundColor = "#e9ecef";
-                });
+                    function dropHandlerProf(e) {
+                        e.preventDefault();
+                        dropAreaProf.style.backgroundColor = "#f8f9fa";
+                        handleFilesProf(e.dataTransfer.files);
+                    };
 
-                dropArea.addEventListener("dragleave", function () {
-                    dropArea.style.backgroundColor = "#f8f9fa";
-                });
+                    dropAreaProf.addEventListener("click", function () {
+                        fileInputProf.click();
+                        
+                    });
 
-                dropArea.addEventListener("drop", function (e) {
-                    e.preventDefault();
-                    dropArea.style.backgroundColor = "#f8f9fa";
+                    fileInputProf.addEventListener("change", function (e) {
+                        handleFilesProf(e.target.files);
+                    });
 
-                    const files = e.dataTransfer.files;
-                    handleFiles(files);
-                });
+                    function handleFilesProf(files) {
+                        let fileNames = [];
 
-                dropArea.addEventListener("click", function () {
-                    fileInput.click();
-                });
-
-                fileInput.addEventListener("change", function (e) {
-                    handleFiles(fileInput.files);
-                });
-
-                function handleFiles(files) {
-                    let fileNames = [];
-
-                    for (let file of files) {
-                        let fileItem = document.createElement("div");
-                        fileItem.classList.add("file-item");
-                        fileItem.textContent = file.name;
-                        fileList.appendChild(fileItem);
-                        fileNames.push(file.name);
+                        for (let file of files) {
+                            let fileItem = document.createElement("div");
+                            fileItem.classList.add("file-item");
+                            fileItem.textContent = file.name;
+                            fileListProf.appendChild(fileItem);
+                            fileNames.push(file.name);
+                            console.log("file :", file);
+                                
+                            hiddenFilesProf.insertAdjacentHTML("beforeend", `<input type="hidden" name="profFiles${indexFileProf}[]" value="${file}">`);
+                            indexFileProf++;
+                        }
                     }
-
-                    // Stocker les fichiers sélectionnés dans un champ caché
-                    uploadedFilesField.value = fileNames.join(",");
-                }
-            });
-
-        </script>
-        
+            </script>
         ');
 
        
@@ -497,13 +566,18 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<div id="add_prof-container"></div>');
 
-        $mform->addElement('html', '<script>
-            let infoProfs = []
+        $mform->addElement('html', '
+        <div id="hidden_prof"></div>
+        
+        <script>
+            let indexProf = 0;
+            let infoProfs = [];
             function addProfField() {
                 let profContainer = document.getElementById("add_prof-container");
                 profContainer.innerHTML = "";
 
                 let html = `
+
                     <div id="info_prof-container" class="p-4 border border-gray-300 rounded-lg mt-4 bg-white">
                         <h3 class="text-2xl font-bold text-green-700">' . get_string('info_prof', 'mod_studentqcm') . '</h3>
                         <label>' . get_string('surname', 'mod_studentqcm') . '</label>
@@ -543,14 +617,19 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     return;
                 }
 
-                let infoProf = [];
-                infoProf.push({
+                let infoProf = {
+                    id: indexProf,
                     name: profName,
                     surname: profSurname,
                     mail: profMail
-                });
+                };
 
                 infoProfs.push(infoProf);
+                indexProf++;
+
+                let profContainer = document.getElementById("hidden_prof");
+                profContainer.innerHTML = "";
+                profContainer.insertAdjacentHTML("beforeend", `<input type="hidden" name="prof[]" value="${JSON.stringify(infoProfs).replace(/"/g, "&quot;")}">`);
 
                 document.getElementById("info_prof-container").remove();
                 displayValidatedProf(infoProf);
@@ -559,11 +638,23 @@ class mod_studentqcm_mod_form extends moodleform_mod {
             function displayValidatedProf(infoProf) {
                 let validatedContainer = document.getElementById("validate_prof-container");
                 let html = `
-                    <div class="p-4-lg mt-4">
-                        <p class="text-2xl">${infoProf[0].name} ${infoProf[0].surname} ${infoProf[0].mail}</p>
+                    <div id="profContainer${infoProf.id}" class="p-4-lg mt-4">
+                        <p class="text-2xl">${infoProf.name} ${infoProf.surname} ${infoProf.mail}</p>
+                        <button onclick="deleteProf(${infoProf.id})"> Delete </button>
                     </div>
                     `;
                     validatedContainer.insertAdjacentHTML("beforeend", html);
+            }
+
+            function deleteProf(index_prof) {
+                let profContainer = document.getElementById(`profContainer${index_prof}`);
+                profContainer.remove();
+
+                infoProfs = infoProfs.filter(prof => prof.id !== index_prof);
+                let profContainerHidden = document.getElementById("hidden_prof");
+                profContainerHidden.innerHTML = "";
+                profContainerHidden.insertAdjacentHTML("beforeend", `<input type="hidden" name="prof[]" value="${JSON.stringify(infoProfs).replace(/"/g, "&quot;")}">`);
+
             }
 
         </script>');
@@ -590,6 +681,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         // Ajout du script JavaScript
         $mform->addElement('html', '
          <script>
+
+            let arrayPOP= [];
         
             document.addEventListener("DOMContentLoaded", function () {
                 const qcmSelect = document.querySelector("select[name=\'choix_qcm\']");
@@ -647,6 +740,10 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     const POPqcmSelect = document.querySelector(`select[name="pop_qcm${index_pop}[]"]`);
                     let POPqcm = parseInt(POPqcmSelect?.value) || 0;
 
+                    const POPqcuSelect = document.querySelector(`select[name="pop_qcu${index_pop}[]"]`);
+                    let POPqcu = parseInt(POPqcuSelect?.value) || 0;
+                    console.log("POPqcu dans qcm: ", POPqcu);
+
                     let totalUsed = qcm + qcu + tcs + totalPopQuestions - POPqcm;
                     let remaining = 18 - totalUsed;
 
@@ -666,6 +763,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                     const POPqcuSelect = document.querySelector(`select[name="pop_qcu${index_pop}[]"]`);
                     let POPqcu = parseInt(POPqcuSelect?.value) || 0;
+
+                    console.log("POPqcu: ", POPqcu);
 
                     let totalUsed = qcm + qcu + tcs + totalPopQuestions - POPqcu;
                     let remaining = 18 - totalUsed;
@@ -687,16 +786,30 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     let totalUsed = qcm + qcu + tcs + totalPopQuestions;
                     let remaining = 18 - totalUsed; // Questions restantes disponibles
 
-                    console.log("totalUsed: ", totalUsed);
+                    // let displayTotalQuestionsContainer = document.getElementById("add_prof-container");
+                    // displayTotalQuestionsContainer.innerHTML = "";
+                    // let text= `
+                    //     <p> Nombre total de questions demandées: ${totalUsed}</p>`
+                    
 
                     selects.forEach(select => {
                         let currentValue = parseInt(select.value) || 0;
                         select.innerHTML = ""; // Réinitialiser les options
-                        for (let i = 0; i <= remaining + currentValue; i++) {
-                            let option = document.createElement("option");
-                            option.value = i;
-                            option.textContent = i;
-                            select.appendChild(option);
+                        if (select.name == "choix_pop") {
+                            let value = remaining < currentValue ? currentValue : remaining;
+                            for (let i = 0; i <= value; i++) {
+                                let option = document.createElement("option");
+                                option.value = i;
+                                option.textContent = i;
+                                select.appendChild(option);
+                            }
+                        } else {
+                            for (let i = 0; i <= remaining + currentValue; i++) {
+                                let option = document.createElement("option");
+                                option.value = i;
+                                option.textContent = i;
+                                select.appendChild(option);
+                            }
                         }
                         
                         select.value = currentValue;
@@ -704,7 +817,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                     document.querySelectorAll("#popOption_qcm_qcu-container select").forEach(select => {
                         let currentValue = parseInt(select.value) || 0;
-
+                        arrayPOP = [];
+                        
                         let match = select.name.match(/\d+/);  // Cherche un nombre dans le name
                         let indexPOP = match ? match[0] : null;
                         if (select.name.includes("qcm")) {
@@ -712,7 +826,22 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                         } else {
                             select.innerHTML = generateOptionPOPQCU(indexPOP);
                         }  
-                        select.value = currentValue > remaining ? remaining : currentValue;
+                        const POPqcuSelect = document.querySelector(`select[name="pop_qcu${indexPOP}[]"]`);
+                        let POPqcu = parseInt(POPqcuSelect?.value) || 0;
+
+                        const POPqcmSelect = document.querySelector(`select[name="pop_qcm${indexPOP}[]"]`);
+                        let POPqcm = parseInt(POPqcmSelect?.value) || 0;
+
+                        let pop = {
+                            nb_qcm: POPqcm,
+                            nb_qcu: POPqcu
+                        };
+                        arrayPOP.push(pop);
+
+                        document.querySelector("form").addEventListener("submit", function () {
+                            document.getElementById("id_pops").value = JSON.stringify(pop);
+                        });
+                        select.value = currentValue;
                     });
                     
                 }
