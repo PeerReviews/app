@@ -19,45 +19,23 @@ function studentqcm_add_instance($data, $mform = null) {
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+    exit;
     $record = new stdClass();
 
     //Data informations du référentiel
-    $record->name = trim($data->name_referentiel);
+    $record->name = trim($data->name_plugin);
     $record->intro = isset($data->intro['text']) ? trim($data->intro['text']) : '';
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
     $record->date_start_referentiel = $data->date_start_referentiel;
     $record->date_end_referentiel = $data->date_end_referentiel;
 
-    //Data compétences, sous-compétences, mot-clefs
-    if (!empty($data->competences_data)) {
-        $competencesArray = json_decode($data->competences_data, true);
-    
-        foreach ($competencesArray as $competence) {
-            // Insérer la compétence
-            $comp_record = new stdClass();
-            $comp_record->studentqcm_id = $id;
-            $comp_record->competence = trim($competence['name']);
-            $competence_id = $DB->insert_record('studentqcm_competency', $comp_record);
-    
-            // Insérer les sous-compétences
-            foreach ($competence['subCompetences'] as $sub) {
-                $subcomp_record = new stdClass();
-                $subcomp_record->competence_id = $competence_id;
-                $subcomp_record->sous_competence = trim($sub['name']);
-                $subcompetence_id = $DB->insert_record('studentqcm_subcompetency', $subcomp_record);
-    
-                // Insérer les mots-clés
-                foreach ($sub['keywords'] as $keyword) {
-                    $key_record = new stdClass();
-                    $key_record->studentqcm_id = $id;
-                    $key_record->keyword = trim($keyword);
-                    $DB->insert_record('studentqcm_keywords', $key_record);
-                }
-            }
-        }
-    }
+    $record_referentiel = new stdClass();
+    $record_referentiel->name = trim($data->name_referentiel);
+    $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
 
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
         if (isset($data->$date_field)) {
@@ -71,31 +49,57 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
-    $infoEtus = optional_param('hidden_files_etu', '', PARAM_RAW);
-    // $infoEtus = json_decode($infoEtus, true);
-    echo '<pre>';
-    print_r($infoEtus);
-    echo '</pre>';
-    exit;
+    //Data compétences, sous-compétences, mot-clefs
+    if (!empty($data->competences_data)) {
+        $competencesArray = json_decode($data->competences_data, true);
+        
+        foreach ($competencesArray as $competence) {
+            // Insérer la compétence
+            $comp_record = new stdClass();
+            $comp_record->referentiel = $referentiel_id;
+            $comp_record->name = trim($competence['name']);
+            $competence_id = $DB->insert_record('competency', $comp_record);
+    
+            // Insérer les sous-compétences
+            foreach ($competence['subCompetences'] as $sub) {
+                $subcomp_record = new stdClass();
+                $subcomp_record->competency = $competence_id;
+                $subcomp_record->name = trim($sub['name']);
+                $subcompetence_id = $DB->insert_record('subcompetency', $subcomp_record);
+    
+                // Insérer les mots-clés
+                foreach ($sub['keywords'] as $keyword) {
+                    $key_record = new stdClass();
+                    $key_record->word = trim($keyword);
+                    $key_record->subcompetency = $subcompetence_id;
+                    $DB->insert_record('keyword', $key_record);
+                }
+            }
+        }
+    }
 
 
-    foreach ($infoEtus as $infoEtu) {
-        $etu_record = new stdClass();
-        $etu_record->name = $infoEtu['name'];
-        $etu_record->surname = $infoEtu['surname'];
-        $etu_record->mail = $infoEtu['mail'];
-        $etudiant -> $DB->get_record('user', array('mail' => $etu_record->mail), '*', MUST_EXIST);
-        // if(!$etudiant){
-        //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
-        // } else {
-        //     $etu_record->id = $etudiant['id'];
-        // }
-        $etu_id = $DB->insert_record('studentqcm_tierstemps', $etu_record);
+    $infoEtus = $data->individualEtu_data;
+    if (!empty($infoEtus)) {
+        foreach ($infoEtus as $infoEtu) {
+            $etu_record = new stdClass();
+            $etu_record->name = $infoEtu['name'];
+            $etu_record->surname = $infoEtu['surname'];
+            $etu_record->mail = $infoEtu['mail'];
+            $etudiant -> $DB->get_record('user', array('mail' => $etu_record->mail), '*', MUST_EXIST);
+            // if(!$etudiant){
+            //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+            // } else {
+            //     $etu_record->id = $etudiant['id'];
+            // }
+            $etu_id = $DB->insert_record('studentqcm_tierstemps', $etu_record);
+        }
     }
 
     //Data étudiants
-    if (!empty($data->add_etus_data)) {
-        $etusArray = json_decode($data->add_etus_data, true);
+    $infoEtusFiles = $data->individualEtu_data;
+    if (!empty($infoEtusFiles)) {
+        $etusArray = json_decode($infoEtusFiles, true);
     
         foreach ($etusArray as $etu) {
             // Insérer la compétence
@@ -113,43 +117,44 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
-    $infoProfs = optional_param('uploaded_files_etu', '', PARAM_RAW);
-    $infoProfs = json_decode($infoProfs, true);
-
-    foreach ($infoProfs as $infoProf) {
-        $prof_record = new stdClass();
-        $prof_record->name = $infoProf['name'];
-        $prof_record->surname = $infoProf['surname'];
-        $prof_record->mail = $infoProf['mail'];
-        $prof = $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
-        // if(!$prof){
-        //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
-        // } else {
-        //     $prof_record->id = $prof['id'];
-        // }
-        $prof_id = $DB->insert_record('studentqcm_prof', $prof_record);
+    $infoProfs = $data->individualProf_data;
+    if (!empty($infoProfs)) {
+        foreach ($infoProfs as $infoProf) {
+            $prof_record = new stdClass();
+            $prof_record->name = $infoProf['name'];
+            $prof_record->surname = $infoProf['surname'];
+            $prof_record->mail = $infoProf['mail'];
+            $prof = $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
+            // if(!$prof){
+            //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+            // } else {
+            //     $prof_record->id = $prof['id'];
+            // }
+            $prof_id = $DB->insert_record('studentqcm_prof', $prof_record);
+        }
     }
 
     //Data profs
-    // if (!empty($data->add_profs_data)) {
-    //     $profsArray = json_decode($data->add_profs_data, true);
+    $infoProfsFiles = $data->individualProf_data;
+    if (!empty($infoProfsFiles)) {
+        $profsArray = json_decode($infoProfsFiles, true);
     
-    //     foreach ($profsArray as $infoProf) {
-    //         // Insérer la compétence
-    //         $prof_record = new stdClass();
-    //         $prof_record->name = $infoProf['name'];
-    //         $prof_record->surname = $infoProf['surname'];
-    //         $prof_record->mail = $infoProf['mail'];
-    //         $prof -> $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
-    //         // if(!$prof){
-    //         //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
-    //         // } else {
-    //         //     $prof_record->id = $prof['id'];
-    //         // }
-    //         $prof_id = $DB->insert_record('studentqcm_prof', $prof_record);
+        foreach ($profsArray as $infoProf) {
+            // Insérer la compétence
+            $prof_record = new stdClass();
+            $prof_record->name = $infoProf['name'];
+            $prof_record->surname = $infoProf['surname'];
+            $prof_record->mail = $infoProf['mail'];
+            $prof -> $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
+            // if(!$prof){
+            //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+            // } else {
+            //     $prof_record->id = $prof['id'];
+            // }
+            $prof_id = $DB->insert_record('studentqcm_prof', $prof_record);
 
-    //     }
-    // }
+        }
+    }
 
     //Data questions
     $record->nb_qcm = $data->nb_qcm;
@@ -157,7 +162,7 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->nb_tcs = $data->nb_tcs;
     $record->nb_pop = $data->nb_pop;
 
-    if (empty($record->name_referentiel)) {
+    if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
     if (empty($record->intro)) {

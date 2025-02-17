@@ -16,6 +16,10 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
 
+        $mform->addElement('text', 'name_plugin', get_string('name_plugin', 'mod_studentqcm'), array('size' => '64'));
+        $mform->setType('name_plugin', PARAM_TEXT);
+        $mform->addRule('name_plugin', null, 'required', null, 'client');
+
         $mform->addElement('text', 'name_referentiel', get_string('name_referentiel', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('name_referentiel', PARAM_TEXT);
         $mform->addRule('name_referentiel', null, 'required', null, 'client');
@@ -157,9 +161,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                 competencesData.push(competenceData);
 
-                let hiddenCompetences = document.getElementById("hidden_files_competences");
-                hiddenCompetences.innerHTML = "";
-                hiddenCompetences.insertAdjacentHTML("beforeend", `<input type="hidden" name="competences[]" value="${JSON.stringify(competencesData).replace(/"/g, "&quot;")}">`);
+                document.querySelector(`input[name="competences_data"]`).value = JSON.stringify(competencesData);
 
                 // Supprimer la section et afficher les données sous forme de texte
                 document.getElementById(`competence-container${index_competence}`).remove();
@@ -197,14 +199,15 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                 competencesContainer.remove();
 
                 competencesData = competencesData.filter(comp => comp.id !== indexComp);
-                let hiddenCompetences = document.getElementById("hidden_files_competences");
-                hiddenCompetences.innerHTML = "";
-                hiddenCompetences.insertAdjacentHTML("beforeend", `<input type="hidden" name="competences[]" value="${JSON.stringify(competencesData).replace(/"/g, "&quot;")}">`);
-            }
+                document.querySelector(`input[name="competences_data"]`).value = JSON.stringify(competencesData);
+                }
 
         </script>');
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_courses', 'mod_studentqcm') . '</h2>');
+        
+        $mform->addElement('hidden', 'courses_files_data');
+        $mform->setType('courses_files_data', PARAM_RAW);
 
         $mform->addElement('html', '
         <div id="drop-area-courses" class="drop-area">
@@ -254,6 +257,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                 function handleFilesCourses(files) {
                     let fileNames = [];
+                    let filesCourses = [];
 
                     for (let file of files) {
                         let fileItem = document.createElement("div");
@@ -262,10 +266,16 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                         fileListCourses.appendChild(fileItem);
                         fileNames.push(file.name);
                         console.log("file :", file);
-                            
-                        hiddenFilesCourses.insertAdjacentHTML("beforeend", `<input type="hidden" name="coursesFiles${indexFileCourses}[]" value="${file}">`);
+                        filesCourses.push({
+                            id: indexFileCourses,
+                            value: file
+                        });
+                                
                         indexFileCourses++;
                     }
+                    document.querySelector(`input[name="courses_files_data"]`).value = filesCourses;
+
+                    
                 }
         </script>
     ');
@@ -312,6 +322,9 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_etu_tt_title', 'mod_studentqcm') . '</h2>');
 
         // Ajout du champ caché pour stocker les fichiers sélectionnés  
+
+        $mform->addElement('hidden', 'filesEtu_data');
+        $mform->setType('filesEtu_data', PARAM_RAW);
 
         $mform->addElement('html', '
             <div id="drop-area-etu" class="drop-area">
@@ -361,6 +374,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                     function handleFilesEtu(files) {
                         let fileNames = [];
+                        let filesEtu = [];
 
                         for (let file of files) {
                             let fileItem = document.createElement("div");
@@ -369,10 +383,15 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                             fileListEtu.appendChild(fileItem);
                             fileNames.push(file.name);
                             console.log("file :", file);
-
-                            hiddenFilesEtu.insertAdjacentHTML("beforeend", `<input type="hidden" name="etuFiles${indexFileEtu}[]" value="${file}">`);
+                            filesEtu.push({
+                                id: indexFileEtu,
+                                value: file
+                            });
+                                
                             indexFileEtu++;
                         }
+
+                        document.querySelector(`input[name="filesEtu_data"]`).value = filesEtu;
                     }
             </script>
         ');
@@ -384,6 +403,9 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('html', '</div>');
 
         $mform->addElement('html', '<div id="add_etu-container"></div>');
+
+        $mform->addElement('hidden', 'individualEtu_data');
+        $mform->setType('individualEtu_data', PARAM_RAW);
 
         $mform->addElement('html', '
         <div id="hidden_etu"></div>
@@ -446,14 +468,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                 infoEtus.push(infoEtu);
                 indexEtu++;
-
-                let etuContainer = document.getElementById("hidden_etu");
-                etuContainer.innerHTML = "";
-                etuContainer.insertAdjacentHTML("beforeend", `<input type="hidden" name="etu[]" value="${JSON.stringify(infoEtus).replace(/"/g, "&quot;")}">`);
-
-                document.querySelector("form").addEventListener("submit", function () {
-                    document.getElementById("id_add_etus_data").value = JSON.stringify(infoEtu);
-                });
+                
+                document.querySelector(`input[name="individualEtu_data"]`).value = JSON.stringify(infoEtus);
 
                 document.getElementById("info_etu-container").remove();
                 displayValidatedEtu(infoEtu);
@@ -490,6 +506,9 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('html', '<div class="m-8 rounded-2xl p-4  bg-gray-200">');
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('choice_prof_title', 'mod_studentqcm') . '</h2>');
+
+        $mform->addElement('hidden', 'filesProf_data');
+        $mform->setType('filesProf_data', PARAM_RAW);
 
         // Ajout du champ caché pour stocker les fichiers sélectionnés
 
@@ -541,6 +560,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
                     function handleFilesProf(files) {
                         let fileNames = [];
+                        let filesProf = [];
 
                         for (let file of files) {
                             let fileItem = document.createElement("div");
@@ -549,10 +569,15 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                             fileListProf.appendChild(fileItem);
                             fileNames.push(file.name);
                             console.log("file :", file);
+                            filesProf.push({
+                                id: indexFileProf,
+                                value: file
+                            });
                                 
-                            hiddenFilesProf.insertAdjacentHTML("beforeend", `<input type="hidden" name="profFiles${indexFileProf}[]" value="${file}">`);
                             indexFileProf++;
                         }
+                        document.querySelector(`input[name="filesProf_data"]`).value = filesProf;
+                        
                     }
             </script>
         ');
@@ -565,6 +590,9 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('html', '</div>');
 
         $mform->addElement('html', '<div id="add_prof-container"></div>');
+
+        $mform->addElement('hidden', 'individualProf_data');
+        $mform->setType('individualProf_data', PARAM_RAW);
 
         $mform->addElement('html', '
         <div id="hidden_prof"></div>
@@ -627,10 +655,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                 infoProfs.push(infoProf);
                 indexProf++;
 
-                let profContainer = document.getElementById("hidden_prof");
-                profContainer.innerHTML = "";
-                profContainer.insertAdjacentHTML("beforeend", `<input type="hidden" name="prof[]" value="${JSON.stringify(infoProfs).replace(/"/g, "&quot;")}">`);
-
+                document.querySelector(`input[name="individualProf_data"]`).value = JSON.stringify(infoProfs);
+                
                 document.getElementById("info_prof-container").remove();
                 displayValidatedProf(infoProf);
             }
@@ -671,12 +697,15 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('type_eval_title', 'mod_studentqcm') . '</h2>');
 
-        $mform->addElement('select', 'choix_qcm', get_string('nb_qcm', 'mod_studentqcm'), $options);
         $mform->addElement('select', 'choix_qcu', get_string('nb_qcu', 'mod_studentqcm'), $options);
+        $mform->addElement('select', 'choix_qcm', get_string('nb_qcm', 'mod_studentqcm'), $options);
         $mform->addElement('select', 'choix_tcs', get_string('nb_tcs', 'mod_studentqcm'), $options);
         $mform->addElement('select', 'choix_pop', get_string('nb_pop', 'mod_studentqcm'), $options);
 
         $mform->addElement('html', '<div id="popOption_qcm_qcu-container"></div>');
+
+        $mform->addElement('hidden', 'pops_data');
+        $mform->setType('pops_data', PARAM_RAW);
 
         // Ajout du script JavaScript
         $mform->addElement('html', '
@@ -700,6 +729,27 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     return totalPopQuestions;
                 }
 
+                function savePOPData() {
+                    let pops = document.querySelectorAll(".pop-block"); // Sélectionne tous les blocs POP
+                    arrayPOP = []; // Réinitialise le tableau avant de le remplir
+
+                    pops.forEach((popBlock, index) => {
+                        // Récupérer les valeurs sélectionnées pour QCU et QCM
+                        let qcuValue = popBlock.querySelector(`select[name="pop_qcu${index}[]"]`).value;
+                        let qcmValue = popBlock.querySelector(`select[name="pop_qcm${index}[]"]`).value;
+
+                        // Stocker dans un objet
+                        let popData = {
+                            qcu: qcuValue,
+                            qcm: qcmValue
+                        };
+
+                        arrayPOP.push(popData);
+                    });
+
+                    document.querySelector(`input[name="pops_data"]`).value = JSON.stringify(arrayPOP);
+                }
+
                 function displayPOP() {
                     let pop = parseInt(popSelect.value) || 0;
                     let popContainer = document.getElementById("popOption_qcm_qcu-container");
@@ -709,13 +759,13 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                         let fieldHTML = `
                             <div class="pop-block p-4 border border-gray-300 rounded-lg mt-4 bg-white">
                                 <h3 class="text-xl font-bold">POP ${i + 1}</h3>
-                                <label>' . get_string('nb_qcm', 'mod_studentqcm') . '</label>
-                                <select name="pop_qcm${i}[]" class="form-control p-2 border rounded w-full" required>
-                                    ${generateOptionPOPQCM(i)}
-                                </select>
                                 <label>' . get_string('nb_qcu', 'mod_studentqcm') . '</label>
                                 <select name="pop_qcu${i}[]" class="form-control p-2 border rounded w-full" required>
                                     ${generateOptionPOPQCU(i)}
+                                </select>
+                                <label>' . get_string('nb_qcm', 'mod_studentqcm') . '</label>
+                                <select name="pop_qcm${i}[]" class="form-control p-2 border rounded w-full" required>
+                                    ${generateOptionPOPQCM(i)}
                                 </select>
                             </div>
                         `;
@@ -786,12 +836,6 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                     let totalUsed = qcm + qcu + tcs + totalPopQuestions;
                     let remaining = 18 - totalUsed; // Questions restantes disponibles
 
-                    // let displayTotalQuestionsContainer = document.getElementById("add_prof-container");
-                    // displayTotalQuestionsContainer.innerHTML = "";
-                    // let text= `
-                    //     <p> Nombre total de questions demandées: ${totalUsed}</p>`
-                    
-
                     selects.forEach(select => {
                         let currentValue = parseInt(select.value) || 0;
                         select.innerHTML = ""; // Réinitialiser les options
@@ -838,13 +882,16 @@ class mod_studentqcm_mod_form extends moodleform_mod {
                         };
                         arrayPOP.push(pop);
 
-                        document.querySelector("form").addEventListener("submit", function () {
-                            document.getElementById("id_pops").value = JSON.stringify(pop);
-                        });
                         select.value = currentValue;
                     });
                     
                 }
+
+                document.addEventListener("change", (event) => {
+                    if (event.target.matches(`select[name^="pop_qcu"], select[name^="pop_qcm"]`)) {
+                        savePOPData();
+                    }
+                });
 
                 selects.forEach(select => {
                     select.addEventListener("change", updateOptions);

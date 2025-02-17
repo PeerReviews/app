@@ -6,11 +6,12 @@ $string['modulename'] = 'Student QCM';
 $string['modulenameplural'] = 'Student QCMs';
 $string['modulename_help'] = 'Cet outil permet aux étudiants de créer leurs propres QCM et aux enseignants de les évaluer.';
 $string['name'] = 'Nom';
+$string['name_plugin'] = 'Nom du plugin';
+$string['name_referentiel'] = 'Nom du référentiel';
 $string['surname'] = 'Prénom';
 $string['mail'] = 'Adresse mail';
 $string['description'] = 'Description';
 $string['intro'] = 'Introduction';
-$string['pluginname'] = 'Student QCM';
 $string['pluginadministration'] = 'Administration du module Student QCM';
 $string['choice_courses'] = 'Choix des cours à ajouter';
 
@@ -54,7 +55,6 @@ $string['submit'] = 'Envoyer le QCM';
 // Creation réferentiel de compétences
 
 $string['info_referentiel_title'] = 'Informations principales du référentiel:';
-$string['name_referentiel'] = 'Choix nom du réferentiel';
 $string['date_start_referentiel'] = 'Date début réferentiel';
 $string['date_end_referentiel'] = 'Date fin réferentiel';
 
