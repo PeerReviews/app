@@ -29,8 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new moodle_exception('invalidquestion', 'mod_studentqcm');
             }
 
-            echo "<pre\n\n\n>" . print_r($question['referentiel'], true) . "</pre>";
-
             $question_record = new stdClass();
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
@@ -52,8 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         'question_id' => $q_id,
                         'indexation' => $indexation
                     ]);
-
-                    echo "<pre>" . print_r($answer, true) . "</pre>";
 
                     $answer_record = new stdClass();
                     $answer_record->question_id = $q_id;
