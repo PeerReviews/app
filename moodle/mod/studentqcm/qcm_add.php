@@ -149,7 +149,7 @@ echo "<div class='mt-8'>";
             echo "</div>";
             echo "</div>";
         }
-        if ($type = "TCS") {
+        else {
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
             echo "<div class='col-span-10 w-full'>";

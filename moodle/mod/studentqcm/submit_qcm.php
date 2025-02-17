@@ -78,26 +78,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new moodle_exception('insertfailed', 'studentqcm_question');
             }
 
-
+            $indexation = 1;
             if (!empty($question['answers'])) {
                 foreach ($question['answers'] as $answer) {
-                    if (!empty(trim($answer['answer']))) {
-                        $answer_record = new stdClass();
-                        $answer_record->question_id = $question_id;
-                        $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
-                        $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
-                        $answer_record->isTrue = isset($answer['correct']) && $answer['correct'] == '1' ? 1 : 0;
+                    
+                    $answer_record = new stdClass();
+                    $answer_record->question_id = $question_id;
+                    $answer_record->indexation = $indexation;
+                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
+                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
+                    $answer_record->isTrue = isset($answer['correct']) && $answer['correct'] == '1' ? 1 : 0;
 
-                        try {
-                            $inserted_answer_id = $DB->insert_record('studentqcm_answer', $answer_record);
-                            if (!$inserted_answer_id) {
-                                throw new moodle_exception('Error inserting answer: ' . print_r($answer_record, true));
-                            }
-                        } catch (Exception $e) {
-                            debugging("Error inserting answer: " . $e->getMessage());
-                            throw $e;
+                    try {
+                        $inserted_answer_id = $DB->insert_record('studentqcm_answer', $answer_record);
+                        if (!$inserted_answer_id) {
+                            throw new moodle_exception('Error inserting answer: ' . print_r($answer_record, true));
                         }
+                    } catch (Exception $e) {
+                        debugging("Error inserting answer: " . $e->getMessage());
+                        throw $e;
                     }
+                    
+                    $indexation++;
                 }
             }
 

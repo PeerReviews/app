@@ -29,42 +29,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new moodle_exception('invalidquestion', 'mod_studentqcm');
             }
 
+            echo "<pre\n\n\n>" . print_r($question['referentiel'], true) . "</pre>";
+
             $question_record = new stdClass();
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
-            $question_record->indexation = 1;
             $question_record->global_comment = clean_param($question['global_comment'], PARAM_TEXT);
             $question_record->context = clean_param($question['context'], PARAM_TEXT);
-            $question_record->referentiel = clean_param($question['referentiel'], PARAM_INT);
-            $question_record->competency = clean_param($question['competency'], PARAM_INT);
-            $question_record->subcompetency = clean_param($question['subcompetency'], PARAM_INT);
+            $question_record->referentiel = isset($question['referentiel']) ? clean_param($question['referentiel'], PARAM_INT) : null;
+            $question_record->competency = isset($question['competency']) ? clean_param($question['competency'], PARAM_INT) : null;
+            $question_record->subcompetency = isset($question['subcompetency']) ? clean_param($question['subcompetency'], PARAM_INT) : null;
             $question_record->type = $type;
 
             $question_record->id = $q_id;
             $DB->update_record('studentqcm_question', $question_record);
 
-            // Gestion des réponses
             if (!empty($question['answers'])) {
-                foreach ($question['answers'] as $a_id => $answer) {
-                    if (!empty(trim($answer['answer']))) {
-                        $answer_record = new stdClass();
-                        $answer_record->question_id = $q_id;
-                        $answer_record->answer = clean_param($answer['answer'], PARAM_TEXT);
-                        $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
-                        $answer_record->isTrue = (isset($answer['correct']) && in_array($answer['correct'], ['1', 1])) ? 1 : 0;
+                foreach ($question['answers'] as $indexation => $answer) {
+                    
+                    // Vérifier si une réponse avec le même indexation existe déjà
+                    $existing_answer = $DB->get_record('studentqcm_answer', [
+                        'question_id' => $q_id,
+                        'indexation' => $indexation
+                    ]);
 
-                        // Si l'ID de la réponse est fourni et existe, mise à jour de la réponse
-                        if ($a_id > 0) {
-                            $existing_answer = $DB->get_record('studentqcm_answer', ['id' => $a_id, 'question_id' => $q_id]);
-                            if ($existing_answer) {
-                                $answer_record->id = $existing_answer->id;
-                                $DB->update_record('studentqcm_answer', $answer_record);
-                            }
-                        } else {
-                            // Si l'ID de la réponse n'existe pas, insertion d'une nouvelle réponse
-                            $DB->insert_record('studentqcm_answer', $answer_record);
-                        }
+                    echo "<pre>" . print_r($answer, true) . "</pre>";
+
+                    $answer_record = new stdClass();
+                    $answer_record->question_id = $q_id;
+                    $answer_record->indexation = $indexation;
+                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
+                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
+                    $answer_record->isTrue = (isset($answer['correct']) && in_array($answer['correct'], ['1', 1])) ? 1 : 0;
+
+                    if ($existing_answer) {
+                        // Mise à jour de la réponse existante
+                        $answer_record->id = $existing_answer->id;
+                        $DB->update_record('studentqcm_answer', $answer_record);
+                    } else {
+                        // Insertion d'une nouvelle réponse
+                        $DB->insert_record('studentqcm_answer', $answer_record);
                     }
+                    
                 }
             }
 
@@ -110,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Redirection après enregistrement
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 2);
+    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
 }
 
 // Redirection si la requête n'est pas un POST
