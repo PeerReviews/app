@@ -42,8 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->id = $q_id;
             $DB->update_record('studentqcm_question', $question_record);
 
+
+            $indexation = 1;
             if (!empty($question['answers'])) {
-                foreach ($question['answers'] as $indexation => $answer) {
+                foreach ($question['answers'] as $i => $answer) {
                     
                     // Vérifier si une réponse avec le même indexation existe déjà
                     $existing_answer = $DB->get_record('studentqcm_answer', [
@@ -53,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     $answer_record = new stdClass();
                     $answer_record->question_id = $q_id;
-                    $answer_record->indexation = $indexation;
+                    $answer_record->indexation = $indexation++;
                     $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
                     $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
                     $answer_record->isTrue = (isset($answer['correct']) && in_array($answer['correct'], ['1', 1])) ? 1 : 0;
