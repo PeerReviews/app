@@ -19,10 +19,10 @@ function studentqcm_add_instance($data, $mform = null) {
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    echo '<pre>';
-    print_r($data);
-    echo '</pre>';
-    exit;
+    // echo '<pre>';
+    // print_r($data);
+    // echo '</pre>';
+    // exit;
     $record = new stdClass();
 
     //Data informations du référentiel
@@ -36,6 +36,7 @@ function studentqcm_add_instance($data, $mform = null) {
     $record_referentiel = new stdClass();
     $record_referentiel->name = trim($data->name_referentiel);
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
+    $record->referentiel = $referentiel_id;
 
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
         if (isset($data->$date_field)) {
@@ -79,14 +80,17 @@ function studentqcm_add_instance($data, $mform = null) {
     }
 
 
-    $infoEtus = $data->individualEtu_data;
+    $infoEtus = json_decode($data->individualEtu_data, true);
+    
     if (!empty($infoEtus)) {
         foreach ($infoEtus as $infoEtu) {
+            
             $etu_record = new stdClass();
-            $etu_record->name = $infoEtu['name'];
-            $etu_record->surname = $infoEtu['surname'];
-            $etu_record->mail = $infoEtu['mail'];
-            $etudiant -> $DB->get_record('user', array('mail' => $etu_record->mail), '*', MUST_EXIST);
+            $etu_record->lastname = $infoEtu['name'];
+            $etu_record->firstname = $infoEtu['surname'];
+            $etu_record->email = $infoEtu['mail'];
+
+            // $etudiant -> $DB->get_record('user', array('mail' => $etu_record->mail), '*', MUST_EXIST);
             // if(!$etudiant){
             //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
             // } else {
@@ -104,10 +108,10 @@ function studentqcm_add_instance($data, $mform = null) {
         foreach ($etusArray as $etu) {
             // Insérer la compétence
             $etu_record = new stdClass();
-            $etu_record->name = $etu['name'];
-            $etu_record->surname = $etu['surname'];
-            $etu_record->mail = $etu['mail'];
-            $etudiant = $DB->get_record('user', array('mail' => $etu_record->mail), '*', MUST_EXIST);
+            $etu_record->lastname = $etu['name'];
+            $etu_record->firstname = $etu['surname'];
+            $etu_record->email = $etu['mail'];
+            // $etudiant = $DB->get_record('user', array('email' => $etu_record->mail), '*', MUST_EXIST);
             // if(!$etudiant){
             //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
             // } else {
@@ -117,14 +121,14 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
-    $infoProfs = $data->individualProf_data;
+    $infoProfs = json_decode($data->individualProf_data, true);
     if (!empty($infoProfs)) {
         foreach ($infoProfs as $infoProf) {
             $prof_record = new stdClass();
-            $prof_record->name = $infoProf['name'];
-            $prof_record->surname = $infoProf['surname'];
-            $prof_record->mail = $infoProf['mail'];
-            $prof = $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
+            $prof_record->lastname = $infoProf['name'];
+            $prof_record->firstname = $infoProf['surname'];
+            $prof_record->email = $infoProf['mail'];
+            // $prof = $DB->get_record('user', array('email' => $prof_record->mail), '*', MUST_EXIST);
             // if(!$prof){
             //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
             // } else {
@@ -142,10 +146,10 @@ function studentqcm_add_instance($data, $mform = null) {
         foreach ($profsArray as $infoProf) {
             // Insérer la compétence
             $prof_record = new stdClass();
-            $prof_record->name = $infoProf['name'];
-            $prof_record->surname = $infoProf['surname'];
-            $prof_record->mail = $infoProf['mail'];
-            $prof -> $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
+            $prof_record->lastname = $infoProf['name'];
+            $prof_record->firstname = $infoProf['surname'];
+            $prof_record->email = $infoProf['mail'];
+            // $prof -> $DB->get_record('user', array('mail' => $prof_record->mail), '*', MUST_EXIST);
             // if(!$prof){
             //     throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
             // } else {
@@ -157,10 +161,22 @@ function studentqcm_add_instance($data, $mform = null) {
     }
 
     //Data questions
-    $record->nb_qcm = $data->nb_qcm;
-    $record->nb_qcu = $data->nb_qcu;
-    $record->nb_tcs = $data->nb_tcs;
-    $record->nb_pop = $data->nb_pop;
+    $record->nbQcm = $data->choix_qcm;
+    $record->nbQcu = $data->choix_qcu;
+    $record->nbTcs = $data->choix_tcs;
+    $record->nbPop = $data->choix_pop;
+
+    $popsArray = json_decode($data->pops_data, true);
+    if (!empty($popsArray)) {
+        foreach ($popsArray as $pop) {
+            // Insérer un pop
+            $pop_record = new stdClass();
+            $pop_record->nbqcm = $pop['qcm'];
+            $pop_record->nbqcu = $pop['qcu'];
+            $pop_record->refId = $referentiel_id;
+            $pop_id = $DB->insert_record('question_pop', $pop_record);
+        }
+    }
 
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
@@ -172,19 +188,6 @@ function studentqcm_add_instance($data, $mform = null) {
     $id = $DB->insert_record('studentqcm', $record);
     if (!$id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
-    }
-
-    $nb_pops = $data->choix_pop;
-    if (!empty($nb_pops)) {
-    
-        for ($i=0; $i<$nb_pops; $i++) {
-            // Insérer un pop
-            $pop_record = new stdClass();
-            $pop_record->$nbqcm = $data->{"nb_qcm$i"};
-            $pop_record->$nbqcu = $data->{"nb_qcu$i"};
-            $pop_record->$refId = $id;
-            $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
-        }
     }
     
 

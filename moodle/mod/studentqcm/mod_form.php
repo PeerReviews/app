@@ -12,7 +12,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform = $this->_form;
 
         // Informations principales du référentiel.
-        $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4  bg-gray-200">');
+        $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4  bg-sky-200">');
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
 
@@ -286,6 +286,9 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('html', '<div class="m-8 rounded-2xl p-4  bg-gray-200">');
 
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
+
+        $mform->addElement('advcheckbox', 'enable_feature', get_string('enable_feature', 'mod_studentqcm'), get_string('enable_feature_label', 'mod_studentqcm'));
+        $mform->setDefault('enable_feature', 0); // Valeur par défaut : décochée
 
         $mform->addElement('date_selector', 'start_date_1', get_string('start_date_1', 'mod_studentqcm'));
         $mform->addRule('start_date_1', null, 'required', null, 'client');
