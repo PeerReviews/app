@@ -4,3 +4,7 @@ moodledata/
 
 # Fichiers confidentiels
 .env
+
+# PHPCodeSniffer
+phpcbf.phar
+phpcs.phar
