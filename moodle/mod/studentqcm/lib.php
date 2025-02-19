@@ -159,6 +159,28 @@ function studentqcm_get_callbacks() {
     ];
 }
 
+function mod_studentqcm_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+    global $CFG, $DB;
+
+    require_login();
+    if (!has_capability('mod/studentqcm:view', $context)) {
+        return false;
+    }
+
+    $fs = get_file_storage();
+    $filename = array_pop($args);
+    $filepath = '/' . implode('/', $args) . '/';
+    
+    $file = $fs->get_file($context->id, 'mod_studentqcm', $filearea, 0, $filepath, $filename);
+    if (!$file || $file->is_directory()) {
+        send_file_not_found();
+    }
+
+    send_stored_file($file, 0, 0, true, $options);
+}
+
+
+
 // function studentqcm_get_capabilities() {
 //     return array(
 //         'mod/studentqcm:addinstance' => array(

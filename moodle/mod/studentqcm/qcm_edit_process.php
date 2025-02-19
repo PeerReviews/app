@@ -114,9 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Redirection après enregistrement
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+    //redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
 }
 
 // Redirection si la requête n'est pas un POST
-redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+//redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
 ?>
