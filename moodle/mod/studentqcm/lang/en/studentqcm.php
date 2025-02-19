@@ -143,3 +143,29 @@ $string['add'] = 'Ajouter';
 $string['value_list'] = 'Je valorise mes QCMs';
 $string['student_evaluation'] = 'Évaluation';
 $string['no_evaluation_found'] = "Aucune évaluation trouvée";
+
+
+// INTERFACE PROF
+$string['student_dashboard'] = 'Suivi des étudiants';
+$string['teacher_dashboard'] = 'Suivi des enseignants';
+$string['production_evaluation'] = 'Évaluation des productions';
+$string[''] = '';
+
+
+$string['student_list'] = 'Liste de étudiants';
+$string['student_id'] = 'ID de l\'étudiant';
+$string['completed_question'] = 'Questions complétées';
+$string['actions'] = 'Actions';
+$string['connect'] = 'Se connecter';
+$string['correctors'] = 'ID des Relecteurs';
+$string['full_name'] = 'Nom complet';
+$string['last_connected'] = 'Dernière connexion';
+$string['never_connected'] = 'Aucune connexion';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
+
+
+$string['teacher_list'] = 'Liste des enseignants';
+$string['completed_evaluations'] = 'Évaluations complétées';
+$string[''] = '';
