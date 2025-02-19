@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->competency = isset($question['competency']) ? clean_param($question['competency'], PARAM_INT) : null;
             $question_record->subcompetency = isset($question['subcompetency']) ? clean_param($question['subcompetency'], PARAM_INT) : null;
             $question_record->type = $type;
+            $question_record->status = isset($_POST['submit']) ? 1 : 0;
+
 
             $question_record->id = $q_id;
             $DB->update_record('studentqcm_question', $question_record);

@@ -19,6 +19,17 @@ $PAGE->set_heading(format_string($course->fullname));
 
 $PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
 
+// Vérifie si le professeur a cliqué sur un bouton pour changer d'utilisateur
+if (isset($_GET['switch_to_user'])) {
+    $student_id = required_param('switch_to_user', PARAM_INT);
+    $student = $DB->get_record('user', array('id' => $student_id), '*', MUST_EXIST);
+    $USER->id = $student->id;
+
+    complete_user_login($student);
+
+    redirect(new moodle_url('/mod/studentqcm/view.php', array('id' => $id)));
+}
+
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";

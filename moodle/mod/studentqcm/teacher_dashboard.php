@@ -11,7 +11,7 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 
 require_login($course, true, $cm);
 
-$PAGE->set_url('/mod/studentqcm/student_dashboard.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/teacher_dashboard.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
