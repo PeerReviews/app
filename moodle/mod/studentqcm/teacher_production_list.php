@@ -16,7 +16,8 @@ require_login($course, true, $cm);
 $user_id = $USER->id;
 
 // Récupérer les productions assignées à l'étudiant
-$assigned_qcms = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $user_id));
+$assigned_students = $DB->get_record('pr_assigned_student_teacher', array('teacherid' => $user_id), 'userid');
+
 
 // Définir l'URL de la page et les informations de la page
 $PAGE->set_url('/mod/studentqcm/teacher_production_list.php', array('id' => $id));
@@ -41,26 +42,26 @@ echo "<div class='flex mt-8 text-lg justify-start'>";
     echo "</a>";
 echo "</div>";
 
-if ($assigned_qcms) {
+if ($assigned_students) {
     echo "<div class='space-y-4 mt-4'>";
     $nb = 1;
-    foreach (['prod1_id', 'prod2_id', 'prod3_id'] as $index => $qcm_field) {
-        if (!empty($assigned_qcms->$qcm_field)) {
-            $prod_id = $assigned_qcms->$qcm_field;
-            echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
-                echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2'>";
-                echo "<i class='fas fa-clipboard text-indigo-400 mr-2'></i>";
-                echo "Production " . ($nb++);
-                echo "</p>";
+    foreach ($assigned_students as $student) {
+        
+        $prod_id = $student;
+        echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
+            echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2'>";
+            echo "<i class='fas fa-clipboard text-indigo-400 mr-2'></i>";
+            echo "Production " . ($nb++);
+            echo "</p>";
 
-                // Bouton d'évaluation
-                echo "<div>";
-                echo "<a href='eval_qcm_list.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-indigo-400 text-white text-lg font-semibold rounded-2xl hover:bg-indigo-500'>";
-                echo "<i class='fas fa-pen-to-square mr-2'></i> " . get_string('evaluate', 'mod_studentqcm');
-                echo "</a>";
-                echo "</div>";
+            // Bouton d'évaluation
+            echo "<div>";
+            echo "<a href='teacher_production_eval.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-indigo-400 text-white text-lg font-semibold rounded-2xl hover:bg-indigo-500'>";
+            echo "<i class='fas fa-pen-to-square mr-2'></i> " . get_string('evaluate', 'mod_studentqcm');
+            echo "</a>";
             echo "</div>";
-        }
+        echo "</div>";
+        
     }
     
     echo "</div>";

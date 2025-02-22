@@ -168,4 +168,11 @@ $string[''] = '';
 
 $string['teacher_list'] = 'Liste des enseignants';
 $string['completed_evaluations'] = 'Évaluations complétées';
+
+$string['context'] = 'Contexte';
+$string['note_for_question'] = 'Attribuez une note pour cette question';
+$string['note_for_revision'] = 'Attribuez une note pour cette révision';
+$string['no_evaluation_for_this_question'] = 'Pas d\'évaluation pour cette question';
+$string['student_revision'] = 'Révision faite par l\'étudiant';
+$string[''] = '';
 $string[''] = '';

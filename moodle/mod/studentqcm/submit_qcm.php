@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($pop_type_id !== 0){
 
                 $pop_record = new stdClass();
-                $pop_record->userid = $USER->id;
-                $pop_record->popTypeID = $pop_type_id;
+                $pop_record->userId = $USER->id;
+                $pop_record->popTypeId = $pop_type_id;
 
  
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
@@ -67,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $question_record->popTypeId = $pop_type_id;
                 $question_record->isPop = ($pop_type_id !== 0) ? 1 : 0;
                 $question_record->popId = $pop_id;
-                echo "La valeur de poptypeid est : " . htmlspecialchars($question_record->popTypeId) . "<br>";
 
             }
 

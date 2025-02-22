@@ -6,7 +6,7 @@ $id = required_param('id', PARAM_INT);
 $prod_id = required_param('prod_id', PARAM_INT);
 
 // Debug : Vérifier l'URL (optionnel)
-echo $_SERVER['REQUEST_URI']; 
+// echo $_SERVER['REQUEST_URI']; 
 
 // Récupérer les informations du module et vérifier l'accès
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
