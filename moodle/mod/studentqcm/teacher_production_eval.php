@@ -79,6 +79,13 @@ echo "</div>";
 if ($qcms) {
     echo "<div class='mt-4 space-y-4'>";
 
+    // Trier les questions par popTypeId
+    usort($qcms, function($a, $b) {
+        return $a->poptypeid <=> $b->poptypeid;
+    });
+
+    $previousPopTypeId = null;
+
     foreach ($qcms as $qcm) {
         $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
         $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
@@ -86,40 +93,63 @@ if ($qcms) {
         $reponses = $DB->get_records('studentqcm_answer', array('question_id' => $qcm->id));
         $evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm->id));
 
+        // Vérifier si le popTypeId a changé pour insérer une séparation
+        if ($qcm->poptypeid !== $previousPopTypeId) {
+            $popInfo = $DB->get_record('question_pop', array('id' => $qcm->poptypeid));
+    
+            if ($popInfo) {
+                echo "<h2 class='text-xl font-semibold text-gray-700 text-center my-4 bg-gray-100 p-2 rounded-lg'>";
+                echo "POP - {$popInfo->nbqcm} QCM, {$popInfo->nbqcu} QCU";
+                echo "</h2>";
+            } else {
+                echo "<h2 class='text-xl font-semibold text-gray-700 text-center my-4 bg-gray-100 p-2 rounded-lg'>";
+                echo "POP - " . get_string(ucfirst(unavailable_information));
+                echo "</h2>";
+            }
+    
+            $previousPopTypeId = $qcm->poptypeid;
+        }
+
         echo "<div class='bg-white rounded-3xl shadow flex items-center justify-between'>";
 
             echo "<div class='flex items-stretch w-full'>";
 
                 // Définir les couleurs en fonction du type de question
-                switch ($qcm->type) {
-                    case 'QCM':
-                        $bgColor = 'bg-indigo-200';
-                        $textColor = 'text-indigo-400';
-                        break;
-                    case 'QCU':
-                        $bgColor = 'bg-lime-200';
-                        $textColor = 'text-lime-400';
-                        break;
-                    case 'TCS':
-                        $bgColor = 'bg-sky-200';
-                        $textColor = 'text-sky-400';
-                        break;
-                    case 'POP':
-                        $bgColor = 'bg-green-200';
-                        $textColor = 'text-green-700';
-                        break;
-                    default:
-                        $bgColor = 'bg-indigo-200';
-                        $textColor = 'text-indigo-400';
+                if ($qcm->ispop == 1) {
+                    $bgColor = 'bg-yellow-200';
+                    $textColor = 'text-yellow-400';
+                } else {
+                    switch ($qcm->type) {
+                        case 'QCM':
+                            $bgColor = 'bg-indigo-200';
+                            $textColor = 'text-indigo-400';
+                            break;
+                        case 'QCU':
+                            $bgColor = 'bg-lime-200';
+                            $textColor = 'text-lime-400';
+                            break;
+                        case 'TCS':
+                            $bgColor = 'bg-sky-200';
+                            $textColor = 'text-sky-400';
+                            break;
+                        case 'POP':
+                            $bgColor = 'bg-green-200';
+                            $textColor = 'text-green-700';
+                            break;
+                        default:
+                            $bgColor = 'bg-indigo-200';
+                            $textColor = 'text-indigo-400';
+                    }
                 }
+
+                $displayType = ($qcm->ispop == 1) ? "POP - " . ucfirst($qcm->type) : ucfirst($qcm->type);
 
                 // Type de question
                 echo "<div class='{$bgColor} rounded-l-3xl py-4 px-2 flex items-center w-16 justify-center'>"; 
-                echo "<p class='font-semibold text-2xl {$textColor} flex items-center gap-2 -rotate-90 text-center'>";
-                echo format_string(ucfirst($qcm->type));
+                echo "<p class='font-semibold text-2xl {$textColor} flex items-center gap-2 -rotate-90 whitespace-nowrap'>";
+                echo format_string($displayType);
                 echo "</p>";
                 echo "</div>";
-
 
                 // Div contenant la question et les infos
                 echo "<div class='flex flex-col justify-between p-4 w-full'>";
