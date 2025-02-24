@@ -178,5 +178,5 @@ $string['nb_evaluated_question'] = 'Questions évaluées';
 $string['nb_evaluated_revision'] = 'Révisions évaluées';
 $string['auto_save'] = 'Cette page utilise la sauvegarde automatique, la notation de chaque question / révision est donc automatiquement sauvegardée et peut être modifiée à tout moment';
 $string['unavailable_information'] = 'Informations indisponibles';
-$string[''] = '';
+$string['student'] = 'Étudiant';
 $string[''] = '';

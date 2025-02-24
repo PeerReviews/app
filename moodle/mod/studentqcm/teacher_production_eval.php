@@ -34,19 +34,26 @@ $nb_eval_questions = count(array_filter($qcms, function($q) {
     return $q->grade !== null;
 }));
 
-$nb_evaluated_revisions = 0;
-$nb_total_revisions = 0;
+$user_evaluations = [];
 
 foreach ($qcms as $qcm) {
     $evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm->id));
-    $nb_total_revisions += count($evaluations);
 
     foreach ($evaluations as $evaluation) {
-        if ($evaluation->grade != null ) {
-            $nb_evaluated_revisions++;
+        $userid_eval = $evaluation->userid;
+
+        if (!isset($user_evaluations[$userid_eval])) {
+            $user_evaluations[$userid_eval] = ['evaluated' => 0, 'total' => 0];
+        }
+
+        $user_evaluations[$userid_eval]['total']++;
+
+        if ($evaluation->grade !== null) {
+            $user_evaluations[$userid_eval]['evaluated']++;
         }
     }
 }
+
 
 require_login($course, true, $cm);
 
@@ -70,11 +77,26 @@ echo "<div class='flex mt-8 text-lg justify-between'>";
     echo "</a>";
 echo "</div>";
 
-echo "<div class='grid grid-cols-2 gap-4 mt-4 text-xl text-gray-700 font-semibold text-center'>";
-    echo "<p class='mr-8'>" . get_string('nb_evaluated_question', 'mod_studentqcm') . " : <span id='nb-eval-questions'>" . $nb_eval_questions . " / " . count($qcms) . "</span></p>";
-    echo "<p>" . get_string('nb_evaluated_revision', 'mod_studentqcm') . " : <span id='nb-eval-revisions'>" . $nb_evaluated_revisions . " / " . $nb_total_revisions . "</span></p>";
-echo "</div>";
 
+echo "<div class='flex justify-between items-center gap-4 mt-4 text-xl text-gray-700 font-semibold text-center'>";
+    echo "<div class='flex-1 text-center rounded-3xl shadow-md p-4 bg-gray-50'>";
+        echo "<p>" . get_string('student', 'mod_studentqcm') . " " . $prod_id . "</p>";
+        echo "<p class='text-gray-700'>" . get_string('nb_evaluated_question', 'mod_studentqcm') . " : 
+            <span id='nb-eval-questions'>" . $nb_eval_questions . " / " . count($qcms) . "</span>
+        </p>";
+    echo "</div>";
+
+    foreach ($user_evaluations as $userid_eval => $counts) {
+        $user_info = $DB->get_record('user', array('id' => $userid_eval));
+    
+        echo "<div class='flex-1 text-center rounded-3xl shadow-md p-4 bg-gray-50'>";
+            echo "<p>" . get_string('student', 'mod_studentqcm') . "</p>";
+            echo "<p class='text-gray-700'>" . get_string('nb_evaluated_revision', 'mod_studentqcm') . " " . $user_info->id . " : 
+                <span id='nb-eval-revisions-{$userid_eval}'>{$counts['evaluated']} / {$counts['total']}</span>
+            </p>";
+        echo "</div>";
+    }    
+echo "</div>";
 
 if ($qcms) {
     echo "<div class='mt-4 space-y-4'>";
@@ -277,17 +299,14 @@ echo $OUTPUT->footer();
 
 <script>
 function selectGrade(qcmId, grade, button) {
-    // Désélectionner tous les boutons liés à cette question
     document.querySelectorAll(`[data-qcm-id="${qcmId}"]`).forEach(btn => {
         btn.classList.remove("bg-lime-500", "text-white", "scale-105", "shadow-lg");
         btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     });
 
-    // Appliquer les styles au bouton cliqué
     button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     button.classList.add("bg-lime-500", "text-white", "scale-105", "shadow-lg");
 
-    // Animation de clic
     button.style.transform = "scale(1.1)";
     setTimeout(() => {
         button.style.transform = "scale(1)";
@@ -298,12 +317,8 @@ function selectGrade(qcmId, grade, button) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                console.log(`Note enregistrée pour la question ${qcmId}: ${grade}`);
-
-                // Mettre à jour le compteur affiché
                 document.getElementById('nb-eval-questions').textContent = data.nb_eval_questions;
             } else {
-                console.error("Erreur : " + data.message);
                 alert("Une erreur s'est produite lors de l'enregistrement.");
             }
         })
@@ -311,32 +326,42 @@ function selectGrade(qcmId, grade, button) {
 }
 
 
-
+// Cette fonction sera appelée lors de la sélection de la note
 function selectEvalGrade(evalId, grade, event) {
     let button = event.currentTarget;
 
-    // Désélectionner tous les boutons de la même évaluation
+    // Mettre à jour l'apparence des boutons de sélection de note
     document.querySelectorAll(`[onclick^="selectEvalGrade(${evalId},"]`).forEach(btn => {
         btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
         btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     });
 
-    // Ajouter la sélection au bouton cliqué
     button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     button.classList.add("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
 
-    // Effet de légère vibration au clic
+    // Animation de l'agrandissement du bouton
     button.style.transform = "scale(1.1)";
     setTimeout(() => {
         button.style.transform = "scale(1)";
     }, 100);
 
-    console.log(`Note pour l'évaluation ${evalId}: ${grade}`);
-
-    // Enregistrer la note d'évaluation dans la table studentqcm_evaluation
-    fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}`, { method: 'GET' })
+    // Envoi de la requête AJAX pour enregistrer la note
+    fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}&prod_id=${prod_id}`, { method: 'GET' })
         .then(response => response.json())
-        .then(data => console.log('Grade d\'évaluation enregistré: ', data));
+        .then(data => {
+            // Si l'enregistrement réussit, mettre à jour l'élément à l'écran
+            if (data.status === 'success') {
+                // Récupérer le nombre d'évaluations actualisé
+                const evaluatedSpan = document.getElementById(`nb-eval-revisions-${data.user_id}`);
+                if (evaluatedSpan) {
+                    evaluatedSpan.textContent = `${data.evaluated} / ${data.total}`;
+                }
+            } else {
+                alert("Une erreur s'est produite lors de l'enregistrement.");
+            }
+        })
+        .catch(error => console.error("Erreur lors de la requête :", error));
 }
+
 </script>
 
