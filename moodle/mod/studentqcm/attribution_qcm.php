@@ -1,55 +1,58 @@
 <?php
-try {
-    $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
+define('CLI_SCRIPT', true); // Indique à Moodle que ce script est exécuté en CLI
+require_once(__DIR__ . '/../../config.php');
 
-    $stmt = $pdo->query("SELECT id FROM mdl_user");
-    $students = $stmt->fetchAll(PDO::FETCH_COLUMN);
+global $DB;
 
-    if (count($students) < 2) {
-        die("Il faut au moins 2 étudiants pour faire l'attribution !");
-    }
+$students = $DB->get_records('user', null, '', 'id');
+$student_ids = array_keys($students);
 
-    $stmt = $pdo->query("SELECT id, userid FROM mdl_studentqcm_question");
-    $qcms = $stmt->fetchAll();
+if (count($student_ids) < 2) {
+    die("Il faut au moins 2 étudiants pour faire l'attribution !");
+}
 
-    // Préparer une liste de QCM à distribuer
-    $qcmDispo = [];
-    foreach ($qcms as $qcm) {
-        $qcmDispo[$qcm['userid']][] = $qcm['id'];
-    }
+shuffle($student_ids); // Mélanger la liste des étudiants
 
-    $qcmAttribues = array_fill_keys($students, []);
+// Dictionnaire pour compter les assignations
+$assignment_count = array_fill_keys($student_ids, 0);
 
-    foreach ($qcmDispo as $creatorId => $qcmList) {
-        shuffle($qcmList);
+// Liste des attributions
+$assignments = [];
 
-        foreach ($qcmList as $qcmId) {
-            // Trouver un étudiant qui n'est pas le créateur et qui a reçu le moins de QCM
-            $candidats = array_diff($students, [$creatorId]); 
-            usort($candidats, function($a, $b) use ($qcmAttribues) {
-                return count($qcmAttribues[$a]) - count($qcmAttribues[$b]);
-            });
+foreach ($student_ids as $student_id) {
+    $assignments[$student_id] = [];
 
-            $assignedStudent = array_shift($candidats); 
+    // Récupérer la liste des étudiants disponibles (pas soi-même et pas déjà 3 assignations)
+    $possible_assignees = array_values(array_filter($student_ids, function ($id) use ($student_id, $assignment_count) {
+        return $id !== $student_id && ($assignment_count[$id] ?? 0) < 3;
+    }));
 
-            // Assigner le QCM
-            $qcmAttribues[$assignedStudent][] = $qcmId;
+    shuffle($possible_assignees);
 
-            // Insérer dans la nouvelle table
-            $stmt = $pdo->prepare("INSERT INTO mdl_studentqcm_assignedqcm (userId, qcm_id) VALUES (:userId, :qcmId)");
-            $stmt->execute([
-            'userId' => $assignedStudent,
-            'qcmId' => $qcmId
-        ]);
+    // Déterminer combien on doit en assigner (2 ou 3)
+    $num_assignees = min(rand(2, 3), count($possible_assignees));
+    $assigned_students = array_slice($possible_assignees, 0, $num_assignees);
+
+    // Stocker les attributions
+    $record = new stdClass();
+    $record->user_id = $student_id;
+    $record->prod1_id = $assigned_students[0] ?? null;
+    $record->prod2_id = $assigned_students[1] ?? null;
+    $record->prod3_id = $assigned_students[2] ?? null;
+
+    $DB->insert_record('studentqcm_assignedqcm', $record);
+
+    // Mettre à jour le compteur d'assignations
+    foreach ($assigned_students as $assignee) {
+        $assignment_count[$assignee] = ($assignment_count[$assignee] ?? 0) + 1;
+        
+        // Si un étudiant atteint 3 assignations, on le retire des choix futurs
+        if ($assignment_count[$assignee] >= 3) {
+            unset($assignment_count[$assignee]);
         }
     }
-
-    echo "Tous les QCM ont été attribués équitablement !\n";
-
-} catch (PDOException $e) {
-    die("Erreur SQL : " . $e->getMessage());
 }
+
+echo "Les étudiants ont été assignés en respectant la limite de 3 assignations maximum !\n";
+
 ?>

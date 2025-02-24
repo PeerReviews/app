@@ -4,3 +4,6 @@ moodledata/
 
 # Fichiers confidentiels
 .env
+
+# Dossiers et fichiers générés par Composer
+moodle/vendor/
