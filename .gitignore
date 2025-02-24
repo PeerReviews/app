@@ -7,3 +7,4 @@ moodledata/
 
 # Dossiers et fichiers générés par Composer
 moodle/vendor/
+moodle/composer.phar
