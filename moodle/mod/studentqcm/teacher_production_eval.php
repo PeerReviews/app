@@ -312,12 +312,13 @@ function selectGrade(qcmId, grade, button) {
         button.style.transform = "scale(1)";
     }, 100);
 
-    // Envoyer la requête AJAX
     fetch(`save_grade.php?qcm_id=${qcmId}&grade=${grade}`)
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                document.getElementById('nb-eval-questions').textContent = data.nb_eval_questions;
+                let evalCounter = document.getElementById('nb-eval-questions');
+                let total = evalCounter.textContent.split('/')[1].trim();
+                evalCounter.textContent = `${data.nb_eval_questions} / ${total}`;
             } else {
                 alert("Une erreur s'est produite lors de l'enregistrement.");
             }
@@ -326,11 +327,9 @@ function selectGrade(qcmId, grade, button) {
 }
 
 
-// Cette fonction sera appelée lors de la sélection de la note
 function selectEvalGrade(evalId, grade, event) {
     let button = event.currentTarget;
 
-    // Mettre à jour l'apparence des boutons de sélection de note
     document.querySelectorAll(`[onclick^="selectEvalGrade(${evalId},"]`).forEach(btn => {
         btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
         btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
@@ -339,22 +338,20 @@ function selectEvalGrade(evalId, grade, event) {
     button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     button.classList.add("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
 
-    // Animation de l'agrandissement du bouton
     button.style.transform = "scale(1.1)";
     setTimeout(() => {
         button.style.transform = "scale(1)";
     }, 100);
 
     // Envoi de la requête AJAX pour enregistrer la note
-    fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}&prod_id=${prod_id}`, { method: 'GET' })
+    fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}&prod_id=<?php echo $prod_id; ?>`, { method: 'GET' })
         .then(response => response.json())
         .then(data => {
-            // Si l'enregistrement réussit, mettre à jour l'élément à l'écran
             if (data.status === 'success') {
-                // Récupérer le nombre d'évaluations actualisé
                 const evaluatedSpan = document.getElementById(`nb-eval-revisions-${data.user_id}`);
                 if (evaluatedSpan) {
-                    evaluatedSpan.textContent = `${data.evaluated} / ${data.total}`;
+                    let total = evaluatedSpan.textContent.split('/')[1].trim();
+                    evaluatedSpan.textContent = `${data.evaluated} / ${total}`;
                 }
             } else {
                 alert("Une erreur s'est produite lors de l'enregistrement.");
