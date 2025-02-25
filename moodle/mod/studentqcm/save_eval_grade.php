@@ -1,7 +1,7 @@
 <?php
 require_once(__DIR__.'/../../config.php');
 
-header('Content-Type: application/json'); // Forcer la réponse en JSON
+header('Content-Type: application/json');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -34,7 +34,7 @@ if ($evaluation) {
         return isset($e->grade) && $e->grade !== null;
     }));
 
-    $total = count($evaluations); // Correction ici
+    $total = count($evaluations);
 
     echo json_encode([
         'status' => 'success',

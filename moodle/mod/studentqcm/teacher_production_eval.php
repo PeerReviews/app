@@ -108,7 +108,7 @@ if ($qcms) {
 
     $previousPopTypeId = null;
 
-    foreach ($qcms as $qcm) {
+    foreach ($qcms as $index => $qcm) {
         $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
         $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
         $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
@@ -271,7 +271,7 @@ if ($qcms) {
                                         for ($i = 0; $i <= 5; $i++) {
                                             $selected = ($evaluation->grade == $i) ? 'bg-indigo-400 text-white scale-105 shadow-lg' : 'bg-gray-200 hover:bg-gray-300 hover:shadow-md';
                                             
-                                            echo "<button type='button' class='{$baseClasses} {$selected}' onclick='selectEvalGrade({$evaluation->id}, {$i}, event)'>";
+                                            echo "<button type='button' class='{$baseClasses} {$selected}' data-eval-qcm-id='{$qcm->id}' onclick='selectEvalGrade({$evaluation->id}, {$i}, event)'>";
                                             echo "<span class='text-md font-semibold'>" . ($i === 0 ? "Ø" : $i) . "</span>";
                                             echo "</button>";
                                         }
@@ -286,6 +286,23 @@ if ($qcms) {
                 echo "</div>";
             echo "</div>";
         echo "</div>";
+
+        if ($index === 0) {
+            echo "<div class='bg-gray-50 rounded-lg p-4 my-4 text-center'>";
+            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmGrades({$qcm->id})'>";
+            echo "Appliquer ces notes à toutes les questions suivantes";
+            echo "</button>";
+            echo "</div>";            
+        }
+
+        if ($index === 0) {
+            echo "<div class='bg-gray-50 rounded-lg p-4 my-4 text-center'>";
+            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmEvaluations({$qcm->id})'>";
+            echo "Appliquer ces évaluations à toutes les révisions suivantes";
+            echo "</button>";
+            echo "</div>";
+        }
+        
     }
     echo "</div>";
     
@@ -330,7 +347,7 @@ function selectGrade(qcmId, grade, button) {
 function selectEvalGrade(evalId, grade, event) {
     let button = event.currentTarget;
 
-    document.querySelectorAll(`[onclick^="selectEvalGrade(${evalId},"]`).forEach(btn => {
+    document.querySelectorAll(`[onclick^="selectEvalGrade(${evalId}"]`).forEach(btn => {
         btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
         btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
     });
@@ -342,6 +359,7 @@ function selectEvalGrade(evalId, grade, event) {
     setTimeout(() => {
         button.style.transform = "scale(1)";
     }, 100);
+
 
     // Envoi de la requête AJAX pour enregistrer la note
     fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}&prod_id=<?php echo $prod_id; ?>`, { method: 'GET' })
@@ -359,6 +377,69 @@ function selectEvalGrade(evalId, grade, event) {
         })
         .catch(error => console.error("Erreur lors de la requête :", error));
 }
+
+
+
+function applyFirstQcmGrades(firstQcmId) {
+    let firstQcmButtons = document.querySelectorAll(`[data-qcm-id="${firstQcmId}"]`);
+    let selectedGrade = null;
+
+    // Récupérer la note sélectionnée dans le premier QCM
+    firstQcmButtons.forEach(btn => {
+        if (btn.classList.contains("bg-lime-500")) {
+            selectedGrade = parseInt(btn.textContent.trim());
+        }
+    });
+
+    if (selectedGrade === null) {
+        alert("Veuillez noter la première question avant d'appliquer aux autres !");
+        return;
+    }
+
+    // Appliquer la note récupérée aux autres QCM (questions)
+    document.querySelectorAll("[data-qcm-id]").forEach(btn => {
+        let qcmId = btn.getAttribute("data-qcm-id");
+        if (qcmId != firstQcmId && parseInt(btn.textContent.trim()) === selectedGrade) {
+            selectGrade(qcmId, selectedGrade, btn);
+        }
+    });
+}
+
+
+function applyFirstQcmEvaluations(firstQcmId) {
+    let firstQcmRevisions = document.querySelectorAll(`[data-eval-qcm-id="${firstQcmId}"]`);
+    let selectedGrades = [];
+
+    // Récupérer les évaluations sélectionnées dans les révisions
+    firstQcmRevisions.forEach(btn => {
+        if (btn.classList.contains("bg-indigo-400")) {
+            selectedGrades.push(parseInt(btn.textContent.trim()));
+        }
+    });
+
+    console.log("selectedGrades", selectedGrades); // Vérification
+
+    // Vérifier que deux révisions sont sélectionnées
+    if (selectedGrades.length !== 2) {
+        alert("Veuillez noter les deux premières révisions avant d'appliquer aux autres !");
+        return;
+    }
+
+    // Appliquer les notes récupérées aux révisions des autres questions
+    document.querySelectorAll("[data-eval-qcm-id]").forEach(btn => {
+        let evalQcmId = btn.getAttribute("data-eval-qcm-id");  // Correction de l'attribut ici
+        let evalId = btn.dataset.evalQcmId; // Récupérer l'ID d'évaluation spécifique
+        if (evalQcmId !== firstQcmId) {
+            console.log('btn:', btn); // Inspecte l'élément
+            selectedGrades.forEach(grade => {
+                console.log('evalId:', evalId, 'grade:', grade, 'button:', btn);
+                selectEvalGrade(evalId, grade, btn);  // Passer l'ID d'évaluation correct
+            });
+        }
+    });
+}
+
+
 
 </script>
 
