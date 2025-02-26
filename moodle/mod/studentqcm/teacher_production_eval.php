@@ -115,6 +115,8 @@ if ($qcms) {
         $reponses = $DB->get_records('studentqcm_answer', array('question_id' => $qcm->id));
         $evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm->id));
 
+        $firstEvaluationId = array();
+
         // Vérifier si le popTypeId a changé pour insérer une séparation
         if ($qcm->poptypeid !== $previousPopTypeId) {
             $popInfo = $DB->get_record('question_pop', array('id' => $qcm->poptypeid));
@@ -271,13 +273,17 @@ if ($qcms) {
                                         for ($i = 0; $i <= 5; $i++) {
                                             $selected = ($evaluation->grade == $i) ? 'bg-indigo-400 text-white scale-105 shadow-lg' : 'bg-gray-200 hover:bg-gray-300 hover:shadow-md';
                                             
-                                            echo "<button type='button' class='{$baseClasses} {$selected}' data-eval-qcm-id='{$qcm->id}' onclick='selectEvalGrade({$evaluation->id}, {$i}, event)'>";
+                                            echo "<button type='button' class='{$baseClasses} {$selected}' data-eval-id='{$evaluation->id}' data-user-id='{$evaluation->userid}' onclick='selectEvalGrade({$evaluation->id}, {$i}, event)'>";
                                             echo "<span class='text-md font-semibold'>" . ($i === 0 ? "Ø" : $i) . "</span>";
                                             echo "</button>";
                                         }
                                     echo "</div>";
                                 echo "</div>";
                             echo "</div>";
+
+                            if ($index === 0) {
+                                array_push($firstEvaluationId, $evaluation->id);
+                            }
                         }
                     } else {
                         echo "<p class='text-gray-500'>" . get_string('no_evaluation_for_this_question', 'mod_studentqcm') . "</p>";
@@ -292,17 +298,16 @@ if ($qcms) {
             echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmGrades({$qcm->id})'>";
             echo "Appliquer ces notes à toutes les questions suivantes";
             echo "</button>";
-            echo "</div>";            
-        }
+            echo "</div>";  
 
-        if ($index === 0) {
             echo "<div class='bg-gray-50 rounded-lg p-4 my-4 text-center'>";
-            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmEvaluations({$qcm->id})'>";
-            echo "Appliquer ces évaluations à toutes les révisions suivantes";
+            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmEvalGrades(" . json_encode($firstEvaluationId) . ")'>";
+            echo "Appliquer ces notes à toutes les révisions suivantes";
             echo "</button>";
             echo "</div>";
-        }
-        
+
+        } 
+               
     }
     echo "</div>";
     
@@ -379,6 +384,53 @@ function selectEvalGrade(evalId, grade, event) {
 }
 
 
+function selectEvalGradeByButton(evalId, grade, button) {
+    // Désélectionner tous les boutons de la même évaluation
+    // document.querySelectorAll(`[data-eval-id="${evalId}"]`).forEach(btn => {
+    //     btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
+    //     btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
+    // });
+
+    document.querySelectorAll(`[data-eval-id="${evalId}"]`).forEach(btn => {
+        if (parseInt(btn.textContent.trim()) !== grade) { // Vérifie si c'est déjà la bonne note
+            btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
+            btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
+        }
+        else {
+
+    // Appliquer le style sélectionné au bouton cliqué
+    button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
+    button.classList.add("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
+        }
+    });
+
+
+
+    // Animation
+    button.style.transform = "scale(1.1)";
+    setTimeout(() => {
+        button.style.transform = "scale(1)";
+    }, 100);
+
+    // Envoi de la requête AJAX pour enregistrer la note
+    fetch(`save_eval_grade.php?eval_id=${evalId}&grade=${grade}&prod_id=<?php echo $prod_id; ?>`, { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const evaluatedSpan = document.getElementById(`nb-eval-revisions-${data.user_id}`);
+                if (evaluatedSpan) {
+                    let total = evaluatedSpan.textContent.split('/')[1].trim();
+                    evaluatedSpan.textContent = `${data.evaluated} / ${total}`;
+                }
+            } else {
+                alert("Une erreur s'est produite lors de l'enregistrement.");
+            }
+        })
+        .catch(error => console.error("Erreur lors de la requête :", error));
+}
+
+
+
 
 function applyFirstQcmGrades(firstQcmId) {
     let firstQcmButtons = document.querySelectorAll(`[data-qcm-id="${firstQcmId}"]`);
@@ -406,38 +458,79 @@ function applyFirstQcmGrades(firstQcmId) {
 }
 
 
-function applyFirstQcmEvaluations(firstQcmId) {
-    let firstQcmRevisions = document.querySelectorAll(`[data-eval-qcm-id="${firstQcmId}"]`);
+function getUserIdByEvalId(evalId) {
+    return fetch(`fetch_userId_eval.php?evalId=${evalId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.userid) {
+                return data.userid;
+            } else {
+                throw new Error('User ID not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user ID:', error);
+            return null;
+        });
+}
+
+function applyFirstQcmEvalGrades(firstQcmIds) {
+    console.log("firstQcmIds", firstQcmIds);
+
     let selectedGrades = [];
 
-    // Récupérer les évaluations sélectionnées dans les révisions
-    firstQcmRevisions.forEach(btn => {
-        if (btn.classList.contains("bg-indigo-400")) {
-            selectedGrades.push(parseInt(btn.textContent.trim()));
-        }
+    // Utiliser Promise.all pour attendre que toutes les promesses soient résolues
+    let fetchPromises = firstQcmIds.map(qcmId => {
+        let qcmButtons = document.querySelectorAll(`[data-eval-id="${qcmId}"]`);
+        let evalId = qcmId;
+
+        return getUserIdByEvalId(evalId).then(userId => {
+            if (userId) {
+                let selectedGrade = null;
+
+                qcmButtons.forEach(btn => {
+                    if (btn.classList.contains("bg-indigo-400")) {
+                        selectedGrade = parseInt(btn.textContent.trim());
+                    }
+                });
+
+                if (selectedGrade !== null) {
+                    selectedGrades.push({ userId: userId, qcmId: qcmId, grade: selectedGrade });
+                } else {
+                    alert(`Veuillez noter les révisions avant d'appliquer la même note aux révisions suivantes !`);
+                }
+            }
+        });
     });
 
-    console.log("selectedGrades", selectedGrades); // Vérification
-
-    // Vérifier que deux révisions sont sélectionnées
-    if (selectedGrades.length !== 2) {
-        alert("Veuillez noter les deux premières révisions avant d'appliquer aux autres !");
-        return;
-    }
-
-    // Appliquer les notes récupérées aux révisions des autres questions
-    document.querySelectorAll("[data-eval-qcm-id]").forEach(btn => {
-        let evalQcmId = btn.getAttribute("data-eval-qcm-id");  // Correction de l'attribut ici
-        let evalId = btn.dataset.evalQcmId; // Récupérer l'ID d'évaluation spécifique
-        if (evalQcmId !== firstQcmId) {
-            console.log('btn:', btn); // Inspecte l'élément
-            selectedGrades.forEach(grade => {
-                console.log('evalId:', evalId, 'grade:', grade, 'button:', btn);
-                selectEvalGrade(evalId, grade, btn);  // Passer l'ID d'évaluation correct
-            });
-        }
+    // Attendre que toutes les promesses de récupération des userIds soient résolues
+    Promise.all(fetchPromises).then(() => {
+        applyGradesToUsers(selectedGrades);
+        // setTimeout(() => location.reload(), 500); // Recharge la page après 500ms
     });
 }
+
+
+function applyGradesToUsers(selectedGrades) {
+    selectedGrades.forEach(gradeEntry => {
+        let { userId, grade } = gradeEntry;
+        console.log("gradeEntry", gradeEntry);
+
+        // Sélectionner les éléments correspondant à userId
+        let userElements = document.querySelectorAll(`[data-user-id="${userId}"]`);
+
+        userElements.forEach(el => {
+            
+                let evalId = el.getAttribute('data-eval-id');
+                
+                selectEvalGradeByButton(evalId, grade, el);
+                
+                console.log(`Applied grade ${grade} for userId ${userId} for evalID ${evalId}`);
+            
+        });
+    });
+}
+
 
 
 
