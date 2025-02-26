@@ -226,7 +226,6 @@ if ($qcms) {
                             echo "<label class='flex flex-col w-full $bgColor p-3 rounded-lg'>";
                             echo "<span class='$answerColor font-medium text-lg'>{$reponse->answer}</span>";
 
-                            // Affichage de l'explication avec une icône de flèche
                             if (!empty($reponse->explanation)) {
                                 echo "<div class='flex mt-1 text-gray-700 text-md'>";
                                 echo "<span class='mr-2 $answerColor'>&#10148;</span>";
@@ -385,28 +384,19 @@ function selectEvalGrade(evalId, grade, event) {
 
 
 function selectEvalGradeByButton(evalId, grade, button) {
-    // Désélectionner tous les boutons de la même évaluation
-    // document.querySelectorAll(`[data-eval-id="${evalId}"]`).forEach(btn => {
-    //     btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
-    //     btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
-    // });
 
     document.querySelectorAll(`[data-eval-id="${evalId}"]`).forEach(btn => {
-        if (parseInt(btn.textContent.trim()) !== grade) { // Vérifie si c'est déjà la bonne note
+        if (parseInt(btn.textContent.trim()) !== grade) {
             btn.classList.remove("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
             btn.classList.add("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
         }
         else {
-
-    // Appliquer le style sélectionné au bouton cliqué
-    button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
-    button.classList.add("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
+            // Appliquer le style sélectionné au bouton cliqué
+            button.classList.remove("bg-gray-200", "hover:bg-gray-300", "hover:shadow-md", "text-gray-700");
+            button.classList.add("bg-indigo-400", "text-white", "scale-105", "shadow-lg");
         }
     });
 
-
-
-    // Animation
     button.style.transform = "scale(1.1)";
     setTimeout(() => {
         button.style.transform = "scale(1)";
@@ -475,11 +465,9 @@ function getUserIdByEvalId(evalId) {
 }
 
 function applyFirstQcmEvalGrades(firstQcmIds) {
-    console.log("firstQcmIds", firstQcmIds);
 
     let selectedGrades = [];
 
-    // Utiliser Promise.all pour attendre que toutes les promesses soient résolues
     let fetchPromises = firstQcmIds.map(qcmId => {
         let qcmButtons = document.querySelectorAll(`[data-eval-id="${qcmId}"]`);
         let evalId = qcmId;
@@ -503,10 +491,8 @@ function applyFirstQcmEvalGrades(firstQcmIds) {
         });
     });
 
-    // Attendre que toutes les promesses de récupération des userIds soient résolues
     Promise.all(fetchPromises).then(() => {
         applyGradesToUsers(selectedGrades);
-        // setTimeout(() => location.reload(), 500); // Recharge la page après 500ms
     });
 }
 
@@ -514,19 +500,12 @@ function applyFirstQcmEvalGrades(firstQcmIds) {
 function applyGradesToUsers(selectedGrades) {
     selectedGrades.forEach(gradeEntry => {
         let { userId, grade } = gradeEntry;
-        console.log("gradeEntry", gradeEntry);
 
-        // Sélectionner les éléments correspondant à userId
         let userElements = document.querySelectorAll(`[data-user-id="${userId}"]`);
 
         userElements.forEach(el => {
-            
-                let evalId = el.getAttribute('data-eval-id');
-                
-                selectEvalGradeByButton(evalId, grade, el);
-                
-                console.log(`Applied grade ${grade} for userId ${userId} for evalID ${evalId}`);
-            
+            let evalId = el.getAttribute('data-eval-id');
+            selectEvalGradeByButton(evalId, grade, el);
         });
     });
 }
