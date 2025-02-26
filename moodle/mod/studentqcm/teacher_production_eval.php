@@ -293,19 +293,19 @@ if ($qcms) {
         echo "</div>";
 
         if ($index === 0) {
-            echo "<div class='bg-gray-50 rounded-lg p-4 my-4 text-center'>";
-            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmGrades({$qcm->id})'>";
-            echo "Appliquer ces notes à toutes les questions suivantes";
-            echo "</button>";
+            echo "<div class='my-6 mx-4 text-center flex flex-col md:flex-row gap-4 justify-between items-center'>";
+                
+                echo "<button class='w-full md:w-1/2 p-4 bg-yellow-400 text-white font-semibold rounded-2xl hover:bg-yellow-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmGrades({$qcm->id})'>";
+                echo "<span class='text-white font-bold'>" . get_string('autocomplete_question', 'mod_studentqcm') . "</span>";
+                echo "</button>";
+        
+                echo "<button class='w-full md:w-1/2 p-4 bg-yellow-400 text-white font-semibold rounded-2xl hover:bg-yellow-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmEvalGrades(" . json_encode($firstEvaluationId) . ")'>";
+                echo "<span class='text-white font-bold'>" . get_string('autocomplete_review', 'mod_studentqcm') . "</span>";
+                echo "</button>";
+        
             echo "</div>";  
-
-            echo "<div class='bg-gray-50 rounded-lg p-4 my-4 text-center'>";
-            echo "<button class='px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition' onclick='applyFirstQcmEvalGrades(" . json_encode($firstEvaluationId) . ")'>";
-            echo "Appliquer ces notes à toutes les révisions suivantes";
-            echo "</button>";
-            echo "</div>";
-
-        } 
+        }
+         
                
     }
     echo "</div>";
@@ -318,7 +318,73 @@ echo $OUTPUT->footer();
 
 ?>
 
+<!-- Modal de confirmation auto-complete question-->
+<div id="auto-complete-question-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+    <div class="bg-white rounded-3xl py-8 px-12 max-w-lg w-full shadow-xl transform transition-all scale-95 hover:scale-100 relative flex flex-col items-center justify-center">
+        <h3 class="text-2xl font-semibold text-lime-500 my-4 text-center">
+            <?php echo get_string('autocomplete_question_success', 'mod_studentqcm'); ?>
+        </h3>
+        <button id="close-auto-complete-question-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl transition-all duration-300 ease-in-out transform hover:scale-110">
+            &times;
+        </button>
+    </div>
+</div>
+
+<!-- Modal de confirmation auto-complete révisions-->
+<div id="auto-complete-review-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+    <div class="bg-white rounded-3xl py-8 px-12 max-w-lg w-full shadow-xl transform transition-all scale-95 hover:scale-100 relative flex flex-col items-center justify-center">
+        <h3 class="text-2xl font-semibold text-lime-500 my-4 text-center">
+            <?php echo get_string('autocomplete_review_success', 'mod_studentqcm'); ?>
+        </h3>
+        <button id="close-auto-complete-review-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-2xl transition-all duration-300 ease-in-out transform hover:scale-110">
+            &times;
+        </button>
+    </div>
+</div>
+
+
 <script>
+
+function showQuestionModal() {
+    document.getElementById("auto-complete-question-modal").classList.remove("hidden");
+}
+
+// Fonction pour fermer le modal
+function closeQuestionModal() {
+    document.getElementById("auto-complete-question-modal").classList.add("hidden");
+}
+
+document.getElementById("close-auto-complete-question-modal").addEventListener("click", function() {
+    closeQuestionModal();
+});
+
+document.getElementById("auto-complete-question-modal").addEventListener("click", function(event) {
+    if (event.target === this) {
+        closeQuestionModal();
+    }
+});
+
+function showReviewModal() {
+    document.getElementById("auto-complete-review-modal").classList.remove("hidden");
+}
+
+// Fonction pour fermer le modal
+function closeReviewModal() {
+    document.getElementById("auto-complete-review-modal").classList.add("hidden");
+}
+
+document.getElementById("close-auto-complete-review-modal").addEventListener("click", function() {
+    closeReviewModal();
+});
+
+document.getElementById("auto-complete-review-modal").addEventListener("click", function(event) {
+    if (event.target === this) {
+        closeReviewModal();
+    }
+});
+
+
+    
 function selectGrade(qcmId, grade, button) {
     document.querySelectorAll(`[data-qcm-id="${qcmId}"]`).forEach(btn => {
         btn.classList.remove("bg-lime-500", "text-white", "scale-105", "shadow-lg");
@@ -420,8 +486,6 @@ function selectEvalGradeByButton(evalId, grade, button) {
 }
 
 
-
-
 function applyFirstQcmGrades(firstQcmId) {
     let firstQcmButtons = document.querySelectorAll(`[data-qcm-id="${firstQcmId}"]`);
     let selectedGrade = null;
@@ -445,6 +509,9 @@ function applyFirstQcmGrades(firstQcmId) {
             selectGrade(qcmId, selectedGrade, btn);
         }
     });
+
+    showQuestionModal();
+
 }
 
 
@@ -494,6 +561,8 @@ function applyFirstQcmEvalGrades(firstQcmIds) {
     Promise.all(fetchPromises).then(() => {
         applyGradesToUsers(selectedGrades);
     });
+
+    showReviewModal();
 }
 
 
