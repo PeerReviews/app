@@ -9,7 +9,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="text" LENGTH="255" NOTNULL="true"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="true"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
@@ -89,9 +89,11 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="word" TYPE="varchar" LENGTH="255" NOTNULL="true" COMMENT="Mot-clé"/>
+        <FIELD NAME="subcompetency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Sous-compétence"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency" REFTABLE="subcompetency" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
 

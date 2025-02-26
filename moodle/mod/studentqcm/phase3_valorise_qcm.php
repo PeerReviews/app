@@ -5,8 +5,7 @@ require_once(__DIR__ . '/../../config.php');
 
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
-$type = required_param('qcm_type', PARAM_TEXT);
-$popTypeId = optional_param('pop_type_id', null, PARAM_INT);
+$qcm_id = required_param('qcm_id', PARAM_INT);
 
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -16,8 +15,14 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 // Vérifier que l'utilisateur est connecté et qu'il a les droits nécessaires
 require_login($course, true, $cm);
 
+$question = $DB->get_record('studentqcm_question', array('id' => $qcm_id), '*', MUST_EXIST);
+$type = $question->type;
+$answers = $DB->get_records('studentqcm_answer', array('question_id' => $qcm_id));
+
+$evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm_id));
+
 // Définir l'URL de la page et les informations de la page
-$PAGE->set_url('/mod/studentqcm/qcm_list.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/phase3_valorise_qcm.php', array('id' => $id, 'qcm_id' => $qcm_id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
@@ -28,49 +33,61 @@ $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => ti
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
-echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('create_question', 'mod_studentqcm') . " " . $type . "</p>";
+echo "<p class='font-bold text-center text-3xl text-gray-600'>" . get_string('edit_question', 'mod_studentqcm') . " " . $type . "</p>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between'>";
-echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
+echo "<a href='phase3_qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-500 no-underline'>";
 echo "<i class='fas fa-arrow-left mr-2'></i>";
 echo get_string('back', 'mod_studentqcm');
 echo "</a>";
 echo "</div>";
 
 // Formulaire
-echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}&pop_type_id={$popTypeId}'>";
+echo "<div class='grid grid-cols-2 gap-4'>";
+echo "<form method='post' action='qcm_edit_process.php?id={$id}&qcm_id={$qcm_id}&type={$type}'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence
     echo "<div class='grid grid-cols-1 lg:grid-cols-3 gap-4'>";
 
         // Sélection du référentiel
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
         echo "<option value=''>" . get_string('select_referentiel', 'mod_studentqcm') . "</option>";
         $referentiels = $DB->get_records('referentiel');
         foreach ($referentiels as $referentiel) {
-            echo "<option value='{$referentiel->id}'>{$referentiel->name}</option>";
+            $selected = ($question->referentiel == $referentiel->id) ? 'selected' : '';
+            echo "<option value='{$referentiel->id}' {$selected}>{$referentiel->name}</option>";
         }
         echo "</select>";
         echo "</div>";
 
         // Sélection de la compétence
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='competency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('competency', 'mod_studentqcm') . " :</label>";
         echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
         echo "<option value=''>" . get_string('select_competency', 'mod_studentqcm') . "</option>";
+        $competencies = $DB->get_records('competency');
+        foreach ($competencies as $competency) {
+            $selected = ($question->competency == $competency->id) ? 'selected' : '';
+            echo "<option value='{$competency->id}' {$selected}>{$competency->name}</option>";
+        }
         echo "</select>";
         echo "</div>";
 
         // Sélection de la sous-compétence avec bouton + pour ajouter une nouvelle sous-compétence
-        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4'>";
+        echo "<div class='rounded-3xl bg-lime-200 mb-2 p-4 shadow-md'>";
         echo "<label for='subcompetency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('subcompetency', 'mod_studentqcm') . " :</label>";
         echo "<div class='flex items-center space-x-2'>";
         echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
         echo "<option value=''>" . get_string('select_subcompetency', 'mod_studentqcm') . "</option>";
+        $subcompetencies = $DB->get_records('subcompetency');
+        foreach ($subcompetencies as $subcompetency) {
+            $selected = ($question->subcompetency == $subcompetency->id) ? 'selected' : '';
+            echo "<option value='{$subcompetency->id}' {$selected}>{$subcompetency->name}</option>";
+        }
         echo "</select>";
         echo "<button type='button' id='show_new_subcompetency' class='flex items-center justify-center w-9 h-9 mt-2 bg-lime-400 text-white rounded-lg hover:bg-lime-500'>";
         echo "<i class='fas fa-plus'></i>";
@@ -88,26 +105,10 @@ echo "<div class='mt-8'>";
 
         echo "</div>";
 
-        echo "</div>";
-
-        // Ajouter un script JavaScript pour afficher le champ de texte lorsque l'option "Ajouter une nouvelle sous-compétence" est sélectionnée
-        echo "<script>
-        document.getElementById('subcompetency_1').addEventListener('change', function() {
-            var value = this.value;
-            var newSubcompetencyInput = document.getElementById('new_subcompetency_input');
-            if (value === 'new') {
-                newSubcompetencyInput.style.display = 'block';
-            } else {
-                newSubcompetencyInput.style.display = 'none';
-            }
-        });
-        </script>";
-
-
     echo "</div>";
 
     // Sélection des mots clés
-    echo "<div class='rounded-3xl bg-lime-200 my-2 p-4'>";
+    echo "<div class='rounded-3xl bg-lime-200 my-2 p-4 shadow-md'>";
     echo "<label class='block font-semibold text-gray-700 text-lg'>" . get_string('keywords', 'mod_studentqcm') . " :</label>";
     echo "<div id='keywords_list_1' class='flex flex-wrap gap-4 items-center'>";
     echo "<p class='text-gray-500 col-span-6'>Sélectionnez une sous-compétence pour voir les mots-clés.</p>";
@@ -125,82 +126,119 @@ echo "<div class='mt-8'>";
 
 
     // Context
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
-    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'></textarea>";
+    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
     echo "</div>";
+
 
     // Question
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
-    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " <span class='text-red-500'>*</span> :</label>";
-    echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
+    echo "<label for='question_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('question', 'mod_studentqcm') . " :</label>";
+    echo "<input type='text' id='question_1' name='questions[1][question]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required value='{$question->question}'>";
     echo "</div>";
 
+
     // Réponses
-    for ($i = 1; $i <= 5; $i++) {
-        echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
-
+    $counter = 1;
+    foreach ($answers as $index => $answer) {
+        echo "<div class='rounded-3xl bg-sky-100 my-4 p-4 shadow-md'>";
+    
         // Réponse
-        if ($type != "TCS") {
+        if ($type !== "TCS") {
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
-            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
             echo "</div>";
             echo "</div>";
         }
-        else {
+        if ($type == "TCS") {
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
-            echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
+            echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $counter :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<input type='text' id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></input>";
+            echo "<input type='text' id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required value='{$answer->answer}'</input>";
             echo "</div>";
             echo "</div>";
         }
-
-        // Explication
+        
         if($type != "TCS") {
+            // Explication
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
-            echo "<label for='explanation_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $i :</label>";
+            echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $counter :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='explanation_1_{$i}' name='questions[1][answers][{$i}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
             echo "</div>";
             echo "</div>";
         }
-
+    
+        // Ajouter un champ hidden pour la valeur par défaut de `correct` (0)
+        echo "<input type='hidden' name='questions[1][answers][{$index}][correct]' value='0'>";
+    
         // Champ checkbox pour marquer la réponse correcte
         echo "<div class='py-2 grid grid-cols-12 w-full'>";
-        echo "<label for='correct_answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
+        echo "<label for='correct_answer_1_{$counter}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('correct_answer', 'mod_studentqcm') . " ?</label>";
         echo "<div class='col-span-10 w-full flex items-center'>";
         echo "<label class='relative inline-flex items-center cursor-pointer'>";
-        echo "<input type='checkbox' id='correct_answer_1_{$i}' name='questions[1][answers][{$i}][correct]' value='1' class='sr-only peer'>";
+    
+        // On vérifie si la réponse est correcte et on coche la case si c'est le cas
+        $checked = ((int)$answer->istrue === 1) ? "checked" : "";
+        echo "<input type='checkbox' id='correct_answer_1_{$counter}' name='questions[1][answers][{$index}][correct]' value='1' class='sr-only peer' $checked>";
+    
         echo "<span class='w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-lime-400 peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-\"\" after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all'></span>";
         echo "</label>";
         echo "</div>";
         echo "</div>";
-
+    
         echo "</div>";
+    
+        $counter++;
     }
+    
 
     // Commentaire / explication globale
-    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4 shadow-md'>";
     echo "<label for='global_comment' class='block font-semibold text-gray-700 text-lg'>" . get_string('global_comment', 'mod_studentqcm') . " :</label>";
-    echo "<input type='text' id='global_comment' name='questions[1][global_comment]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
+    echo "<input type='text' id='global_comment' name='questions[1][global_comment]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required value='{$question->global_comment}'>";
     echo "</div>";
 
 
 echo "</div>";
 
+echo "<div id='hidden_inputs'></div>";
+
 echo "<div class='mb-4 mt-4 flex justify-end space-x-2'>";
     echo "<button type='submit' name='save' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" .
         get_string('save', 'mod_studentqcm') . "</button>";
-    echo "<button type='submit' name='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
+    echo "<button type='submit' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg'>" . 
         get_string('submit', 'mod_studentqcm') . "</button>";
-echo "</div>";
-
-
+echo "</div>";  
 
 echo "</form>";
+
+// Affichage des évaluations 
+echo "<div class='sticky top-4 h-fit mt-8'>";
+
+if (empty($evaluations)) {
+    echo "<div class='rounded-3xl shadow-md p-4 mb-4 bg-gray-100 text-gray-600 text-center'>";
+    echo "<p class='font-semibold text-xl'>" . get_string('no_evaluation_found', 'mod_studentqcm') . "</p>";
+    echo "</div>";
+} else {
+    $index = 1;
+    foreach ($evaluations as $evaluation) {
+        echo "<div class='rounded-3xl shadow-md p-4 mb-4 bg-indigo-50'>";
+        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>" .
+            get_string('student_evaluation', 'mod_studentqcm') . " " . $index . "</p>";
+        echo "<p>{$evaluation->explanation}</p>";
+        echo "</div>";  
+        $index++;
+    }
+}
+
+echo "</div>";
+ 
+
+echo "</div>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
@@ -253,6 +291,7 @@ tinymce.init({
 });
 </script>";
 
+
 ?>
 
 <!-- Modal for error messages -->
@@ -271,7 +310,6 @@ tinymce.init({
 
 <?php
 echo $OUTPUT->footer();
-
 ?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -287,14 +325,64 @@ document.getElementById('show_new_subcompetency').addEventListener('click', func
     }
 });
 
+$(document).ready(function() {
+    // Activer les champs competency et subcompetency avant la soumission du formulaire
+    $('form').on('submit', function() {
+        $('#competency_1').prop('disabled', false);
+        $('#subcompetency_1').prop('disabled', false);
+    });
+});
+
+
+
+$(document).ready(function() {
+    var preselectedSubcompetency = <?= json_encode($question->subcompetency) ?>;
+    var questionId = <?= json_encode($question->id) ?>;
+
+    if (preselectedSubcompetency) {
+        $.getJSON('fetch_keywords.php', { subcompetency_id: preselectedSubcompetency }, function(allKeywords) {
+            $.getJSON('fetch_selected_keywords.php', { question_id: questionId }, function(selectedKeywords) {
+
+                const selectedKeywordIds = Object.values(selectedKeywords);
+
+                var buttons = '';
+
+                // Ajouter les mots-clés sélectionnés dans les inputs cachés
+                $('#hidden_inputs').empty();
+                $.each(selectedKeywordIds, function(index, keywordId) {
+                    $('#hidden_inputs').append(`<input type="hidden" name="questions[1][keywords][]" value="${keywordId}">`);
+                });
+
+                $.each(allKeywords, function(index, keyword) {
+                    var customIcon = keyword.isCustom ? '<i class="fas fa-pen ml-2"></i>' : '';
+                    var isSelected = selectedKeywordIds.includes(keyword.id.toString());
+                    var selectedClass = isSelected ? 'bg-indigo-400 text-white' : 'bg-lime-100 text-indigo-400';
+
+                    buttons += `<button type="button" class="keyword-btn px-4 py-2 border border-lime-400 rounded-2xl hover:bg-indigo-400 hover:text-white ${selectedClass}" data-id="${keyword.id}">${keyword.word} ${customIcon}</button>`;
+                });
+
+                buttons += `
+                    <div class="flex justify-center items-center col-span-1">
+                        <button type="button" id="show_new_keyword" class="flex items-center justify-center w-full bg-lime-400 text-white rounded-2xl hover:bg-lime-500 px-4 py-2">
+                            <i class="fas fa-plus mr-2"></i>
+                            Ajouter un mot clé
+                        </button>
+                    </div>
+                `;
+
+                $('#keywords_list_1').html(buttons);
+            });
+        });
+    }
+});
+
 
 $(document).ready(function() {
     // Filtrer les compétences en fonction du référentiel sélectionné
     $('#referentiel_1').change(function() {
-    var referentielId = $(this).val();
-    // Désactiver la compétence jusqu'à ce qu'un référentiel soit sélectionné
-    $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', !referentielId);
-    $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
+        var referentielId = $(this).val();
+        $('#competency_1').html('<option value="">Chargement...</option>').prop('disabled', true);
+        $('#subcompetency_1').html('<option value="" disabled selected>Sélectionnez une sous-compétence</option>').prop('disabled', true);
 
         if (referentielId) {
             $.get('fetch_competencies.php', { referentiel_id: referentielId }, function(data) {
@@ -365,7 +453,6 @@ $(document).ready(function() {
     });
 
 
-
     // Mise à jour de la liste des mots-clés pour la sous-compétence sélectionnée
     $('#subcompetency_1').change(function() {
         var subcompetencyId = $(this).val();
@@ -388,6 +475,7 @@ $(document).ready(function() {
                                 </button>
                             </div>
                         `;
+                        
                     });
                 } else {
                     buttons = '<p class="text-gray-500">Aucun mot-clé disponible</p>';
@@ -408,8 +496,6 @@ $(document).ready(function() {
             });
         }
     });
-
-    
 
     // Gestion du clic sur les boutons pour sélectionner/désélectionner un mot-clé
     $(document).on('click', '.keyword-btn', function() {
@@ -529,7 +615,6 @@ $(document).ready(function() {
             $('#error-messages').append('<li>La sous-compétence est requise.</li>');
         }
 
-        // Vérification des mots-clés (au moins un mot-clé doit être sélectionné)
         if ($('#hidden_inputs input').length === 0) {
             isValid = false;
             $('#error-messages').append('<li>Au moins un mot-clé doit être sélectionné.</li>');

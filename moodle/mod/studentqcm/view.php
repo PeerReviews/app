@@ -10,6 +10,7 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 
 require_login($course, true, $cm);
 
+
 $PAGE->set_url('/mod/studentqcm/view.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -84,7 +85,7 @@ if ($is_teacher) {
         echo "<p class='text-center pt-4 italic text-sky-600'>" . get_string('phase_start', 'mod_studentqcm') . " : " . date('d M Y', $start_date_2) . "</p>";
         echo "<div class='flex justify-center mt-2'>";
         if($is_available) {
-            echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 cursor-pointer text-sky-700 no-underline'>";
+            echo "<a href='eval_prod_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 cursor-pointer text-sky-700 no-underline'>";
             echo get_string('phase_available', 'mod_studentqcm');
             echo "<i class='fas fa-arrow-right ml-4'></i>";
             echo "</a>";
@@ -108,7 +109,7 @@ if ($is_teacher) {
         echo "<p class='text-center pt-4 text-indigo-600 italic'>" . get_string('phase_start', 'mod_studentqcm') . " : " . date('d M Y', $start_date_3) . "</p>";
         echo "<div class='flex justify-center mt-2'>";
         if($is_available) {
-            echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-indigo-300 hover:bg-indigo-400 cursor-pointer text-indigo-700 no-underline'>";
+            echo "<a href='phase3_qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-indigo-300 hover:bg-indigo-400 cursor-pointer text-indigo-700 no-underline'>";
             echo get_string('phase_available', 'mod_studentqcm');
             echo "<i class='fas fa-arrow-right ml-4'></i>";
             echo "</a>";

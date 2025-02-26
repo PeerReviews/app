@@ -1,0 +1,10 @@
+{
+    "baseUrl": "mod/studentqcm/amd/src",
+    "dir": "mod/studentqcm/amd/build",
+    "modules": [
+        {
+            "name": "main"
+        }
+    ],
+    "optimize": "none"
+}

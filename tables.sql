@@ -388,7 +388,7 @@ DROP TABLE IF EXISTS `mdl_question_pop`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `mdl_question_pop` (
-  `id` int(10) NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `nbqcm` int(10),
   `nbqcu` int(10),
   `refId` int(100) NOT NULL,
@@ -406,6 +406,120 @@ LOCK TABLES `mdl_question_pop` WRITE;
 /*!40000 ALTER TABLE `mdl_question_pop` DISABLE KEYS */;
 /*!40000 ALTER TABLE `mdl_question_pop` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `mdl_question_grille_qcu`
+--
+
+DROP TABLE IF EXISTS `mdl_question_grille_qcu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mdl_question_grille_qcu` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `bonus` TEXT NOT NULL,  
+  `malus` TEXT NOT NULL,
+  `refId` int(100) NOT NULL,
+
+  PRIMARY KEY (`id`),
+  CONSTRAINT `mdl_question_grille_qcu_refId_fk_1` FOREIGN KEY (`refId`) REFERENCES `mdl_referentiel` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mdl_question_grille_qcu`
+--
+
+LOCK TABLES `mdl_question_grille_qcu` WRITE;
+/*!40000 ALTER TABLE `mdl_question_grille_qcu` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mdl_question_grille_qcu` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mdl_question_grille_qcm`
+--
+
+DROP TABLE IF EXISTS `mdl_question_grille_qcm`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mdl_question_grille_qcm` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `bonus` TEXT NOT NULL,  
+  `malus` TEXT NOT NULL,
+  `refId` int(100) NOT NULL,
+
+  PRIMARY KEY (`id`),
+  CONSTRAINT `mdl_question_grille_qcm_refId_fk_1` FOREIGN KEY (`refId`) REFERENCES `mdl_referentiel` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mdl_question_grille_qcm`
+--
+
+LOCK TABLES `mdl_question_grille_qcm` WRITE;
+/*!40000 ALTER TABLE `mdl_question_grille_qcm` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mdl_question_grille_qcm` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mdl_question_grille_tcs`
+--
+
+DROP TABLE IF EXISTS `mdl_question_grille_tcs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mdl_question_grille_tcs` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `bonus` TEXT NOT NULL,  
+  `malus` TEXT NOT NULL,
+  `refId` int(100) NOT NULL,
+
+  PRIMARY KEY (`id`),
+  CONSTRAINT `mdl_question_grille_tcs_refId_fk_1` FOREIGN KEY (`refId`) REFERENCES `mdl_referentiel` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mdl_question_grille_tcs`
+--
+
+LOCK TABLES `mdl_question_grille_tcs` WRITE;
+/*!40000 ALTER TABLE `mdl_question_grille_tcs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mdl_question_grille_tcs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `mdl_studentqcm_cours`
+--
+
+DROP TABLE IF EXISTS `mdl_studentqcm_cours`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `mdl_studentqcm_cours` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `refId` int(100) NOT NULL,
+  --- `comptId` int(10) NOT NULL,
+  `filename` VARCHAR(255) NOT NULL, -- Nom du fichier
+  `filetype` VARCHAR(100) NOT NULL, -- Type MIME du fichier
+  `filesize` INT NOT NULL,           -- Taille du fichier en octets
+  `filecontent` LONGBLOB NOT NULL,    -- Contenu du fichier en binaire
+
+  PRIMARY KEY (`id`),
+  --- CONSTRAINT `mdl_studentqcm_cours_comptId_fk_1` FOREIGN KEY (`comptId`) REFERENCES `mdl_competency` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `mdl_studentqcm_cours_refId_fk_1` FOREIGN KEY (`refId`) REFERENCES `mdl_referentiel` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mdl_studentqcm_cours`
+--
+
+LOCK TABLES `mdl_studentqcm_cours` WRITE;
+/*!40000 ALTER TABLE `mdl_studentqcm_cours` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mdl_studentqcm_cours` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
