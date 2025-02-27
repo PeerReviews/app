@@ -42,9 +42,9 @@ echo "<div class='mx-auto grid grid-cols-3 gap-4'>";
 if ($is_teacher) {
     // Affichage pour les professeurs
     echo "<div class='p-4 bg-sky-200 rounded-3xl shadow-md'>";
-        echo "<p class='font-semibold text-center text-xl text-sky-700 pb-2'>" . mb_strtoupper(get_string('student_dashboard', 'mod_studentqcm'), 'UTF-8') . "</p>";
+        echo "<p class='font-semibold text-center text-xl text-sky-700 pb-2'>" . mb_strtoupper(get_string('student_dashboard_phase1', 'mod_studentqcm'), 'UTF-8') . "</p>";
         echo "<div class='flex justify-center mt-2'>";
-            echo "<a href='student_dashboard.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 cursor-pointer text-sky-700 no-underline'>";
+            echo "<a href='student_dashboard_phase1.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 cursor-pointer text-sky-700 no-underline'>";
             echo get_string('phase_available', 'mod_studentqcm');
             echo "<i class='fas fa-arrow-right ml-4'></i>";
             echo "</a>";
@@ -52,14 +52,24 @@ if ($is_teacher) {
     echo "</div>";
 
     echo "<div class='p-4 bg-lime-200 rounded-3xl shadow-md'>";
-        echo "<p class='font-semibold text-center text-xl text-lime-700 pb-2'>" . mb_strtoupper(get_string('teacher_dashboard', 'mod_studentqcm'), 'UTF-8') . "</p>";
+        echo "<p class='font-semibold text-center text-xl text-lime-700 pb-2'>" . mb_strtoupper(get_string('student_dashboard_phase2', 'mod_studentqcm'), 'UTF-8') . "</p>";
         echo "<div class='flex justify-center mt-2'>";
-            echo "<a href='teacher_dashboard.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline'>";
+            echo "<a href='student_dashboard_phase2.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline'>";
             echo get_string('phase_available', 'mod_studentqcm');
             echo "<i class='fas fa-arrow-right ml-4'></i>";
             echo "</a>";
         echo "</div>";
     echo "</div>";
+
+    // echo "<div class='p-4 bg-lime-200 rounded-3xl shadow-md'>";
+    //     echo "<p class='font-semibold text-center text-xl text-lime-700 pb-2'>" . mb_strtoupper(get_string('teacher_dashboard', 'mod_studentqcm'), 'UTF-8') . "</p>";
+    //     echo "<div class='flex justify-center mt-2'>";
+    //         echo "<a href='teacher_dashboard.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline'>";
+    //         echo get_string('phase_available', 'mod_studentqcm');
+    //         echo "<i class='fas fa-arrow-right ml-4'></i>";
+    //         echo "</a>";
+    //     echo "</div>";
+    // echo "</div>";
 
     echo "<div class='p-4 bg-indigo-200 rounded-3xl shadow-md'>";
         echo "<p class='font-semibold text-center text-xl text-indigo-700 pb-2'>" . mb_strtoupper(get_string('production_evaluation', 'mod_studentqcm'), 'UTF-8') . "</p>";

@@ -88,13 +88,21 @@ if ($assigned_students) {
             echo "Production " . ($nb++);
             echo "</p>";
 
-            // Bouton d'évaluation
+            // Déterminer si toutes les évaluations sont terminées
+            $all_evaluated = ($nb_eval_questions == count($qcms)) && ($nb_evaluated_revisions == $nb_total_revisions);
+
+            // Définition des classes CSS et de l'icône
+            $button_class = $all_evaluated ? "bg-lime-400 hover:bg-lime-500" : "bg-indigo-400 hover:bg-indigo-500";
+            $icon_class = $all_evaluated ? "fas fa-check-circle" : "fas fa-pen-to-square";
+            $button_text = $all_evaluated ? get_string('evaluated', 'mod_studentqcm') : get_string('evaluate', 'mod_studentqcm');
+
+            // Affichage du bouton
             echo "<div class='flex items-center text-xl text-gray-700'>";
                 echo "<p class='mr-8 font-medium text-lg'>" . get_string('nb_evaluated_question', 'mod_studentqcm') . " : <span id='nb-eval-questions'>" . $nb_eval_questions . " / " . count($qcms) . "</span></p>";
                 echo "<p class='mr-8 font-medium text-lg'>" . get_string('nb_evaluated_revision', 'mod_studentqcm') . " : <span id='nb-eval-revisions'>" . $nb_evaluated_revisions . " / " . $nb_total_revisions . "</span></p>";
 
-                echo "<a href='teacher_production_eval.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 bg-indigo-400 text-white text-lg font-semibold rounded-2xl hover:bg-indigo-500'>";
-                echo "<i class='fas fa-pen-to-square mr-2'></i> " . get_string('evaluate', 'mod_studentqcm');
+                echo "<a href='teacher_production_eval.php?id={$id}&prod_id={$prod_id}' class='px-4 py-2 text-white text-lg font-semibold rounded-2xl $button_class'>";
+                echo "<i class='$icon_class mr-2'></i> $button_text";
                 echo "</a>";
             echo "</div>";
 

@@ -67,7 +67,7 @@ if ($qcms) {
         if ($evaluation && $evaluation->status == 1) {
             // Si le QCM a été évalué
             $buttonText = get_string('evaluated', 'mod_studentqcm');
-            $buttonIcon = 'fa-regular fa-square-check';
+            $buttonIcon = 'fas fa-check-circle';
             $buttonColor = 'bg-lime-400 hover:bg-lime-500';
             $buttonTextColor = 'text-white';
         } else {

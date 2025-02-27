@@ -9,11 +9,18 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
-$nbTotal_question = $studentqcm->nbqcm + $studentqcm->nbqcu + $studentqcm->nbtcs + $studentqcm->nbpop;
+
+$nbTotalQuestionPop = 0;
+$popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
+foreach($popTypes as $popType){
+    $nbTotalQuestionPop += $popType->nbqcm + $popType->nbqcu;
+}
+
+$nbTotal_question = $studentqcm->nbqcm + $studentqcm->nbqcu + $studentqcm->nbtcs + $nbTotalQuestionPop;
 
 require_login($course, true, $cm);
 
-$PAGE->set_url('/mod/studentqcm/student_dashboard.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/student_dashboard_phase2.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
@@ -56,7 +63,7 @@ echo '<tr class="bg-gray-100 text-left">';
 $columns = [
     'student_id' => get_string('student_id', 'mod_studentqcm'),
     'full_name' => get_string('full_name', 'mod_studentqcm'),
-    'completed_question' => get_string('completed_question', 'mod_studentqcm'),
+    'completed_reviews' => get_string('completed_reviews', 'mod_studentqcm'),
     'last_connected' => get_string('last_connected', 'mod_studentqcm'),
     'correctors' => get_string('correctors', 'mod_studentqcm'),
     'actions' => get_string('actions', 'mod_studentqcm')
@@ -66,20 +73,24 @@ $columnIndex = 0;
 foreach ($columns as $key => $label) {
     $roundedClass = ($columnIndex == 0) ? 'rounded-tl-3xl' : (($columnIndex == count($columns) - 1) ? 'rounded-tr-3xl' : '');
 
-    echo '<th class="px-3 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer ' . $roundedClass . '"
-              onclick="sortTable(' . $columnIndex . ')">
-              ' . mb_strtoupper($label, 'UTF-8');
+    echo '<th class="px-3 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer ' . $roundedClass . '">
+            <div class="flex items-center justify-center space-x-2">';
+
+    echo '<p class="w-36 break-words text-center">' . mb_strtoupper($label, 'UTF-8') . '</p>';
 
     // Ajout du bouton "œil" pour la colonne "Nom complet"
     if ($key === 'full_name') {
-        echo ' <button onclick="toggleAllNames()" class="ml-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full">';
+        echo '<button onclick="toggleAllNames()" class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full">';
         echo '<i class="fas fa-eye" id="eye-icon-all"></i></button>';
     }
 
-    echo ' <i class="fas fa-sort ml-2"></i>';
-    echo '</th>';
+    echo '<i class="fas fa-sort"></i>';
+
+    echo '</div></th>';
     $columnIndex++;
 }
+
+
 
 echo '</tr>';
 echo '</thead>';
@@ -87,19 +98,25 @@ echo '<tbody>';
 
 // Affichage des étudiants
 foreach ($students as $student) {
-    $completed_questions_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
+    $completed_reviews_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
+    // $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('prod1_id' => $student->userid))
 
-    $correctors = [];
-    $correctors[] = $DB->get_records('studentqcm_assignedqcm', array('prod1_id' => $student->userid), 'user_id');
-    $correctors[] = $DB->get_records('studentqcm_assignedqcm', array('prod2_id' => $student->userid), 'user_id');
-    $correctors[] = $DB->get_records('studentqcm_assignedqcm', array('prod3_id' => $student->userid), 'user_id');
-    $correctors = array_merge(...$correctors);
+    $sql = "SELECT * FROM {studentqcm_assignedqcm} WHERE prod1_id = :userid1 OR prod2_id = :userid2 OR prod3_id = :userid3";
 
+    $params = [
+    'userid1' => $student->userid,
+    'userid2' => $student->userid,
+    'userid3' => $student->userid
+    ];
+
+    $students_to_review = $DB->get_records_sql($sql, $params);
+    
     $correctors_list = [];
-    foreach ($correctors as $corrector) {
-        $corrector_user = $DB->get_record('user', array('id' => $corrector->user_id));
-        $correctors_list[] = $corrector_user->id;
+    foreach($students_to_review as $student_reviewed){
+        $correctors_list[] = $student_reviewed->id;
     }
+
+
 
     $student_name = $DB->get_record('user', array('id' => $student->userid));
     $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
@@ -112,10 +129,11 @@ foreach ($students as $student) {
     echo '<div id="name-' . $student->userid . '" class="text-gray-600 hidden">' . $student_fullname . '</div>';
     echo '</td>';
 
-    $colorClass = ($completed_questions_count == 0) ? 'text-red-400' : 
-                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-400' : 'text-gray-600');
+    $colorClass = ($completed_reviews_count == 0) ? 'text-red-400' :
+                  (($completed_reviews_count == $nbTotal_question) ? 'text-green-400' : 'text-gray-600');
+                  
 
-    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question . '</td>';
+    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_reviews_count . " / " . $nbTotal_question . '</td>';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . 
          ($student_name->lastaccess > 0 
@@ -123,7 +141,7 @@ foreach ($students as $student) {
             : mb_strtoupper(get_string('never_connected', 'mod_studentqcm'), 'UTF-8')) . 
          '</td>';
 
-    echo '<td class="px-3 py-4 text-md text-gray-600">' . implode(', ', $correctors_list) . '</td>';
+    echo '<td class="px-3 py-4 text-md text-gray-600">' .  implode(', ', $correctors_list)  . '</td>';
 
     echo '<td class="px-2 py-4 text-md text-gray-600">';
     echo '<a href="' . new moodle_url($PAGE->url, array('switch_to_user' => $student->userid)) . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl">';
