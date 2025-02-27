@@ -7,7 +7,7 @@ header('Content-Type: application/json'); // Assurer un retour en JSON
 
 try {
     $cmid = required_param('cmid', PARAM_INT); // Récupération de l'ID du module
-    $context = context_module::instance($cmid);
+    $context = context_system::instance();
     $fs = get_file_storage();
 
     // Vérifier la présence d'un fichier
@@ -19,6 +19,7 @@ try {
 
     $file = $_FILES['file'];
     $filename = time() . "_" . clean_param($file['name'], PARAM_FILE);
+
     $file_record = [
         'contextid' => $context->id,
         'component' => 'mod_studentqcm',
