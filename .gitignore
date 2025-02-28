@@ -5,10 +5,10 @@ moodledata/
 # Fichiers confidentiels
 .env
 
-# PHPCodeSniffer
-phpcbf.phar
-phpcs.phar
-
 # Dossiers et fichiers générés par Composer
 moodle/vendor/
 moodle/composer.phar
+
+# PHPCodeSniffer
+phpcbf.phar
+phpcs.phar
