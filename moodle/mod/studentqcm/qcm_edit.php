@@ -127,7 +127,21 @@ echo "<div class='mt-8'>";
     // Context
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
-    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
+    
+    $context = context_system::instance(); // Contexte de Moodle
+    $context_text = file_rewrite_pluginfile_urls(
+        $question->context,      // Le texte contenant la balise <img>
+        'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
+        $context->id,            // ID du contexte
+        'mod_studentqcm',        // Nom du module
+        'questionfiles',         // Zone des fichiers
+        0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
+    );
+
+    // Afficher l'éditeur avec le contenu préchargé
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$context_text}</textarea>";
+    echo "</div>";
     echo "</div>";
 
 
@@ -144,21 +158,41 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         if($answer = current($answers)){
+
+            $context = context_system::instance(); // Contexte de Moodle
+            $img_text = file_rewrite_pluginfile_urls(
+                $answer->answer,      // Le texte contenant la balise <img>
+                'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
+                $context->id,            // ID du contexte
+                'mod_studentqcm',        // Nom du module
+                'questionfiles',         // Zone des fichiers
+                0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
+            );
         
             // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $index :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$img_text}</textarea>";
             echo "</div>";
             echo "</div>";
         
             if($type != "TCS") {
+
+                $context = context_system::instance(); // Contexte de Moodle
+                $img_text = file_rewrite_pluginfile_urls(
+                    $answer->explanation,      // Le texte contenant la balise <img>
+                    'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
+                    $context->id,            // ID du contexte
+                    'mod_studentqcm',        // Nom du module
+                    'questionfiles',         // Zone des fichiers
+                    0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
+                );
                 // Explication
                 echo "<div class='py-2 grid grid-cols-12 w-full'>";
                 echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $index :</label>";
                 echo "<div class='col-span-10 w-full'>";
-                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
+                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$img_text}</textarea>";
                 echo "</div>";
                 echo "</div>";
             }
@@ -242,6 +276,8 @@ echo "</form>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
+var cmid = " . json_encode($_GET['qcm_id'] ?? '') . ";
+
 tinymce.init({
     selector: 'textarea',
     plugins: ['image', 'media', 'link', 'table'],
@@ -249,13 +285,21 @@ tinymce.init({
     image_advtab: true,
     media_dimensions: true,
     height: 180,
-    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
+    images_upload_url: 'upload.php',
     automatic_uploads: true,
+    setup: function (editor) {
+        editor.on('init', function () {
+            console.log('TinyMCE chargé !');
+        });
+
+        editor.on('change', function () {
+            console.log('Contenu TinyMCE :', editor.getContent());
+        });
+    },
     file_picker_callback: function(callback, value, meta) {
         var input = document.createElement('input');
         input.setAttribute('type', 'file');
         
-        // Gère l’upload des images, vidéos et sons
         if (meta.filetype === 'image') {
             input.setAttribute('accept', 'image/*');
         } else if (meta.filetype === 'media') {
@@ -267,11 +311,17 @@ tinymce.init({
             var formData = new FormData();
             formData.append('file', file);
 
-            fetch('upload.php', {
+            fetch('upload.php?cmid=${id}' , {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    console.log('Contenu de la réponse en erreur:', response.text());
+                    throw new Error('Erreur HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.location) {
                     callback(data.location, {alt: file.name});
@@ -282,14 +332,10 @@ tinymce.init({
             .catch(error => console.error('Erreur:', error));
         };
         input.click();
-    },
-    setup: function (editor) {
-        editor.on('init', function () {
-            editor.getContainer().closest('form').setAttribute('novalidate', true);
-        });
     }
 });
 </script>";
+
 
 ?>
 
