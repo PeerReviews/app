@@ -176,6 +176,8 @@ $CFG->dataroot  = '/var/moodledata';
 // NOTE: the prefixed 0 is important, and don't use quotes.
 
 $CFG->directorypermissions = 02777;
+$CFG->disablecookievalidation = true;
+
 
 
 //=========================================================================
@@ -866,8 +868,8 @@ $CFG->admin = 'admin';
 //=========================================================================
 // 9. PHPUNIT SUPPORT
 //=========================================================================
-// $CFG->phpunit_prefix = 'phpu_';
-// $CFG->phpunit_dataroot = '/home/example/phpu_moodledata';
+$CFG->phpunit_prefix = 'test_';
+$CFG->phpunit_dataroot = '/var/phpu_moodledata';
 // $CFG->phpunit_directorypermissions = 02777; // optional
 // $CFG->phpunit_profilingenabled = true; // optional to profile PHPUnit runs.
 //

@@ -41,7 +41,7 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
-    // 1. Ajouter un référentiel si nécessaire
+    // // 1. Ajouter un référentiel si nécessaire
     // if (isset($data->referentiel_name) && !record_exists('mdl_referentiel', 'name', $data->referentiel_name)) {
     //     $referentiel = new stdClass();
     //     $referentiel->name = $data->referentiel_name;  // Assurez-vous que $data->referentiel_name existe
@@ -49,6 +49,8 @@ function studentqcm_add_instance($data, $mform = null) {
     // } else {
     //     $referentiel_id = $data->referentiel_id;  // Utilisation d'un ID de référentiel existant
     // }
+
+    $record->referentiel = 1;
 
     // 2. Ajouter une compétence si elle n'existe pas
     // if (isset($data->competency_name) && !record_exists('mdl_competency', 'name', $data->competency_name)) {

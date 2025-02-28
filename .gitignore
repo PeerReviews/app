@@ -8,3 +8,7 @@ moodledata/
 # PHPCodeSniffer
 phpcbf.phar
 phpcs.phar
+
+# Dossiers et fichiers générés par Composer
+moodle/vendor/
+moodle/composer.phar

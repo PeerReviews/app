@@ -24,30 +24,13 @@ class mod_studentqcm_mod_form extends moodleform_mod {
         $mform->addElement('text', 'new_referentiel', get_string('newreferentiel', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('new_referentiel', PARAM_TEXT);
 
-        // Compétence : Liste des compétences selon le référentiel sélectionné
-        $referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
-        $mform->addElement('select', 'referentiel_id', get_string('referentiel', 'mod_studentqcm'), $referentiels);
-        $mform->addRule('referentiel_id', null, 'required', null, 'client');
-
         // Option pour ajouter plusieurs compétences en cascade selon le référentiel
         $mform->addElement('text', 'new_competency', get_string('newcompetency', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('new_competency', PARAM_TEXT);
 
-        // Sous-compétence : Liste des sous-compétences selon la compétence sélectionnée
-        $competency_id = $data ? $data->competency : 0; 
-        $subcompetencies = $DB->get_records_menu('subcompetency', array('competency' => $competency_id), '', 'id, name');
-        $mform->addElement('select', 'competency_id', get_string('competency', 'mod_studentqcm'), $subcompetencies);
-        $mform->addRule('competency_id', null, 'required', null, 'client');
-
         // Option pour ajouter plusieurs sous-compétences selon la compétence
         $mform->addElement('text', 'new_subcompetency', get_string('newsubcompetency', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('new_subcompetency', PARAM_TEXT);
-
-        // Mot-clé : Liste des mots-clés selon la sous-compétence
-        $subcompetency_id = $data ? $data->subcompetency : 0;
-        $keywords = $DB->get_records_menu('keyword', array('subcompetency' => $subcompetency_id), '', 'id, word');
-        $mform->addElement('select', 'keyword_id', get_string('keywords', 'mod_studentqcm'), $keywords);
-        $mform->addRule('keyword_id', null, 'required', null, 'client');
 
         // Option pour ajouter plusieurs mots-clés selon la sous-compétence
         $mform->addElement('text', 'new_keyword', get_string('newkeyword', 'mod_studentqcm'), array('size' => '64'));
@@ -55,8 +38,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
         // Ajout des champs de date
         for ($i = 1; $i <= 3; $i++) {
-            $mform->addElement('date_selector', "start_$i", get_string("start_date_$i", 'mod_studentqcm'));
-            $mform->addRule("start_$i", null, 'required', null, 'client');
+            $mform->addElement('date_selector', "start_date_$i", get_string("start_date_$i", 'mod_studentqcm'));
+            $mform->addRule("start_date_$i", null, 'required', null, 'client');
             
             $mform->addElement('date_selector', "end_date_$i", get_string("end_date_$i", 'mod_studentqcm'));
             $mform->addRule("end_date_$i", null, 'required', null, 'client');
@@ -74,15 +57,15 @@ class mod_studentqcm_mod_form extends moodleform_mod {
 
     // Fonction pour gérer la création d'un nouveau référentiel, compétence, sous-compétence et mot-clé
     public function validation($data, $files) {
+
+        global $DB;
         $errors = parent::validation($data, $files);
 
         // Création d'un référentiel si nécessaire
         if (!empty($data['new_referentiel'])) {
             $referentiel = new stdClass();
-            $referentiel->name = $data['new_referentiel'];
-            $DB->insert_record('referentiel', $referentiel);
-            // On met à jour la sélection du référentiel avec l'ID du nouvel élément créé
-            $data['referentiel_id'] = $DB->get_insertid();
+            $referentiel->name = 'Cardiaque';
+            $data['referentiel_id'] =$DB->insert_record('referentiel', $referentiel);
         }
 
         // Création de compétences si nécessaire
@@ -90,9 +73,8 @@ class mod_studentqcm_mod_form extends moodleform_mod {
             $competency = new stdClass();
             $competency->name = $data['new_competency'];
             $competency->referentiel = $data['referentiel_id'];
-            $DB->insert_record('competency', $competency);
-            // On met à jour la sélection de la compétence avec l'ID du nouvel élément créé
-            $data['competency_id'] = $DB->get_insertid();
+            $data['competency_id'] = $DB->insert_record('competency', $competency);
+            
         }
 
         // Création de sous-compétences si nécessaire
@@ -100,9 +82,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
             $subcompetency = new stdClass();
             $subcompetency->name = $data['new_subcompetency'];
             $subcompetency->competency = $data['competency_id'];
-            $DB->insert_record('subcompetency', $subcompetency);
-            // On met à jour la sélection de la sous-compétence avec l'ID du nouvel élément créé
-            $data['subcompetency_id'] = $DB->get_insertid();
+            $data['subcompetency_id'] = $DB->insert_record('subcompetency', $subcompetency);
         }
 
         // Création de mots-clés si nécessaire
@@ -110,9 +90,7 @@ class mod_studentqcm_mod_form extends moodleform_mod {
             $keyword = new stdClass();
             $keyword->word = $data['new_keyword'];
             $keyword->subcompetency = $data['subcompetency_id'];
-            $DB->insert_record('keyword', $keyword);
-            // On met à jour la sélection du mot-clé avec l'ID du nouvel élément créé
-            $data['keyword_id'] = $DB->get_insertid();
+            $data['keyword_id'] = $DB->insert_record('keyword', $keyword);
         }
 
         return $errors;
