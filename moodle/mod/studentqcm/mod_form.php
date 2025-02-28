@@ -38,12 +38,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
         // Ajout compétences
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('competences_title', 'mod_studentqcm') . '</h2>');
 
-        $mform->addElement('hidden', 'filesCompetences_data');
-        $mform->setType('filesCompetences_data', PARAM_RAW);
-
         $mform->addElement(
-            'html',
-            '
+            'html', '
+            <div id="error_competence"></div>
             <div class="mt-4">
                 <p>' . get_string('upload_compentence', 'mod_studentqcm') . '</p>
             </div>
@@ -89,7 +86,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     document.querySelectorAll(`[id^="competencesContainer"]`).forEach(div => div.remove());
                     competencesData = [];
 
-                    document.querySelector(`input[name="competences_data"]`).value = [];
+                    document.querySelector(`input[name="competences_data"]`).value = "";
                     displayCoursesCompetence(arrayFilesCourses);
 
                     let html = `
@@ -169,9 +166,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
                                                     subCompetences: subCompetences
                                                 };
                                                 competencesData.push(competenceData);
+                                                displayValidatedCompetences(competenceData.id);
                                                 cpt_comp++;
 
-                                                displayValidatedCompetences(competenceData.id);
                                             });
                                             
 
@@ -281,7 +278,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     document.querySelectorAll(`[id^="competence-container"]`).forEach(div => div.remove());
                     document.querySelectorAll(`[id^="competencesContainer"]`).forEach(div => div.remove());
                     competencesData = [];
-                    document.querySelector(`input[name="competences_data"]`).value = [];
+                    document.querySelector(`input[name="competences_data"]`).value = "";
                     displayCoursesCompetence(arrayFilesCourses);
                     competencesData = [];
 
@@ -291,8 +288,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
                             <button id="add_competences" onclick="addCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
             . get_string('add_competences', 'mod_studentqcm') .
             '</button>
-                             <button type="button" id="export_competences" onclick="exportCompetencesData()" 
-                                class="bg-gray p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
+                             <button type="button" id="expor    t_competences" onclick="exportCompetencesData()" 
+                                class="bg-indigo-500 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
                                 ' . get_string('export', 'mod_studentqcm') . '
                             </button>
                         </div>
@@ -341,15 +338,15 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
             function addCompetenceField() {
                 let container = document.getElementById("add_competences-container");
-                compteur_competence += 1;
 
                 let index_competence = compteur_competence;
+                compteur_competence += 1;
 
                 let fieldHTML = `
                     <div id="competence-container${index_competence}" class="competence-block p-4 border border-gray-300 rounded-lg bg-white mt-4">
                         <h3 class="text-2xl font-bold">' . get_string('competences_title', 'mod_studentqcm') . '</h3>
                         <label>' . get_string('name_competence', 'mod_studentqcm') . '</label>
-                        <input type="text" id="competence-name${compteur_competence}" name="name_competence[]" class="form-control p-2 border rounded w-full" required>
+                        <input type="text" id="competence-name${index_competence}" name="name_competence[]" class="form-control p-2 border rounded w-full" required>
 
                         <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addSubCompetenceField(${index_competence})">
                             ' . get_string('add_subcompetences', 'mod_studentqcm') . '
@@ -472,7 +469,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 competencesData.forEach((competence, index) => {
                     let html = `
-                        <div id="competencesContainer${index_competence}" class="p-4 border border-gray-300 rounded-lg mt-4 bg-white">
+                        <div id="competencesContainer${index}" class="p-4 border border-gray-300 rounded-lg mt-4 bg-white">
                             <h3 class="text-2xl font-bold">${competence.name}</h3>
                             <ul class="mt-2">
                                 ${competence.subCompetences.map(sub => `
@@ -484,7 +481,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                                     </li>
                                 `).join("")}
                             </ul>
-                            <button class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${index_competence})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
+                            <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${index})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
 
                         </div>
                     `;
@@ -496,10 +493,13 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 let competencesContainer = document.getElementById(`competencesContainer${indexComp}`);
                 competencesContainer.remove();
 
+                console.log("indexComp: ",indexComp);
+
                 competencesData = competencesData.filter(comp => comp.id !== indexComp);
+                console.log("competencesData: ",competencesData);
+
                 document.querySelector(`input[name="competences_data"]`).value = JSON.stringify(competencesData);
                 displayCoursesCompetence(arrayFilesCourses);
-
             }
 
             function deleteAddCompetence(indexComp) {
@@ -649,8 +649,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
             function generateOptionCourses() {
                 let arrayComp = [];
                 let competences = document.querySelector(`input[name="competences_data"]`);
+                console.log("competences.value: ", competences.value);
                 let optionsPop = "";
-                if (competences.value.length>0) {
+                if (competences.value.length>0 && competences.value!= "[]") {
                     let compData = JSON.parse(competences.value);
                     let length = compData.length;
 
@@ -986,6 +987,30 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $this->standard_coursemodule_elements();
 
         // Boutons d'action (enregistrer, annuler)
+        $mform->addElement('html', '
+            <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let form = document.querySelector(".mform"); // Sélection du formulaire Moodle
+
+                form.addEventListener("submit", function(event) {
+                    let errors = [];
+
+                    let comp_data = document.querySelector(`input[name="competences_data"]`);
+                    
+                    if (comp_data.value.trim() === "" || comp_data.value.trim() === "[]") {
+                        errors.push("Veuillez saisir au moins une compétence.");
+                    }
+
+                    // Si des erreurs sont détectées, empêcher la soumission et afficher les erreurs
+                    if (errors.length > 0) {
+                        event.preventDefault();
+                        alert(errors.join("\n"));
+                    }
+                });
+            });
+            </script>
+
+        ');
         $this->add_action_buttons();
 
         $mform->addElement('html', '</div>');

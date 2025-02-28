@@ -499,11 +499,7 @@ DROP TABLE IF EXISTS `mdl_studentqcm_cours`;
 CREATE TABLE `mdl_studentqcm_cours` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `refId` int(100) NOT NULL,
-  --- `comptId` int(10) NOT NULL,
-  `filename` VARCHAR(255) NOT NULL, -- Nom du fichier
-  `filetype` VARCHAR(100) NOT NULL, -- Type MIME du fichier
-  `filesize` INT NOT NULL,           -- Taille du fichier en octets
-  `filecontent` LONGBLOB NOT NULL,    -- Contenu du fichier en binaire
+  
 
   PRIMARY KEY (`id`),
   --- CONSTRAINT `mdl_studentqcm_cours_comptId_fk_1` FOREIGN KEY (`comptId`) REFERENCES `mdl_competency` (`id`) ON DELETE CASCADE,

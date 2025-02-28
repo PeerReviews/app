@@ -19,10 +19,10 @@ function studentqcm_add_instance($data, $mform = null) {
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    // echo '<pre>';
-    // print_r($data);
-    // echo '</pre>';
-    // exit;
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+    exit;
 
     // Préparer les données du QCM
     $record = new stdClass();
@@ -55,7 +55,7 @@ function studentqcm_add_instance($data, $mform = null) {
     }
 
     //Data compétences, sous-compétences, mot-clefs
-    if (!empty($data->competences_data)) {
+    if (!empty($data->competences_data) || $data->competences_data == "[]") {
         $competencesArray = json_decode($data->competences_data, true);
         
         foreach ($competencesArray as $competence) {
@@ -81,8 +81,9 @@ function studentqcm_add_instance($data, $mform = null) {
                 }
             }
         }
+    } else {
+        throw new moodle_exception('invaliddate', 'studentqcm', '', $competences_data);
     }
-
 
 
     # AJOUT D'UN COURS

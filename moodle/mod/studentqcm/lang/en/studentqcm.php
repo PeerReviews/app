@@ -182,6 +182,8 @@ $string['name_keyword'] = 'Nom du mot-cle';
 $string['subcompetence_associated'] = 'Sous-compétence associée';
 $string['export'] = 'Exporter les compétences';
 
+$string['no_competence_error'] = 'Veuillez saisir au moins une compétence.';
+
 // Choix étudiants
 
 $string['choice_etu_title'] = 'Choix étudiants';
