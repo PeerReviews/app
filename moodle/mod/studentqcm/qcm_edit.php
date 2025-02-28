@@ -129,8 +129,6 @@ echo "<div class='mt-8'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
     
     $context = context_system::instance(); // Contexte de Moodle
-
-
     $context_text = file_rewrite_pluginfile_urls(
         $question->context,      // Le texte contenant la balise <img>
         'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
@@ -139,13 +137,11 @@ echo "<div class='mt-8'>";
         'questionfiles',         // Zone des fichiers
         0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
     );
-    echo "<pre> \n\n\n\n CONTEXT TEXT" . print_r($context_text, true) . "</pre>";
 
-    
     // Afficher l'éditeur avec le contenu préchargé
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
-    echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
     echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$context_text}</textarea>";
+    echo "</div>";
     echo "</div>";
 
 
@@ -162,21 +158,41 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         if($answer = current($answers)){
+
+            $context = context_system::instance(); // Contexte de Moodle
+            $img_text = file_rewrite_pluginfile_urls(
+                $answer->answer,      // Le texte contenant la balise <img>
+                'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
+                $context->id,            // ID du contexte
+                'mod_studentqcm',        // Nom du module
+                'questionfiles',         // Zone des fichiers
+                0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
+            );
         
             // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $index :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$img_text}</textarea>";
             echo "</div>";
             echo "</div>";
         
             if($type != "TCS") {
+
+                $context = context_system::instance(); // Contexte de Moodle
+                $img_text = file_rewrite_pluginfile_urls(
+                    $answer->explanation,      // Le texte contenant la balise <img>
+                    'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
+                    $context->id,            // ID du contexte
+                    'mod_studentqcm',        // Nom du module
+                    'questionfiles',         // Zone des fichiers
+                    0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
+                );
                 // Explication
                 echo "<div class='py-2 grid grid-cols-12 w-full'>";
                 echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $index :</label>";
                 echo "<div class='col-span-10 w-full'>";
-                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
+                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$img_text}</textarea>";
                 echo "</div>";
                 echo "</div>";
             }
