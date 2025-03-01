@@ -240,56 +240,69 @@ echo "</div>";
 
 echo "</form>";
 
-echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
-echo "<script>
-tinymce.init({
-    selector: 'textarea',
-    plugins: ['image', 'media', 'link', 'table'],
-    toolbar: 'undo redo | bold italic underline | image media | link | table',
-    image_advtab: true,
-    media_dimensions: true,
-    height: 180,
-    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
-    automatic_uploads: true,
-    file_picker_callback: function(callback, value, meta) {
-        var input = document.createElement('input');
-        input.setAttribute('type', 'file');
-        
-        // Gère l’upload des images, vidéos et sons
-        if (meta.filetype === 'image') {
-            input.setAttribute('accept', 'image/*');
-        } else if (meta.filetype === 'media') {
-            input.setAttribute('accept', 'audio/*,video/*');
-        }
-        
-        input.onchange = function() {
-            var file = this.files[0];
-            var formData = new FormData();
-            formData.append('file', file);
+echo '<script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js"></script>';
+echo '<script>
+document.addEventListener("DOMContentLoaded", function() {
+    tinymce.init({
+        selector: "textarea",
+        plugins: ["image", "media", "link", "table"],
+        toolbar: "undo redo | bold italic underline | image media | link | table",
+        image_advtab: true,
+        media_dimensions: true,
+        height: 180,
+        images_upload_url: "upload.php",  
+        automatic_uploads: true,
+        file_picker_callback: function(callback, value, meta) {
+            var input = document.createElement("input");
+            input.setAttribute("type", "file");
 
-            fetch('upload.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.location) {
-                    callback(data.location, {alt: file.name});
-                } else {
-                    alert('Erreur lors du téléchargement du fichier.');
+            if (meta.filetype === "image") {
+                input.setAttribute("accept", "image/*");
+            } else if (meta.filetype === "media") {
+                input.setAttribute("accept", "audio/*,video/*");
+            }
+
+            input.onchange = function() {
+                var file = this.files[0];
+                if (!file) {
+                    console.warn("Aucun fichier sélectionné.");
+                    return;
                 }
-            })
-            .catch(error => console.error('Erreur:', error));
-        };
-        input.click();
-    },
-    setup: function (editor) {
-        editor.on('init', function () {
-            editor.getContainer().closest('form').setAttribute('novalidate', true);
-        });
-    }
+
+                var formData = new FormData();
+                formData.append("file", file);
+
+                fetch("upload.php", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.location) {
+                        callback(data.location, {alt: file.name});
+                    } else {
+                        alert("Erreur lors du téléchargement du fichier.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur:", error);
+                    alert("Impossible d\'envoyer le fichier.");
+                });
+            };
+            input.click();
+        },
+        setup: function (editor) {
+            editor.on("init", function () {
+                var form = editor.getElement().closest("form");
+                if (form) {
+                form.setAttribute("novalidate", true);
+                }
+            });
+        }
+    });
 });
-</script>";
+</script>';
+
 
 ?>
 
