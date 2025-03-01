@@ -19,10 +19,6 @@ function studentqcm_add_instance($data, $mform = null) {
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
-    echo '<pre>';
-    print_r($data);
-    echo '</pre>';
-    exit;
 
     // Préparer les données du QCM
     $record = new stdClass();
