@@ -45,7 +45,7 @@ echo "</div>";
 
 // Formulaire
 echo "<div class='grid grid-cols-2 gap-4'>";
-echo "<form method='post' action='qcm_edit_process.php?id={$id}&qcm_id={$qcm_id}&type={$type}'>";
+echo "<form method='post' action='qcm_edit_process.php?id={$id}&qcm_id={$qcm_id}&type={$type}&is_improved=1'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence

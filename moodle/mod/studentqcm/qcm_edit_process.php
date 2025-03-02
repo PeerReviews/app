@@ -6,6 +6,7 @@ require_once(__DIR__ . '/../../config.php');
 $id = required_param('id', PARAM_INT);
 $type = required_param('type', PARAM_TEXT);
 $qcm_id = required_param('qcm_id', PARAM_INT);
+$is_improved = required_param('is_improved', PARAM_INT);
 
 // Récupérer les informations du module et vérifier l'accès
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->competency = isset($question['competency']) ? clean_param($question['competency'], PARAM_INT) : null;
             $question_record->subcompetency = isset($question['subcompetency']) ? clean_param($question['subcompetency'], PARAM_INT) : null;
             $question_record->type = $type;
+            $question_record->is_improved = $is_improved;
             $question_record->status = isset($_POST['submit']) ? 1 : 0;
 
 
@@ -116,9 +118,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Redirection après enregistrement
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+    if ($is_improved == 1) {
+        redirect(new moodle_url('/mod/studentqcm/phase3_qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+    } else {
+        redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+    }
+
 }
 
 // Redirection si la requête n'est pas un POST
-redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+if ($is_improved == 1) {
+    redirect(new moodle_url('/mod/studentqcm/phase3_qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+} else {
+    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_updated', 'mod_studentqcm'), 10);
+}
+
 ?>

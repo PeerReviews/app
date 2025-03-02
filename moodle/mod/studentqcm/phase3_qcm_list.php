@@ -97,14 +97,15 @@ if ($qcms) {
             echo "</div>";
             echo "</div>";
 
+            $buttonClass = $qcm->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
+            $iconClass = $qcm->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
+
             // Partie droite (boutons)
-            if ($qcm->status == 0){
-                echo "<div class='flex space-x-2'>";
-                    echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500'>";
-                    echo "<i class='fas fa-edit'></i>";
-                    echo "</a>";
-                echo "</div>";
-            }
+            echo "<div class='flex space-x-2'>";
+                echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
+                echo "<i class='{$iconClass}'></i>";
+                echo "</a>";
+            echo "</div>";
         echo "</div>";
     }
     echo "</div>";

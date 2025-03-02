@@ -148,6 +148,7 @@ $string['no_evaluation_found'] = "Aucune évaluation trouvée";
 // INTERFACE PROF
 $string['student_dashboard_phase1'] = 'Suivi des étudiants pour la phase 1';
 $string['student_dashboard_phase2'] = 'Suivi des étudiants pour la phase 2';
+$string['student_dashboard_phase3'] = 'Suivi des étudiants pour la phase 3';
 $string['teacher_dashboard'] = 'Suivi des enseignants';
 $string['production_evaluation'] = 'Évaluation des productions';
 $string[''] = '';
@@ -163,7 +164,7 @@ $string['full_name'] = 'Nom complet';
 $string['last_connected'] = 'Dernière connexion';
 $string['never_connected'] = 'Aucune connexion';
 $string['completed_reviews'] = 'Révisions complétées';
-$string[''] = '';
+$string['reviewed_question'] = 'Questions révisées';
 $string[''] = '';
 
 
