@@ -153,6 +153,12 @@ $string['teacher_dashboard'] = 'Suivi des enseignants';
 $string['production_evaluation'] = 'Évaluation des productions';
 $string[''] = '';
 
+$string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
+$string['teacher'] = 'Actions réalisables par l\'enseignant';
+
+$string['user_gestion'] = 'Gestion des utilisateurs';
+$string['phase_gestion'] = 'Gestion des phases';
+
 
 $string['student_list'] = 'Liste de étudiants';
 $string['student_id'] = 'ID de l\'étudiant';

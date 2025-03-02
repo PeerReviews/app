@@ -31,7 +31,7 @@ echo get_string('back', 'mod_studentqcm');
 echo "</a>";
 echo "</div>";
 
-// Récupération des étudiants
+// Récupération des enseignants
 $teachers = $DB->get_records('teachers');
 
 echo '<div class="mt-8">';
@@ -43,8 +43,7 @@ echo '<tr class="bg-gray-100 text-left">';
 $columns = [
     'full_name' => get_string('full_name', 'mod_studentqcm'),
     'completed_evaluations' => get_string('completed_question', 'mod_studentqcm'),
-    'last_connected' => get_string('last_connected', 'mod_studentqcm'),
-    'actions' => get_string('actions', 'mod_studentqcm')
+    'last_connected' => get_string('last_connected', 'mod_studentqcm')
 ];
 
 $columnIndex = 0;
@@ -63,16 +62,16 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
-// Affichage des étudiants
+// Affichage des enseignants
 foreach ($teachers as $teacher) {
 
-    $teacher_name = $DB->get_record('user', array('id' => $teacher->userid));
-    $teacher_fullname = ucwords(strtolower($teacher_name->firstname)) . ' ' . ucwords(strtolower($teacher_name->lastname));
+    $teacher_entity = $DB->get_record('user', array('id' => $teacher->userid));
+    $teacher_fullname = ucwords(strtolower($teacher_entity->firstname)) . ' ' . ucwords(strtolower($teacher_entity->lastname));
 
     echo '<tr class="border-t hover:bg-gray-50">';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">';
-    echo '<div id="name-' . $teacher->userid . '" class="text-gray-600>' . $teacher_fullname . '</div>';
+    echo '<div id="name-' . $teacher->userid . '" class="text-gray-600">' . $teacher_fullname . '</div>';
     echo '</td>';
 
     $colorClass = ($completed_questions_count == 0) ? 'text-red-400' : 
@@ -81,18 +80,10 @@ foreach ($teachers as $teacher) {
     echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question . '</td>';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . 
-         ($teacher_name->lastaccess > 0 
-            ? date('d/m/Y', $teacher_name->lastaccess) 
+         ($teacher_entity->lastaccess > 0 
+            ? date('d/m/Y', $teacher_entity->lastaccess) 
             : mb_strtoupper(get_string('never_connected', 'mod_studentqcm'), 'UTF-8')) . 
          '</td>';
-
-    echo '<td class="px-3 py-4 text-md text-gray-600">' . implode(', ', $correctors_list) . '</td>';
-
-    echo '<td class="px-2 py-4 text-md text-gray-600">';
-    echo '<a href="' . new moodle_url($PAGE->url, array('switch_to_user' => $teacher->userid)) . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl">';
-    echo '<i class="fas fa-people-pulling mr-2"></i>' . mb_strtoupper(get_string('connect', 'mod_studentqcm'), 'UTF-8');
-    echo "</a>";
-    echo '</td>';
 
     echo '</tr>';
 }

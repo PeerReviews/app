@@ -23,6 +23,7 @@ $user_roles = get_user_roles(context_course::instance($course->id), $USER->id, t
 // Variables pour vérifier si l'utilisateur est un étudiant ou un professeur
 $is_student = false;
 $is_teacher = false;
+$is_manager = false;
 
 // Vérifie si l'utilisateur a le rôle "student"
 foreach ($user_roles as $role) {
@@ -33,13 +34,62 @@ foreach ($user_roles as $role) {
     if ($role->shortname == 'editingteacher' || $role->shortname == 'teacher') {
         $is_teacher = true;
     }
+    if ($role->shortname == 'manager') {
+        $is_manager = true;
+    }
 }
 
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto grid grid-cols-3 gap-4'>";
 
-if ($is_teacher) {
+if ($is_teacher || $is_manager) {
+
+    if($is_manager) {
+
+        echo "<div class='flex mt-8 mx-4 justify-between border-b p-2 col-span-3'>";
+            echo "<div class='flex text-center text-gray-500 items-end'>";
+                echo "<p class='text-3xl'> " . get_string('manager_teacher', 'mod_studentqcm') . "</p>";
+            echo "</div>";        
+        echo "</div>";
+
+        echo "<div class='p-4 bg-gray-100 rounded-3xl shadow-md'>";
+            echo "<p class='font-semibold text-center text-xl text-gray-600 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('user_gestion', 'mod_studentqcm'), 'UTF-8') . "</p>";
+            echo "<div class='flex justify-center mt-2'>";
+                echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
+                echo get_string('phase_available', 'mod_studentqcm');
+                echo "<i class='fas fa-arrow-right ml-4'></i>";
+                echo "</a>";
+            echo "</div>";
+        echo "</div>";
+
+        echo "<div class='p-4 bg-gray-100 rounded-3xl shadow-md'>";
+            echo "<p class='font-semibold text-center text-xl text-gray-600 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('phase_gestion', 'mod_studentqcm'), 'UTF-8') . "</p>";
+            echo "<div class='flex justify-center mt-2'>";
+                echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
+                echo get_string('phase_available', 'mod_studentqcm');
+                echo "<i class='fas fa-arrow-right ml-4'></i>";
+                echo "</a>";
+            echo "</div>";
+        echo "</div>";
+
+        echo "<div class='p-4 bg-gray-100 rounded-3xl shadow-md'>";
+            echo "<p class='font-semibold text-center text-xl text-gray-600 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('teacher_dashboard', 'mod_studentqcm'), 'UTF-8') . "</p>";
+            echo "<div class='flex justify-center mt-2'>";
+                echo "<a href='teacher_dashboard.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
+                echo get_string('phase_available', 'mod_studentqcm');
+                echo "<i class='fas fa-arrow-right ml-4'></i>";
+                echo "</a>";
+            echo "</div>";
+        echo "</div>";
+
+        echo "<div class='flex mt-8 mx-4 justify-between border-b p-2 col-span-3'>";
+            echo "<div class='flex text-center text-gray-500 items-end'>";
+                echo "<p class='text-3xl'> " . get_string('teacher', 'mod_studentqcm') . "</p>";
+            echo "</div>";        
+        echo "</div>";
+    }
+    
     // Affichage pour les professeurs
     echo "<div class='p-4 bg-sky-200 rounded-3xl shadow-md'>";
         echo "<p class='font-semibold text-center text-xl text-sky-700 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('student_dashboard_phase1', 'mod_studentqcm'), 'UTF-8') . "</p>";
@@ -60,16 +110,6 @@ if ($is_teacher) {
             echo "</a>";
         echo "</div>";
     echo "</div>";
-
-    // echo "<div class='p-4 bg-lime-200 rounded-3xl shadow-md'>";
-    //     echo "<p class='font-semibold text-center text-xl text-lime-700 pb-2'>" . mb_strtoupper(get_string('teacher_dashboard', 'mod_studentqcm'), 'UTF-8') . "</p>";
-    //     echo "<div class='flex justify-center mt-2'>";
-    //         echo "<a href='teacher_dashboard.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline'>";
-    //         echo get_string('phase_available', 'mod_studentqcm');
-    //         echo "<i class='fas fa-arrow-right ml-4'></i>";
-    //         echo "</a>";
-    //     echo "</div>";
-    // echo "</div>";
 
     echo "<div class='p-4 bg-indigo-200 rounded-3xl shadow-md'>";
         echo "<p class='font-semibold text-center text-xl text-indigo-700 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('student_dashboard_phase3', 'mod_studentqcm'), 'UTF-8') . "</p>";
