@@ -221,7 +221,7 @@ function getImageFile($contextid, $component, $filearea, $itemid, $filename) {
         $contextid,
         $component,
         $filearea,
-        0,
+        $itemid,
         '/',
         $filename
     );
@@ -264,7 +264,7 @@ function mod_studentqcm_pluginfile(
     // }
 
     // Make sure the filearea is one of those used by the plugin.
-    if ($filearea !== 'questionfiles') {
+    if ($filearea !== 'contextfiles' && $filearea !== 'answerfiles' && $filearea !== 'explanationfiles' && $filearea !== 'coursefiles') {
         return false;
     }
 

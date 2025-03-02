@@ -3,6 +3,8 @@
 // Inclure le fichier de configuration de Moodle pour initialiser l'environnement Moodle
 require_once(__DIR__ . '/../../config.php');
 
+$context = context_system::instance(); // Contexte de Moodle
+
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
 $type = required_param('qcm_type', PARAM_TEXT);

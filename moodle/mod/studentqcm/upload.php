@@ -7,6 +7,11 @@ header('Content-Type: application/json'); // Assurer un retour en JSON
 
 try {
     $cmid = required_param('cmid', PARAM_INT); // Récupération de l'ID du module
+    $filearea = required_param('filearea', PARAM_TEXT);
+    $itemid = required_param('itemid', PARAM_INT);
+    $id_referentiel = optional_param('id_referentiel', null, PARAM_INT);
+    $id_competency = optional_param('id_competency', null, PARAM_INT);
+    
     $context = context_system::instance();
     $fs = get_file_storage();
 
@@ -20,11 +25,12 @@ try {
     $file = $_FILES['file'];
     $filename = time() . "_" . clean_param($file['name'], PARAM_FILE);
 
+
     $file_record = [
         'contextid' => $context->id,
         'component' => 'mod_studentqcm',
-        'filearea' => 'questionfiles',
-        'itemid' => 0,
+        'filearea' => $filearea,
+        'itemid' => $itemid,
         'filepath' => '/',
         'filename' => $filename
     ];
@@ -39,17 +45,34 @@ try {
         exit;
     }
     
-    error_log("Tentative d'enregistrement du fichier: " . print_r($file, true));
+    error_log("Tentative d'enregistrement du fichier : " . print_r($file, true));
 
     // Enregistrer le fichier dans Moodle
     $stored_file = $fs->create_file_from_pathname($file_record, $file['tmp_name']);
 
-    error_log("Fichier stored: " . print_r($stored_file, true));
+    error_log("Fichier stored : " . print_r($stored_file, true));
 
     if ($stored_file) {
+        // Enregistrement en BD du fichier 
+        $file_record = new stdClass();
+        $file_record->itemid = $itemid;
+        $file_record->userid = $USER->id;
+        $file_record->filearea = $filearea;
+        $file_record->mimetype = $stored_file->get_mimetype();
+        if ($id_referentiel !== null && $id_competency !== null) {
+            $file_record->id_referentiel = $id_referentiel;
+            $file_record->id_competency = $id_competency;
+            $file_record->iscourse = 1;
+        }
+        else {
+            $file_record->iscourse = 0;
+        }
+
+        $file_record->id = $DB->insert_record('studentqcm_file', $file_record);
+
         // Génération de l'URL du fichier
         $file_url = moodle_url::make_pluginfile_url(
-            $context->id, 'mod_studentqcm', 'questionfiles', 0, '/', $filename
+            $context->id, 'mod_studentqcm', $filearea, $itemid, '/', $filename
         )->out(false);
 
         echo json_encode(['location' => $file_url]); // TinyMCE attend "location"
