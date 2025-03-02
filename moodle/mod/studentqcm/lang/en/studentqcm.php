@@ -5,13 +5,18 @@ $string['pluginname'] = 'Student QCM';
 $string['modulename'] = 'Student QCM';
 $string['modulenameplural'] = 'Student QCMs';
 $string['modulename_help'] = 'Cet outil permet aux étudiants de créer leurs propres QCM et aux enseignants de les évaluer.';
-$string['name'] = 'Name';
+$string['name'] = 'Nom';
+$string['name_plugin'] = 'Nom de la session';
+$string['name_referentiel'] = 'Nom du référentiel';
+$string['surname'] = 'Prénom';
+$string['mail'] = 'Adresse mail';
 $string['description'] = 'Description';
 $string['intro'] = 'Introduction';
-$string['pluginname'] = 'Student QCM';
 $string['pluginadministration'] = 'Administration du module Student QCM';
+$string['choice_courses'] = 'Choix des cours à ajouter';
 
 // Ajouter les chaînes pour les nouveaux champs de date
+$string['phases_title'] = 'Choix dates des phases';
 $string['start_date_1'] = 'Phase 1 : date début';
 $string['end_date_1'] = 'Phase 1 : date fin';
 $string['end_date_tt_1'] = 'Phase 1 : date fin tiers-temps';
@@ -38,6 +43,9 @@ $string['phase2_title'] = 'Évaluation de QCMs';
 $string['phase3_title'] = 'Valorisation des QCMs';
 
 $string['back'] = 'Retour';
+$string['validate'] = 'Valider';
+$string['cancel'] = 'Annuler';
+$string['delete'] = 'Supprimer';
 
 $string['qcm_list'] = 'Ma liste de QCMs';
 $string['add_qcm'] = 'Ajouter un QCM';
@@ -143,6 +151,71 @@ $string['add'] = 'Ajouter';
 $string['value_list'] = 'Je valorise mes QCMs';
 $string['student_evaluation'] = 'Évaluation';
 $string['no_evaluation_found'] = "Aucune évaluation trouvée";
+
+// Creation réferentiel de compétences
+
+$string['info_referentiel_title'] = 'Informations principales du référentiel';
+$string['date_start_referentiel'] = 'Date début session';
+$string['date_end_referentiel'] = 'Date fin session';
+
+$string['upload_compentence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
+$string['desc_manual_compentence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
+$string['add_manual_compentence'] = "Ajouter manuellement les compétences";
+$string['desc_files_compentence'] = "Déposer un fichier de compétences";
+$string['add_files_compentence'] = "Ajouter un fichier de compétences";
+$string['competences_title'] = 'Compétences:';
+$string['add_competences'] = 'Ajouter une compétence';
+$string['info_competence'] = 'Nouvelle compétence';
+$string['name_competence'] = 'Nom de la compétence';
+$string['choice_comp'] = 'Veuillez choisir une compétence associée';
+
+$string['subcompetences_title'] = 'Sous-compétences:';
+$string['add_subcompetences'] = 'Ajouter une sous-compétence';
+$string['info_subcompetence'] = 'Nouvelle sous-compétence';
+$string['name_subcompetence'] = 'Nom de la sous-compétence';
+$string['competence_associated'] = 'Compétence associée';
+
+$string['keyword_title'] = 'Mot-clefs:';
+$string['add_keyword'] = 'Ajouter un mot-clef';
+$string['info_keyword'] = 'Information sur le mot-clef';
+$string['name_keyword'] = 'Nom du mot-cle';
+$string['subcompetence_associated'] = 'Sous-compétence associée';
+$string['export'] = 'Exporter les compétences';
+
+$string['no_competence_error'] = 'Veuillez saisir au moins une compétence.';
+
+// Choix étudiants
+
+$string['choice_etu_title'] = 'Choix étudiants';
+$string['choice_etu_tt_title'] = 'Choix étudiants avec tiers-temps';
+$string['import_etu'] = 'Importer liste étudiants';
+$string['selected_etu'] = 'Etudiants sélectionnés:';
+$string['add_etu'] = 'Ajouter un étudiant manuellement';
+$string['info_etu'] = 'Informations sur l’étudiant:';
+
+$string['choice_prof_title'] = 'Choix professeurs';
+$string['import_prof'] = 'Importer liste professeurs';
+$string['selected_prof'] = 'Professeurs sélectionnés:';
+$string['add_prof'] = 'Ajouter un professeur manuellement';
+$string['info_prof'] = 'Informations sur le professeur:';
+
+// Choix types eval
+
+$string['type_eval_title'] = 'Choix types évaluation';
+$string['nb_qcm'] = 'Nombre de QCM';
+$string['nb_qcu'] = 'Nombre de QCU';
+$string['nb_tcs'] = 'Nombre de TCS';
+$string['nb_pop'] = 'Nombre de POP';
+$string['grid_eval'] = 'Grille évaluation';
+$string['grid_eval_qcm'] = 'Grille évaluation QCM';
+$string['grid_eval_qcu'] = 'Grille évaluation QCU';
+$string['grid_eval_tcs'] = 'Grille évaluation TCS';
+$string['bonus'] = 'Bonus:';
+$string['malus'] = 'Malus:';
+$string['add_malus'] = 'Ajouter un malus';
+
+$string['add_tiers_temps_phase'] = 'Voulez vous prendre en compte les tiers-temps ?';
+
 
 
 // INTERFACE PROF

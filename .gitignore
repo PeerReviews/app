@@ -4,3 +4,11 @@ moodledata/
 
 # Fichiers confidentiels
 .env
+
+# Dossiers et fichiers générés par Composer
+moodle/vendor/
+moodle/composer.phar
+
+# PHPCodeSniffer
+phpcbf.phar
+phpcs.phar

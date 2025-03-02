@@ -3,6 +3,8 @@
 // Inclure le fichier de configuration de Moodle pour initialiser l'environnement Moodle
 require_once(__DIR__ . '/../../config.php');
 
+$context = context_system::instance(); // Contexte de Moodle
+
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
 $qcm_id = required_param('qcm_id', PARAM_INT);
@@ -127,7 +129,46 @@ echo "<div class='mt-8'>";
     // Context
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
-    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
+    
+    
+    $filearea = 'contextfiles';            // La zone des fichiers associée au contexte
+    $itemid = $qcm_id;            // L'ID de la question
+
+    $file_storage = get_file_storage();
+
+    // Récupérer tous les fichiers associés au contexte de la question
+    $file_records = $file_storage->get_area_files(
+        $context->id,      // ID du contexte
+        'mod_studentqcm',  // Nom du module
+        $filearea,         // Zone de fichiers
+        $itemid,           // ID de l'élément
+        'sortorder',       // Tri des fichiers
+        false              // Inclure ou non les fichiers supprimés
+    );
+
+    // Parcourir les fichiers et générer les balises <img> pour les afficher
+    $img_text = '';
+    foreach ($file_records as $file) {
+        // Générer l'URL du fichier
+        $img_url = moodle_url::make_pluginfile_url(
+            $context->id,
+            'mod_studentqcm',    // Nom du module
+            $filearea,           // Zone de fichiers
+            $itemid,             // Item ID (ID de la question)
+            $file->get_filepath(), // Chemin du fichier
+            $file->get_filename()   // Nom du fichier
+        )->out();  // Génère l'URL complète du fichier
+
+        // Ajouter l'élément <img> avec l'URL
+        $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+    }
+    
+    $question->context = $question->context . $img_text;
+
+    // Afficher l'éditeur avec le contenu préchargé
+    echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
+    echo "<textarea id='context_1' name='questions[1][context]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
+    echo "</div>";
     echo "</div>";
 
 
@@ -144,21 +185,90 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         if($answer = current($answers)){
+
+            $filearea = 'answerfiles';            // La zone des fichiers associée à la réponse
+            $itemid = $answer->id;            // L'ID de la réponse
+
+            $file_storage = get_file_storage();
+
+            // Récupérer tous les fichiers associés à la réponse de la question
+            $file_records = $file_storage->get_area_files(
+                $context->id,      // ID du contexte
+                'mod_studentqcm',  // Nom du module
+                $filearea,         // Zone de fichiers
+                $itemid,           // ID de l'élément
+                'sortorder',       // Tri des fichiers
+                false              // Inclure ou non les fichiers supprimés
+            );
+
+            // Parcourir les fichiers et générer les balises <img> pour les afficher
+            $img_text = '';
+            foreach ($file_records as $file) {
+                // Générer l'URL du fichier
+                $img_url = moodle_url::make_pluginfile_url(
+                    $context->id,
+                    'mod_studentqcm',    // Nom du module
+                    $filearea,           // Zone de fichiers
+                    $itemid,             // Item ID (ID de la réponse)
+                    $file->get_filepath(), // Chemin du fichier
+                    $file->get_filename()   // Nom du fichier
+                )->out();  
+
+                // Ajouter l'élément <img> avec l'URL
+                $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+            }
+
+            $answer->answer = $answer->answer . $img_text;
         
             // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='answer_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $index :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
+            echo "<textarea id='answer_1_{$index}' name='questions[1][answers][{$index}][answer]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->answer}</textarea>";
             echo "</div>";
             echo "</div>";
         
             if($type != "TCS") {
+
+                $filearea = 'explanationfiles';   // La zone des fichiers associée à l'explication de la réponse
+                $itemid = $answer->id;            // L'ID de la réponse
+
+                $file_storage = get_file_storage();
+
+                // Récupérer tous les fichiers associés à l'explication de la réponse à la question
+                $file_records = $file_storage->get_area_files(
+                    $context->id,      // ID du contexte
+                    'mod_studentqcm',  // Nom du module
+                    $filearea,         // Zone de fichiers
+                    $itemid,           // ID de l'élément
+                    'sortorder',       // Tri des fichiers
+                    false              // Inclure ou non les fichiers supprimés
+                );
+
+                // Parcourir les fichiers et générer les balises <img> pour les afficher
+                $img_text = '';
+                foreach ($file_records as $file) {
+                    // Générer l'URL du fichier
+                    $img_url = moodle_url::make_pluginfile_url(
+                        $context->id,
+                        'mod_studentqcm',    // Nom du module
+                        $filearea,           // Zone de fichiers
+                        $itemid,             // Item ID (ID de l'explication)
+                        $file->get_filepath(), // Chemin du fichier
+                        $file->get_filename()   // Nom du fichier
+                    )->out();  
+
+                    // Ajouter l'élément <img> avec l'URL
+                    $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+                }
+
+                $answer->explanation = $answer->explanation . $img_text;
+                
                 // Explication
                 echo "<div class='py-2 grid grid-cols-12 w-full'>";
                 echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $index :</label>";
                 echo "<div class='col-span-10 w-full'>";
-                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
+                echo "<textarea id='explanation_1_{$index}' name='questions[1][answers][{$index}][explanation]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required>{$answer->explanation}</textarea>";
                 echo "</div>";
                 echo "</div>";
             }
@@ -240,68 +350,70 @@ echo "</div>";
 
 echo "</form>";
 
-echo '<script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js"></script>';
-echo '<script>
-document.addEventListener("DOMContentLoaded", function() {
-    tinymce.init({
-        selector: "textarea",
-        plugins: ["image", "media", "link", "table"],
-        toolbar: "undo redo | bold italic underline | image media | link | table",
-        image_advtab: true,
-        media_dimensions: true,
-        height: 180,
-        images_upload_url: "upload.php",  
-        automatic_uploads: true,
-        file_picker_callback: function(callback, value, meta) {
-            var input = document.createElement("input");
-            input.setAttribute("type", "file");
+echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
+echo "<script>
 
-            if (meta.filetype === "image") {
-                input.setAttribute("accept", "image/*");
-            } else if (meta.filetype === "media") {
-                input.setAttribute("accept", "audio/*,video/*");
-            }
-
-            input.onchange = function() {
-                var file = this.files[0];
-                if (!file) {
-                    console.warn("Aucun fichier sélectionné.");
-                    return;
-                }
-
-                var formData = new FormData();
-                formData.append("file", file);
-
-                fetch("upload.php", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.location) {
-                        callback(data.location, {alt: file.name});
-                    } else {
-                        alert("Erreur lors du téléchargement du fichier.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Erreur:", error);
-                    alert("Impossible d\'envoyer le fichier.");
-                });
-            };
-            input.click();
-        },
-        setup: function (editor) {
-            editor.on("init", function () {
-                var form = editor.getElement().closest("form");
-                if (form) {
-                form.setAttribute("novalidate", true);
-                }
-            });
+tinymce.init({
+    selector: 'textarea',
+    plugins: ['image', 'media', 'link', 'table'],
+    toolbar: 'undo redo | bold italic underline | image media | link | table',
+    image_advtab: true,
+    media_dimensions: true,
+    height: 180,
+    images_upload_url: 'upload.php',
+    automatic_uploads: true,
+    setup: function (editor) {
+      editor.on('init', function () {
+        // Assure que chaque formulaire parent a 'novalidate'
+        var form = editor.getElement().closest('form');
+        if (form) {
+          form.setAttribute('novalidate', true);
         }
-    });
+      });
+    },
+    file_picker_callback: function(callback, value, meta) {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        
+        if (meta.filetype === 'image') {
+            input.setAttribute('accept', 'image/*');
+        } else if (meta.filetype === 'media') {
+            input.setAttribute('accept', 'audio/*,video/*');
+        }
+        
+        input.onchange = function() {
+            var file = this.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            var activeEditor = tinymce.activeEditor; 
+            var filearea = activeEditor.getElement().dataset.filearea;
+            var itemid = activeEditor.getElement().dataset.itemid;
+
+            fetch('upload.php?cmid=${id}&filearea=' + filearea + '&itemid=' + itemid, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.log('Contenu de la réponse en erreur:', response.text());
+                    throw new Error('Erreur HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.location) {
+                    callback(data.location, {alt: file.name});
+                } else {
+                    alert('Erreur lors du téléchargement du fichier.');
+                }
+            })
+            .catch(error => console.error('Erreur :', error));
+        };
+        input.click();
+    }
 });
-</script>';
+</script>";
 
 
 ?>
@@ -672,8 +784,9 @@ $(document).ready(function() {
                 isValid = false;
                 $('#error-messages').append('<li>Au moins une réponse doit être correcte.</li>');
             }
+        
         }
-
+        
         // Vérification du commentaire global
         if ($('#global_comment').val().trim() === "") {
             isValid = false;
@@ -687,6 +800,7 @@ $(document).ready(function() {
             // Afficher les messages d'erreur dans le modal
             $('#error-modal').removeClass('hidden');
         }
+        
     });
 
     // Fermer le modal

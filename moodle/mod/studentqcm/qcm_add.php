@@ -3,6 +3,8 @@
 // Inclure le fichier de configuration de Moodle pour initialiser l'environnement Moodle
 require_once(__DIR__ . '/../../config.php');
 
+$context = context_system::instance(); // Contexte de Moodle
+
 // Récupérer l'ID du module de cours depuis l'URL
 $id = required_param('id', PARAM_INT);
 $type = required_param('qcm_type', PARAM_TEXT);
@@ -125,9 +127,12 @@ echo "<div class='mt-8'>";
 
 
     // Context
+    $filearea = 'contextfiles';
+    $itemid = 0;
+
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<label for='context_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('context', 'mod_studentqcm') . " :</label>";
-    echo "<textarea id='context_1' name='questions[1][context]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'></textarea>";
+    echo "<textarea id='context_1' name='questions[1][context]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'></textarea>";
     echo "</div>";
 
     // Question
@@ -139,13 +144,16 @@ echo "<div class='mt-8'>";
     // Réponses
     for ($i = 1; $i <= 5; $i++) {
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
+        $itemid = -$i;
 
         // Réponse
         if ($type != "TCS") {
+            $filearea = 'answerfiles';
+
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='answer_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('answer', 'mod_studentqcm') . " $i :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "<textarea id='answer_1_{$i}' name='questions[1][answers][{$i}][answer]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
             echo "</div>";
             echo "</div>";
         }
@@ -160,10 +168,12 @@ echo "<div class='mt-8'>";
 
         // Explication
         if($type != "TCS") {
+            $filearea = 'explanationfiles';
+
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
             echo "<label for='explanation_1_{$i}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $i :</label>";
             echo "<div class='col-span-10 w-full'>";
-            echo "<textarea id='explanation_1_{$i}' name='questions[1][answers][{$i}][explanation]' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
+            echo "<textarea id='explanation_1_{$i}' name='questions[1][answers][{$i}][explanation]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full block resize-none p-2 mt-2 border border-gray-300 rounded-lg' required></textarea>";
             echo "</div>";
             echo "</div>";
         }
@@ -204,6 +214,7 @@ echo "</form>";
 
 echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></script>";
 echo "<script>
+
 tinymce.init({
     selector: 'textarea',
     plugins: ['image', 'media', 'link', 'table'],
@@ -211,13 +222,21 @@ tinymce.init({
     image_advtab: true,
     media_dimensions: true,
     height: 180,
-    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
+    images_upload_url: 'upload.php',
     automatic_uploads: true,
+    setup: function (editor) {
+      editor.on('init', function () {
+        // Assure que chaque formulaire parent a 'novalidate'
+        var form = editor.getElement().closest('form');
+        if (form) {
+          form.setAttribute('novalidate', true);
+        }
+      });
+    },
     file_picker_callback: function(callback, value, meta) {
         var input = document.createElement('input');
         input.setAttribute('type', 'file');
         
-        // Gère l’upload des images, vidéos et sons
         if (meta.filetype === 'image') {
             input.setAttribute('accept', 'image/*');
         } else if (meta.filetype === 'media') {
@@ -229,11 +248,21 @@ tinymce.init({
             var formData = new FormData();
             formData.append('file', file);
 
-            fetch('upload.php', {
+            var activeEditor = tinymce.activeEditor; 
+            var filearea = activeEditor.getElement().dataset.filearea;
+            var itemid = activeEditor.getElement().dataset.itemid;
+
+            fetch('upload.php?cmid=${id}&filearea=' + filearea + '&itemid=' + itemid, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    console.log('Contenu de la réponse en erreur:', response.text());
+                    throw new Error('Erreur HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.location) {
                     callback(data.location, {alt: file.name});
@@ -241,14 +270,9 @@ tinymce.init({
                     alert('Erreur lors du téléchargement du fichier.');
                 }
             })
-            .catch(error => console.error('Erreur:', error));
+            .catch(error => console.error('Erreur :', error));
         };
         input.click();
-    },
-    setup: function (editor) {
-        editor.on('init', function () {
-            editor.getContainer().closest('form').setAttribute('novalidate', true);
-        });
     }
 });
 </script>";

@@ -17,6 +17,25 @@ require_login($course, true, $cm);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $questions = $_POST['questions'];
 
+
+    // Correction des itemid temporaire dans mdl_files et mdl_studentqcm_file
+    $fileareas = ['contextfiles', 'answerfiles', 'explanationfiles'];
+    $files = [];
+
+    foreach ($fileareas as $area) {
+        $sql = "SELECT * FROM {studentqcm_file} 
+                WHERE userid = :userid 
+                AND filearea = :filearea 
+                AND itemid <= 0";
+        
+        $params = [
+            'userid' => $USER->id,
+            'filearea' => $area
+        ];
+
+        $files[$area] = $DB->get_records_sql($sql, $params);
+    }
+
     foreach ($questions as $q_id => $question) {
         // Vérifier que la question a bien un texte
         if (!empty(trim($question['question']))) {
@@ -77,6 +96,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 throw new moodle_exception('insertfailed', 'studentqcm_question');
             }
 
+            // Correction des itemid temporaire dans mdl_files et mdl_studentqcm_file   
+            $area = 'contextfiles';
+            if (!empty($files[$area])) {
+                // Récupérer tous les fichiers de mdl_files en une seule requête
+                $sql = "SELECT * FROM {files} 
+                        WHERE userid = :userid 
+                        AND itemid <= 0 
+                        AND filearea = :filearea";
+            
+                $params = [
+                    'userid' => $USER->id, // L'utilisateur courant
+                    'filearea' => $area
+                ];
+            
+                $mdl_files = $DB->get_records_sql($sql, $params);
+            
+                // Parcourir les fichiers contextfiles pour mettre à jour studentqcm_file
+                foreach ($files[$area] as $file) {
+                    $file->itemid = $question_id;
+                    $DB->update_record('studentqcm_file', $file);
+                }
+            
+                // Mettre à jour les fichiers de mdl_files en dehors de la boucle précédente
+                foreach ($mdl_files as $mdl_file) {
+                    $mdl_file->itemid = $question_id;
+                    $DB->update_record('files', $mdl_file);
+                }
+            }
+            
+
             $indexation = 1;
             if (!empty($question['answers'])) {
                 foreach ($question['answers'] as $answer) {
@@ -97,10 +146,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         debugging("Error inserting answer: " . $e->getMessage());
                         throw $e;
                     }
+
+                    // Correction des itemid temporaire dans mdl_files et mdl_studentqcm_file   
+                    $fileareas = ['answerfiles', 'explanationfiles'];
+
+                    foreach ($fileareas as $area) {
+                        if (!empty($files[$area])) {
+                            // Récupérer tous les fichiers de mdl_files en une seule requête pour chaque filearea
+                            $sql = "SELECT * FROM {files} 
+                                    WHERE userid = :userid 
+                                    AND itemid <= 0 
+                                    AND filearea = :filearea";
+                        
+                            $params = [
+                                'userid' => $USER->id, // L'utilisateur courant
+                                'filearea' => $area
+                            ];
+                        
+                            $mdl_files = $DB->get_records_sql($sql, $params);
+                        
+                            // Mettre à jour les fichiers de mdl_studentqcm_file
+                            foreach ($files[$area] as $file) {
+                                // Si l'itemid correspond à $indexation, on effectue la mise à jour
+                                if ($file->itemid === $indexation) {
+                                    $file->itemid = $inserted_answer_id;
+                                    $DB->update_record('studentqcm_file', $file);
+                                }
+                            }
+                        
+                            // Mettre à jour les fichiers de mdl_files
+                            foreach ($mdl_files as $mdl_file) {
+                                // Si l'itemid correspond à $indexation, on effectue la mise à jour
+                                if ($mdl_file->itemid === $indexation) {
+                                    $mdl_file->itemid = $inserted_answer_id;
+                                    $DB->update_record('files', $mdl_file);
+                                }
+                            }
+                        }
+                    }
+
+            
                     
                     $indexation++;
                 }
             }
+
 
             // Vérifier et insérer les mots-clés
             if (!empty($question['keywords']) && is_array($question['keywords'])) {
