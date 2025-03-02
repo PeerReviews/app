@@ -163,15 +163,6 @@ echo "<div class='mt-8'>";
         $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
     }
     
-    // $img_text = file_rewrite_pluginfile_urls(
-    //     $question->context,      // Le texte contenant la balise <img>
-    //     'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
-    //     $context->id,            // ID du contexte
-    //     'mod_studentqcm',        // Nom du module
-    //     'questionfiles',         // Zone des fichiers
-    //     0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
-    // );
-
     $question->context = $question->context . $img_text;
 
     // Afficher l'éditeur avec le contenu préchargé
@@ -194,16 +185,6 @@ echo "<div class='mt-8'>";
         echo "<div class='rounded-3xl bg-sky-100 my-2 p-4'>";
 
         if($answer = current($answers)){
-
-            // $context = context_system::instance(); // Contexte de Moodle
-            // $img_text = file_rewrite_pluginfile_urls(
-            //     $answer->answer,      // Le texte contenant la balise <img>
-            //     'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
-            //     $context->id,            // ID du contexte
-            //     'mod_studentqcm',        // Nom du module
-            //     'questionfiles',         // Zone des fichiers
-            //     0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
-            // );
 
             $filearea = 'answerfiles';            // La zone des fichiers associée à la réponse
             $itemid = $answer->id;            // L'ID de la réponse
@@ -249,17 +230,7 @@ echo "<div class='mt-8'>";
         
             if($type != "TCS") {
 
-                // $context = context_system::instance(); // Contexte de Moodle
-                // $img_text = file_rewrite_pluginfile_urls(
-                //     $answer->explanation,      // Le texte contenant la balise <img>
-                //     'pluginfile.php',        // Le plugin pour gérer l'affichage des fichiers
-                //     $context->id,            // ID du contexte
-                //     'mod_studentqcm',        // Nom du module
-                //     'questionfiles',         // Zone des fichiers
-                //     0                        // Item ID (utilisé pour associer un fichier à un élément spécifique)
-                // );
-
-                $filearea = 'explanationfiles';            // La zone des fichiers associée à l'explication de la réponse
+                $filearea = 'explanationfiles';   // La zone des fichiers associée à l'explication de la réponse
                 $itemid = $answer->id;            // L'ID de la réponse
 
                 $file_storage = get_file_storage();
@@ -419,9 +390,6 @@ tinymce.init({
             var filearea = activeEditor.getElement().dataset.filearea;
             var itemid = activeEditor.getElement().dataset.itemid;
 
-            console.log(filearea);
-            console.log(itemid);
-
             fetch('upload.php?cmid=${id}&filearea=' + filearea + '&itemid=' + itemid, {
                 method: 'POST',
                 body: formData
@@ -440,7 +408,7 @@ tinymce.init({
                     alert('Erreur lors du téléchargement du fichier.');
                 }
             })
-            .catch(error => console.error('Erreur jsp :', error));
+            .catch(error => console.error('Erreur :', error));
         };
         input.click();
     }

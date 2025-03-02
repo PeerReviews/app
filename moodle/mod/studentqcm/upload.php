@@ -32,8 +32,10 @@ try {
         'filearea' => $filearea,
         'itemid' => $itemid,
         'filepath' => '/',
-        'filename' => $filename
+        'filename' => $filename,
+        'userid' => $USER->id 
     ];
+    
 
     if (!file_exists($file['tmp_name'])) {
         echo json_encode(['error' => 'Fichier temporaire introuvable: ' . $file['tmp_name']]);
