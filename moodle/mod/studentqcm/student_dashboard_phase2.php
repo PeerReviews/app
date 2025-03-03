@@ -101,9 +101,6 @@ foreach ($students as $student) {
     $completed_reviews_count = $DB->count_records('studentqcm_evaluation', array('userid' => $student->userid, 'status' => 1));
     $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
 
-
-    $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
-
     $tmp = [];
     foreach ($students_to_review as $record) {
         // Filtrer les valeurs nulles avant de les ajouter à la liste
