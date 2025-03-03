@@ -2,6 +2,8 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+$context = context_system::instance();
+
 $id = required_param('id', PARAM_INT);
 $prod_id = required_param('prod_id', PARAM_INT);
 
@@ -21,10 +23,8 @@ $qcms = array();
 
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
-    // Charger les questions associées à cette production spécifique
     $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id));
 
-    // Ajouter chaque question au tableau $qcms
     foreach ($questions as $question) {
         $qcms[] = $question;
     }
@@ -208,6 +208,55 @@ if ($qcms) {
                                 echo "Contexte";
                             echo "</p>";
                             echo "<span class=''>{$qcm->context}</span>";
+
+                            $filearea = 'contextfiles';            // La zone des fichiers associée au contexte
+                            $itemid = $qcm->id;            // L'ID de la question
+
+                            $file_storage = get_file_storage();
+
+                            // Récupérer tous les fichiers associés au contexte de la question
+                            $file_records = $file_storage->get_area_files(
+                                $context->id,      // ID du contexte
+                                'mod_studentqcm',  // Nom du module
+                                $filearea,         // Zone de fichiers
+                                $itemid,           // ID de l'élément
+                                'sortorder',       // Tri des fichiers
+                                false              // Inclure ou non les fichiers supprimés
+                            );
+
+                            // Parcourir les fichiers et générer les balises <img> pour les afficher
+                            $img_text = '';
+                            foreach ($file_records as $file) {
+                                if ($file->get_filename() == '.') {
+                                    continue;
+                                }
+                            
+                                $img_url = moodle_url::make_pluginfile_url(
+                                    $context->id,
+                                    'mod_studentqcm',
+                                    $filearea,
+                                    $itemid,
+                                    $file->get_filepath(),
+                                    $file->get_filename()
+                                )->out();
+                            
+                                echo "<p>URL générée : <a href='{$img_url}' target='_blank'>{$img_url}</a></p>";
+                            
+                                $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' style='max-width:100%; height:auto;' />";
+                            }
+
+
+debugging("URL du fichier : " . moodle_url::make_pluginfile_url(
+    $context->id,
+    'mod_studentqcm',
+    $filearea,
+    $itemid,
+    $file->get_filepath(),
+    $file->get_filename()
+)->out(), DEBUG_DEVELOPER);
+
+                            
+                            echo $img_text;
 
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2 mt-4'>";
                                 echo "Explication globale";

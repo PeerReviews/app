@@ -249,13 +249,21 @@ tinymce.init({
     image_advtab: true,
     media_dimensions: true,
     height: 180,
-    images_upload_url: 'upload.php',  // Moodle gérera l'upload ici
+    images_upload_url: 'upload.php',
     automatic_uploads: true,
+    setup: function (editor) {
+      editor.on('init', function () {
+        // Assure que chaque formulaire parent a 'novalidate'
+        var form = editor.getElement().closest('form');
+        if (form) {
+          form.setAttribute('novalidate', true);
+        }
+      });
+    },
     file_picker_callback: function(callback, value, meta) {
         var input = document.createElement('input');
         input.setAttribute('type', 'file');
         
-        // Gère l’upload des images, vidéos et sons
         if (meta.filetype === 'image') {
             input.setAttribute('accept', 'image/*');
         } else if (meta.filetype === 'media') {
@@ -267,11 +275,21 @@ tinymce.init({
             var formData = new FormData();
             formData.append('file', file);
 
-            fetch('upload.php', {
+            var activeEditor = tinymce.activeEditor; 
+            var filearea = activeEditor.getElement().dataset.filearea;
+            var itemid = activeEditor.getElement().dataset.itemid;
+
+            fetch('upload.php?cmid=${id}&filearea=' + filearea + '&itemid=' + itemid, {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    console.log('Contenu de la réponse en erreur:', response.text());
+                    throw new Error('Erreur HTTP ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.location) {
                     callback(data.location, {alt: file.name});
@@ -279,18 +297,12 @@ tinymce.init({
                     alert('Erreur lors du téléchargement du fichier.');
                 }
             })
-            .catch(error => console.error('Erreur:', error));
+            .catch(error => console.error('Erreur :', error));
         };
         input.click();
-    },
-    setup: function (editor) {
-        editor.on('init', function () {
-            editor.getContainer().closest('form').setAttribute('novalidate', true);
-        });
     }
 });
 </script>";
-
 
 ?>
 

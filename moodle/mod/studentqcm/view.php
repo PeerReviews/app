@@ -20,17 +20,14 @@ $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => ti
 // Vérifie les rôles de l'utilisateur dans le contexte du cours
 $user_roles = get_user_roles(context_course::instance($course->id), $USER->id, true);
 
-// Variables pour vérifier si l'utilisateur est un étudiant ou un professeur
 $is_student = false;
 $is_teacher = false;
 $is_manager = false;
 
-// Vérifie si l'utilisateur a le rôle "student"
 foreach ($user_roles as $role) {
     if ($role->shortname == 'student') {
         $is_student = true;
     }
-    // Vérifie si l'utilisateur a le rôle "teacher"
     if ($role->shortname == 'editingteacher' || $role->shortname == 'teacher') {
         $is_teacher = true;
     }
@@ -46,7 +43,7 @@ echo "<div class='mx-auto grid grid-cols-3 gap-4'>";
 if ($is_teacher || $is_manager) {
 
     if($is_manager) {
-
+        // Affichage administrateur
         echo "<div class='flex mt-8 mx-4 justify-between border-b p-2 col-span-3'>";
             echo "<div class='flex text-center text-gray-500 items-end'>";
                 echo "<p class='text-3xl'> " . get_string('manager_teacher', 'mod_studentqcm') . "</p>";
