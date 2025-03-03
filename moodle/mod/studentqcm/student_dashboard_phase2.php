@@ -99,24 +99,26 @@ echo '<tbody>';
 // Affichage des étudiants
 foreach ($students as $student) {
     $completed_reviews_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
-    // $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('prod1_id' => $student->userid))
+    $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
 
-    $sql = "SELECT * FROM {studentqcm_assignedqcm} WHERE prod1_id = :userid1 OR prod2_id = :userid2 OR prod3_id = :userid3";
 
-    $params = [
-    'userid1' => $student->userid,
-    'userid2' => $student->userid,
-    'userid3' => $student->userid
-    ];
+    $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
 
-    $students_to_review = $DB->get_records_sql($sql, $params);
-    
-    $correctors_list = [];
-    foreach($students_to_review as $student_reviewed){
-        $correctors_list[] = $student_reviewed->id;
+    $tmp = [];
+    foreach ($students_to_review as $record) {
+        // Filtrer les valeurs nulles avant de les ajouter à la liste
+        $to_review = array_filter([
+            $record->prod1_id, 
+            $record->prod2_id, 
+            $record->prod3_id
+        ], fn($value) => !is_null($value));
+
+        // Ajouter les valeurs filtrées à la liste principale
+        $tmp = array_merge($tmp, $to_review);
     }
 
-
+    // Convertir en une chaîne de caractères formatée
+    $students_to_review = implode(', ', $tmp);
 
     $student_name = $DB->get_record('user', array('id' => $student->userid));
     $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
@@ -141,7 +143,7 @@ foreach ($students as $student) {
             : mb_strtoupper(get_string('never_connected', 'mod_studentqcm'), 'UTF-8')) . 
          '</td>';
 
-    echo '<td class="px-3 py-4 text-md text-gray-600">' .  implode(', ', $correctors_list)  . '</td>';
+    echo '<td class="px-3 py-4 text-md text-gray-600">' . $students_to_review . '</td>';
 
     echo '<td class="px-2 py-4 text-md text-gray-600">';
     echo '<a href="' . new moodle_url($PAGE->url, array('switch_to_user' => $student->userid)) . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl">';
