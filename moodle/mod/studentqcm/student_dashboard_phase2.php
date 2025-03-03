@@ -98,7 +98,7 @@ echo '<tbody>';
 
 // Affichage des étudiants
 foreach ($students as $student) {
-    $completed_reviews_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
+    $completed_reviews_count = $DB->count_records('studentqcm_evaluation', array('userid' => $student->userid, 'status' => 1));
     $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
 
 
