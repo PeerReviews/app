@@ -215,7 +215,7 @@ function studentqcm_get_callbacks() {
     ];
 }
 
-function getImageFile($contextid, $component, $filearea, $itemid, $filename, $userid) {
+function getImageFile($contextid, $component, $filearea, $itemid, $filename) {
     $fs = get_file_storage();
     // Récupérer tous les fichiers pour le contexte, le composant, l'élément et la zone spécifiés
     $file_records = $fs->get_area_files(
@@ -229,7 +229,7 @@ function getImageFile($contextid, $component, $filearea, $itemid, $filename, $us
     
     // Parcourir les fichiers et filtrer par user_id et filename
     foreach ($file_records as $file) {
-        if ($file->get_filename() === $filename && $file->get_userid() == $userid) {
+        if ($file->get_filename() === $filename) {
             return $file;  // Retourner le fichier correspondant
         }
     }
@@ -251,7 +251,7 @@ function mod_studentqcm_pluginfile(
     // if ($context->contextlevel != CONTEXT_MODULE) {
     //     return false;
     // }
-
+    
     // Make sure the filearea is one of those used by the plugin.
     if ($filearea !== 'contextfiles' && $filearea !== 'answerfiles' && $filearea !== 'explanationfiles' && $filearea !== 'coursefiles') {
         return false;
@@ -288,9 +288,9 @@ function mod_studentqcm_pluginfile(
     $systemcontext = context_system::instance();
     $fs = get_file_storage();
 
-    $file = getImageFile($context->id, 'mod_studentqcm', $filearea, $itemid, $filename, $USER->id);
+    $file = getImageFile($context->id, 'mod_studentqcm', $filearea, $itemid, $filename);
     if (!$file) {
-        throw new moodle_exception("Le fichier est introuvable !" . " -- " . $filepath . " -- " . $filearea . ' error : ' . $filename . ' USER id : ' . $USER->id);
+        throw new moodle_exception("Le fichier est introuvable !" . " -- " . $filepath . " -- " . $filearea . ' error : ' . $filename);
         // The file does not exist.
         return false;
     }

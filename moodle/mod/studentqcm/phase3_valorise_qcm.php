@@ -142,7 +142,9 @@ echo "<div class='mt-8'>";
         'sortorder',       // Tri des fichiers
         false              // Inclure ou non les fichiers supprimés
     );
-
+    echo '<pre>';
+    print_r($file_records);
+    echo '</pre>';
     // Parcourir les fichiers et générer les balises <img> pour les afficher
     $img_text = '';
     foreach ($file_records as $file) {
@@ -155,7 +157,10 @@ echo "<div class='mt-8'>";
             $file->get_filepath(), // Chemin du fichier
             $file->get_filename()   // Nom du fichier
         )->out();  // Génère l'URL complète du fichier
-
+        
+        echo '<pre>';
+        print_r($img_url);
+        echo '</pre>';
         // Ajouter l'élément <img> avec l'URL
         $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
     }
