@@ -145,6 +145,10 @@ $string['evaluation_saved'] = 'Évaluation enregistrée';
 
 $string['add'] = 'Ajouter';
 
+$string['media_context'] = 'Médias du contexte';
+$string['media_answer'] = 'Médias de la réponse';
+$string['media_explanation'] = 'Médias de l\'explication';
+
 
 // PHASE 3
 

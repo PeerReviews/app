@@ -63,6 +63,61 @@ $PAGE->set_heading(format_string($course->fullname));
 
 $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
+
+function generate_media_html($context, $filearea, $itemid, $file_storage) {
+    $file_records = $file_storage->get_area_files($context->id, 'mod_studentqcm', $filearea, $itemid, 'sortorder', false);
+    $media_html = '';
+
+    foreach ($file_records as $file) {
+        if ($file->get_filename() == '.') continue;
+
+        $file_url = moodle_url::make_pluginfile_url($context->id, 'mod_studentqcm', $filearea, $itemid, $file->get_filepath(), $file->get_filename())->out();
+        $file_extension = pathinfo($file->get_filename(), PATHINFO_EXTENSION);
+
+        // Styles généraux pour tous les médias
+        $common_classes = "cursor-pointer rounded-lg shadow";
+        $overlay_classes = "absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300 cursor-pointer";
+        $icon_classes = "text-white text-2xl";
+
+        // Images
+        if (in_array($file_extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            $media_html .= "
+                <div class='relative block w-[40px] h-[40px]'>
+                    <img src='{$file_url}' alt='{$file->get_filename()}' class='$common_classes w-full h-full object-cover' onclick='openMediaModal(\"{$file_url}\")' />
+                    <div class='$overlay_classes' onclick='openMediaModal(\"{$file_url}\")'>
+                        <i class='fas fa-search $icon_classes'></i>
+                    </div>
+                </div>";
+        }
+        // Vidéos
+        elseif (in_array($file_extension, ['mp4', 'webm', 'ogg'])) {
+            $media_html .= "
+                <div class='relative block w-[40px] h-[40px]' onclick='openMediaModal(\"{$file_url}\")'>
+                    <div class='$common_classes bg-gray-800 flex items-center justify-center w-full h-full'>
+                        <i class='fas fa-play text-white text-xl'></i>
+                    </div>
+                    <div class='$overlay_classes'>
+                        <i class='fas fa-play-circle $icon_classes'></i>
+                    </div>
+                </div>";
+        }
+        // Audios
+        elseif (in_array($file_extension, ['mp3', 'wav', 'ogg'])) {
+            $media_html .= "
+                <div class='relative block w-[40px] h-[40px]' onclick='openMediaModal(\"{$file_url}\")'>
+                    <div class='$common_classes bg-gray-700 flex items-center justify-center w-full h-full'>
+                        <i class='fas fa-music text-white text-xl'></i>
+                    </div>
+                    <div class='$overlay_classes'>
+                        <i class='fas fa-play-circle $icon_classes'></i>
+                    </div>
+                </div>";
+        }
+    }
+
+    return $media_html;
+}
+
 echo $OUTPUT->header();
 
 echo "<div class='mx-auto'>";
@@ -185,19 +240,19 @@ if ($qcms) {
                             echo "<p class='font-semibold text-2xl text-gray-700 mb-2'>";
                             echo format_string(ucfirst($qcm->question));
                             echo "</p>";
-                    
+
                             // Infos référentiel, compétence, sous-compétence
                             echo "<div class='my-4 text-gray-600 text-sm space-y-1'>";
                                 echo "<p class='flex items-center gap-2'>";
                                 echo "<i class='fas fa-book text-green-500'></i>";
                                 echo "<span>" . get_string('referentiel', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
                                 echo "</p>";
-                    
+
                                 echo "<p class='flex items-center gap-2'>";
                                 echo "<i class='fas fa-bookmark text-orange-500'></i>";
                                 echo "<span>" . get_string('competency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_competency) . "</strong></span>";
                                 echo "</p>";
-                    
+
                                 echo "<p class='flex items-center gap-2'>";
                                 echo "<i class='fas fa-award text-purple-500'></i>";
                                 echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . ": <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
@@ -205,7 +260,7 @@ if ($qcms) {
                             echo "</div>";
 
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2'>";
-                                echo "Contexte";
+                            echo "Contexte";
                             echo "</p>";
                             echo "<span class=''>{$qcm->context}</span>";
 
@@ -214,46 +269,28 @@ if ($qcms) {
 
                             $file_storage = get_file_storage();
 
-                            // Récupérer tous les fichiers associés au contexte de la question
-                            $file_records = $file_storage->get_area_files(
-                                $context->id,      // ID du contexte
-                                'mod_studentqcm',  // Nom du module
-                                $filearea,         // Zone de fichiers
-                                $itemid,           // ID de l'élément
-                                'sortorder',       // Tri des fichiers
-                                false              // Inclure ou non les fichiers supprimés
-                            );
+                            // Utilisation de la fonction pour récupérer les fichiers et les afficher
+                            $img_text = generate_media_html($context, $filearea, $itemid, $file_storage);
 
-                            // Parcourir les fichiers et générer les balises <img> pour les afficher
-                            $img_text = '';
-                            foreach ($file_records as $file) {
-                                if ($file->get_filename() == '.') {
-                                    continue;
-                                }
-                            
-                                $img_url = moodle_url::make_pluginfile_url(
-                                    $context->id,
-                                    'mod_studentqcm',
-                                    $filearea,
-                                    $itemid,
-                                    $file->get_filepath(),
-                                    $file->get_filename()
-                                )->out();
-                            
-                                $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' style='max-width:100%; height:auto;' />";
+                            // Affichage des fichiers associés au contexte de la question
+                            if (!empty($img_text)) {
+                                echo "<div class='flex items-center gap-2 mt-2'>";
+                                echo "<p class='font-semibold text-md text-gray-600 inline-flex'>" . get_string('media_context', 'mod_studentqcm') . " :</p>";
+                                echo "<div class='flex gap-1'>" . $img_text . "</div>";
+                                echo "</div>";
                             }
-                            
-                            echo $img_text;
 
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2 mt-4'>";
-                                echo "Explication globale";
+                            echo "Explication globale";
                             echo "</p>";
                             echo "<span class=''>{$qcm->global_comment}</span>";
 
                         echo "</div>";
+
+
                     
                         // Colonne des réponses
-                        echo "<div class='w-full'>"; 
+                        echo "<div class='w-full'>";
                         foreach ($reponses as $reponse) {
                             $bgColor = $reponse->istrue ? 'bg-lime-200' : 'bg-red-200';
                             $answerColor = $reponse->istrue ? 'text-lime-700' : 'text-red-700';
@@ -269,45 +306,25 @@ if ($qcms) {
                                 echo "</div>";
                             }
 
-                            $filearea = 'answerfiles';
-                            $itemid = $reponse->id;
-
                             $file_storage = get_file_storage();
 
-                            // Récupérer tous les fichiers associés au contexte de la question
-                            $file_records = $file_storage->get_area_files(
-                                $context->id,      // ID du contexte
-                                'mod_studentqcm',  // Nom du module
-                                $filearea,         // Zone de fichiers
-                                $itemid,           // ID de l'élément
-                                'sortorder',       // Tri des fichiers
-                                false              // Inclure ou non les fichiers supprimés
-                            );
-
-                            // Parcourir les fichiers et générer les balises <img> pour les afficher
-                            $img_text = '';
-                            foreach ($file_records as $file) {
-                                if ($file->get_filename() == '.') {
-                                    continue;
-                                }
-                            
-                                $img_url = moodle_url::make_pluginfile_url(
-                                    $context->id,
-                                    'mod_studentqcm',
-                                    $filearea,
-                                    $itemid,
-                                    $file->get_filepath(),
-                                    $file->get_filename()
-                                )->out();
-                            
-                                $img_text .= "
-                                    <div class='relative mt-2'>
-                                        <img src='{$img_url}' alt='{$file->get_filename()}' style='max-width:100%; height:auto;' class='cursor-pointer' onclick='openModal(\"{$img_url}\")' />
-                                        <button class='bg-blue-500 text-white px-2 py-1 rounded mt-1' onclick='openModal(\"{$img_url}\")'>Voir en grand</button>
-                                    </div>";
+                            // Affichage des fichiers "answerfiles"
+                            $img_text_answer = generate_media_html($context, 'answerfiles', $reponse->id, $file_storage);
+                            if (!empty($img_text_answer)) {
+                                echo "<div class='flex items-center gap-2 mt-2'>";
+                                echo "<p class='font-semibold text-md $answerColor inline-flex'>" . get_string('media_answer', 'mod_studentqcm') . " :</p>";
+                                echo "<div class='flex gap-1'>" . $img_text_answer . "</div>";
+                                echo "</div>";
                             }
 
-                            echo $img_text;
+                            // Affichage des fichiers "explanationfiles"
+                            $img_text_explanation = generate_media_html($context, 'explanationfiles', $reponse->id, $file_storage);
+                            if (!empty($img_text_explanation)) {
+                                echo "<div class='flex items-center gap-2 mt-2'>";
+                                echo "<p class='font-semibold text-md $answerColor inline-flex'>" . get_string('media_explanation', 'mod_studentqcm') . " :</p>";
+                                echo "<div class='flex gap-1'>" . $img_text_explanation . "</div>";
+                                echo "</div>";
+                            }
 
                             echo "</label>";
                             echo "</div>";
@@ -315,7 +332,6 @@ if ($qcms) {
                         echo "</div>";
                     echo "</div>";
 
-                    // Conteneur principal aligné en ligne
                     echo "<div class='bg-gray-50 rounded-lg p-4 my-2 flex items-center gap-4'>";
                         echo "<p class='font-semibold text-lg text-gray-700'>";
                         echo "<span>" . get_string('note_for_question', 'mod_studentqcm') . " :</span>";
@@ -418,8 +434,65 @@ echo $OUTPUT->footer();
     </div>
 </div>
 
+<!-- Modale d'affichage en grand -->
+<div id="mediaModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="relative bg-white p-4 rounded-lg shadow-lg max-w-3xl mt-12">
+        <!-- Bouton de fermeture -->
+        <button class="absolute top-2 right-2 text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded" onclick="closeMediaModal()">&times;</button>
+
+        <!-- Conteneur dynamique pour médias -->
+        <div id="modalContent" class="w-full flex justify-center items-center"></div>
+    </div>
+</div>
 
 <script>
+function openMediaModal(mediaUrl) {
+    const modalContent = document.getElementById("modalContent");
+    modalContent.innerHTML = ""; // On vide le contenu précédent
+
+    const fileExtension = mediaUrl.split('.').pop().toLowerCase();
+
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension)) {
+        // Afficher une image
+        const img = document.createElement("img");
+        img.src = mediaUrl;
+        img.classList.add("max-w-full", "max-h-[80vh]", "mx-auto", "rounded-lg");
+        modalContent.appendChild(img);
+    } else if (["mp4", "webm", "ogg"].includes(fileExtension)) {
+        // Afficher une vidéo
+        const video = document.createElement("video");
+        video.src = mediaUrl;
+        video.controls = true;
+        video.autoplay = true;
+        video.classList.add("max-w-full", "max-h-[80vh]", "mx-auto", "rounded-lg");
+        modalContent.appendChild(video);
+    } else if (["mp3", "wav", "ogg"].includes(fileExtension)) {
+        // Afficher un audio
+        const audio = document.createElement("audio");
+        audio.src = mediaUrl;
+        audio.controls = true;
+        audio.classList.add("w-full");
+        modalContent.appendChild(audio);
+    } else {
+        // Fichier non supporté
+        modalContent.innerHTML = "<p class='text-red-600 font-bold'>Format non supporté</p>";
+    }
+
+    // Afficher la modale
+    document.getElementById("mediaModal").classList.remove("hidden");
+    
+    // Fermer en cliquant en dehors
+    document.getElementById("mediaModal").addEventListener("click", function(event) {
+        if (event.target === document.getElementById("mediaModal")) {
+            closeMediaModal();
+        }
+    });
+}
+
+function closeMediaModal() {
+    document.getElementById("mediaModal").classList.add("hidden");
+}
+
 
 function showQuestionModal() {
     document.getElementById("auto-complete-question-modal").classList.remove("hidden");
@@ -458,7 +531,6 @@ document.getElementById("auto-complete-review-modal").addEventListener("click", 
         closeReviewModal();
     }
 });
-
 
     
 function selectGrade(qcmId, grade, button) {
