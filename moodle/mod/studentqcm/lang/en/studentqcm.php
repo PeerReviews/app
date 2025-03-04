@@ -233,7 +233,7 @@ $string['user_gestion'] = 'Gestion des utilisateurs';
 $string['phase_gestion'] = 'Gestion du tirage au sort';
 $string[''] = '';
 
-$string['student_list'] = 'Liste de étudiants';
+$string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
 $string['completed_question'] = 'Questions complétées';
 $string['actions'] = 'Actions';
@@ -266,4 +266,11 @@ $string[''] = '';
 $string['autocomplete_question_success'] = 'Notes des questions auto-complétées avec succès !';
 $string['autocomplete_review_success'] = 'Notes des révisions auto-complétées avec succès !';
 $string[''] = '';
-$string[''] = '';
+
+// Gestion des attributions
+$string['attribution_list'] = 'Liste des attributions de productions';
+$string['prod1'] = 'Production 1 à évaluer';
+$string['prod2'] = 'Production 2 à évaluer';
+$string['prod3'] = 'Production 3 à évaluer';
+$string['add_attribution'] = 'Ajouter manuellement une attribution';
+$string['save_students'] = 'Enregistrer les modifications';
