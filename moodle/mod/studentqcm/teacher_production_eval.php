@@ -246,14 +246,14 @@ if ($qcms) {
                             }
 
 
-debugging("URL du fichier : " . moodle_url::make_pluginfile_url(
-    $context->id,
-    'mod_studentqcm',
-    $filearea,
-    $itemid,
-    $file->get_filepath(),
-    $file->get_filename()
-)->out(), DEBUG_DEVELOPER);
+// debugging("URL du fichier : " . moodle_url::make_pluginfile_url(
+//     $context->id,
+//     'mod_studentqcm',
+//     $filearea,
+//     $itemid,
+//     $file->get_filepath(),
+//     $file->get_filename()
+// )->out(), DEBUG_DEVELOPER);
 
                             
                             echo $img_text;

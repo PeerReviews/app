@@ -6,6 +6,7 @@ require_once($CFG->dirroot . '/user/lib.php');
 global $DB, $USER;
 
 $nb_users = 100; // Nombre d'utilisateurs à créer
+$context = context_system::instance(); // Contexte global du site
 
 for ($i = 1; $i <= $nb_users; $i++) {
     $newuser = new stdClass();
@@ -30,14 +31,17 @@ for ($i = 1; $i <= $nb_users; $i++) {
     if ($newuser->id) {
         echo "Utilisateur {$newuser->username} créé avec succès, ID: {$newuser->id}\n";
 
-        // Insertion dans la table mdl_studentqcm_students
+        role_assign($roleid, $newuser->id, $context->id); // Attribution du rôle
+        echo "Rôle 'Student' assigné à l'utilisateur {$newuser->username}.\n";
+
+        // Insertion dans la table mdl_students
         $student = new stdClass();
-        $student->userid = $newuser->id;
-        $student->istiertemps = 0;
+        $student->userId = $newuser->id;
+        $student->isTierTemps = 0;
         
 
-        $DB->insert_record('studentqcm_students', $student);
-        echo "Ajouté à la table mdl_studentqcm_students.\n";
+        $DB->insert_record('students', $student);
+        echo "Ajouté à la table mdl_students.\n";
     } else {
         echo "Erreur lors de la création de l'utilisateur {$newuser->username}.\n";
     }
