@@ -209,8 +209,8 @@ if ($qcms) {
                             echo "</p>";
                             echo "<span class=''>{$qcm->context}</span>";
 
-                            $filearea = 'contextfiles';            // La zone des fichiers associée au contexte
-                            $itemid = $qcm->id;            // L'ID de la question
+                            $filearea = 'contextfiles';
+                            $itemid = $qcm->id;
 
                             $file_storage = get_file_storage();
 
@@ -240,21 +240,8 @@ if ($qcms) {
                                     $file->get_filename()
                                 )->out();
                             
-                                echo "<p>URL générée : <a href='{$img_url}' target='_blank'>{$img_url}</a></p>";
-                            
                                 $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' style='max-width:100%; height:auto;' />";
                             }
-
-
-// debugging("URL du fichier : " . moodle_url::make_pluginfile_url(
-//     $context->id,
-//     'mod_studentqcm',
-//     $filearea,
-//     $itemid,
-//     $file->get_filepath(),
-//     $file->get_filename()
-// )->out(), DEBUG_DEVELOPER);
-
                             
                             echo $img_text;
 
@@ -281,6 +268,46 @@ if ($qcms) {
                                 echo "<span class='$answerColor'>{$reponse->explanation}</span>";
                                 echo "</div>";
                             }
+
+                            $filearea = 'answerfiles';
+                            $itemid = $reponse->id;
+
+                            $file_storage = get_file_storage();
+
+                            // Récupérer tous les fichiers associés au contexte de la question
+                            $file_records = $file_storage->get_area_files(
+                                $context->id,      // ID du contexte
+                                'mod_studentqcm',  // Nom du module
+                                $filearea,         // Zone de fichiers
+                                $itemid,           // ID de l'élément
+                                'sortorder',       // Tri des fichiers
+                                false              // Inclure ou non les fichiers supprimés
+                            );
+
+                            // Parcourir les fichiers et générer les balises <img> pour les afficher
+                            $img_text = '';
+                            foreach ($file_records as $file) {
+                                if ($file->get_filename() == '.') {
+                                    continue;
+                                }
+                            
+                                $img_url = moodle_url::make_pluginfile_url(
+                                    $context->id,
+                                    'mod_studentqcm',
+                                    $filearea,
+                                    $itemid,
+                                    $file->get_filepath(),
+                                    $file->get_filename()
+                                )->out();
+                            
+                                $img_text .= "
+                                    <div class='relative mt-2'>
+                                        <img src='{$img_url}' alt='{$file->get_filename()}' style='max-width:100%; height:auto;' class='cursor-pointer' onclick='openModal(\"{$img_url}\")' />
+                                        <button class='bg-blue-500 text-white px-2 py-1 rounded mt-1' onclick='openModal(\"{$img_url}\")'>Voir en grand</button>
+                                    </div>";
+                            }
+
+                            echo $img_text;
 
                             echo "</label>";
                             echo "</div>";
