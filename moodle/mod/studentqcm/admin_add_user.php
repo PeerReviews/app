@@ -128,7 +128,7 @@ echo '</table>';
 echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
     echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
 
-    echo '<form action="" method="post" class="space-y-5">';
+    echo "<form method='post' action='admin_add_user.php?id={$id}' class='space-y-5'>";
         echo '<input type="hidden" name="id" value="' . $id . '">';
 
         echo '<div class="flex gap-4">';
@@ -196,4 +196,55 @@ function sortTable(columnIndex) {
     table.dataset.sortOrder = isAscending ? "desc" : "asc";
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("JS chargé !");
+    
+    let form = document.querySelector("form");
+
+    if (!form) {
+        console.error("⚠️ Formulaire introuvable !");
+        return;
+    } else {
+        console.log("✅ Formulaire trouvé !");
+    }
+
+    // Ajouter un événement directement sur le formulaire
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();  // Empêche la soumission classique du formulaire
+        console.log("🚀 Formulaire soumis !");
+
+        // Récupérer les données du formulaire
+        let formData = new FormData(form);
+        console.log("📦 Données envoyées :", Object.fromEntries(formData));
+
+        // Envoi des données via fetch
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            // Vérifier si la réponse est bien JSON
+            return response.json();
+        })
+        .then(data => {
+            console.log("📩 Réponse du serveur :", data);
+            if (data.success) {
+                alert("L'étudiant a été ajouté avec succès !");
+                location.reload();  // Recharge la page après ajout
+            } else {
+                alert("Erreur : " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("❌ Erreur lors de l'envoi :", error);
+            alert("Une erreur est survenue. Veuillez réessayer.");
+        });
+    });
+});
+
+
+
+
 </script>
+
+
