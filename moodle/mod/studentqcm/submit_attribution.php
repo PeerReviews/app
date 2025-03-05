@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $record->user_id = $student_id;
             $record->prod1_id = $prod1;
             $record->prod2_id = $prod2;
-            $record->prod3_id = $prod3 == 0 ? null : $prod3;
+            $record->prod3_id = $prod3 == "" ? null : $prod3;
 
             $attribution_id = $DB->insert_record('studentqcm_assignedqcm', $record);
             if (!$attribution_id) {

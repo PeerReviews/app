@@ -225,7 +225,7 @@ function saveRow(button) {
     });
 
     if (!allFilled) {
-        alert("Toutes les cases doivent être remplies, sauf la Production 3 (facultative) !");
+        alert("Les champs 'Student ID', 'Production 1' et 'Production 2' doivent être remplis !");
         return;
     }
 
@@ -293,18 +293,36 @@ function editRow(button, studentId, row = null) {
 
         button.innerText = "Enregistrer";
     } else {
-        let studentData = { studentId: studentId };
 
-        // Récupérer les valeurs modifiées
-        cells.forEach((cell, index) => {
-            let input = cell.querySelector("input");
-            if (input) {
-                let value = input.value.trim();
-                if (value !== "") {
-                    studentData["prod" + (index - 1)] = value; // Stocke seulement les valeurs non vides
+        let studentData = { studentId: studentId };
+        let allFilled = true;
+
+        let inputs = row.querySelectorAll("input"); 
+        inputs.forEach((input) => {
+            let value = input.value.trim();
+            
+            if (input.name === "student_id") {
+                studentData.studentId = value;
+                if (value === "") {
+                    allFilled = false;
                 }
+            } else if (input.name === "prod1" || input.name === "prod2") {
+                studentData[input.name] = value === "" ? null : value; // Met null si vide
+                if (value === "") {
+                    allFilled = false;
+                }
+            } else if (input.name === "prod3") {
+                studentData.prod3 = value === "" ? null : value; // Prod3 facultatif
             }
         });
+
+
+        // Vérifier si les champs obligatoires sont remplis
+        if (!allFilled) {
+            alert("Les champs 'ID de l'étudiant', 'Production 1' et 'Production 2' doivent être remplis !");
+            return;
+        }
+
 
         if (Object.keys(studentData).length > 1) {
             let index = updatedData.findIndex(data => data.studentId === studentId);
