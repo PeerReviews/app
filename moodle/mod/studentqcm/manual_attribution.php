@@ -229,14 +229,33 @@ function saveRow(button) {
         return;
     }
 
+    let studentId = null;
+
     // Remplace les champs par leur valeur
     inputs.forEach(input => {
+        if (input.name === "student_id"){
+            studentId = input.value;
+        }
         input.parentElement.innerHTML = input.value;
     });
 
-    button.remove(); // Supprime le bouton après enregistrement
+    // Supprime le bouton "Enregistrer" après enregistrement
+    let actionsCell = button.closest('td'); // Cellule contenant le bouton "Enregistrer"
+    actionsCell.innerHTML = ''; // Vider le contenu de la cellule des actions
 
-    console.log('Données enregistrées:', inputs);
+    // Créer le bouton "Modifier"
+    let editButton = document.createElement("button");
+    editButton.innerText = "Modifier";
+    editButton.classList.add("px-3", "py-1", "bg-blue-500", "text-white", "rounded");
+    
+    // Ajouter l'événement pour réactiver les champs et permettre la modification
+    editButton.onclick = function() {
+        event.preventDefault();
+        editRow(editButton, studentId, row); // Appeler la fonction editRow pour activer la modification des champs
+    };
+
+    // Ajouter le bouton "Modifier" dans la cellule d'action
+    actionsCell.appendChild(editButton);
 
     let form = document.getElementById('attributionForm');
     
@@ -252,8 +271,10 @@ function saveRow(button) {
 
 let updatedData = [];
 
-function editRow(button, studentId) {
-    let row = document.getElementById("row-" + studentId);
+function editRow(button, studentId, row = null) {
+    if (row == null) {
+        row = document.getElementById("row-" + studentId);
+    }
     let cells = row.querySelectorAll("td");
 
     if (button.innerText === "Modifier") {
@@ -285,25 +306,14 @@ function editRow(button, studentId) {
             }
         });
 
-        // Vérifier si l'étudiant a bien des valeurs mises à jour
         if (Object.keys(studentData).length > 1) {
-            updatedData = updatedData.filter(data => data.studentId !== studentId); // Évite les doublons
-            updatedData.push(studentData);
+            let index = updatedData.findIndex(data => data.studentId === studentId);
+            if (index !== -1) {
+                updatedData[index] = studentData;  // Mettre à jour si trouvé
+            } else {
+                updatedData.push(studentData);  // Ajouter s'il n'existe pas
+            }
         }
-
-        // Nettoyer updatedData en supprimant les valeurs vides
-        updatedData = updatedData.filter(item => Object.keys(item).length > 1);
-
-        // Mettre à jour ou créer l'input hidden correspondant
-        let hiddenInput = document.getElementById("updatedData-" + studentId);
-        if (!hiddenInput) {
-            hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "updatedData[]";
-            hiddenInput.id = "updatedData-" + studentId;
-            document.getElementById("studentForm").appendChild(hiddenInput);
-        }
-        hiddenInput.value = JSON.stringify(studentData);
 
         // Remettre les valeurs modifiées dans les cellules
         cells.forEach((cell, index) => {
@@ -314,7 +324,6 @@ function editRow(button, studentId) {
         });
 
         button.innerText = "Modifier";
-        console.log("Updated Data:", updatedData);
     }
 }
 
@@ -330,7 +339,14 @@ document.getElementById('saveStudentsButton').addEventListener('click', function
     // Vérifier que `updatedData` contient uniquement des entrées valides
     updatedData = updatedData.filter(item => Object.keys(item).length > 1);
 
-    console.log("Final Updated Data avant soumission :", updatedData);
+    // Ajouter les données mises à jour au formulaire
+    updatedData.forEach(item => {
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "updatedData[]";  // Si plusieurs étudiants sont envoyés
+        input.value = JSON.stringify(item);
+        document.getElementById("attributionForm").appendChild(input);
+    });
 
     // Soumettre le formulaire
     let form = document.getElementById('attributionForm');
