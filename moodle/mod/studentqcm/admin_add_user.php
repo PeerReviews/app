@@ -44,6 +44,46 @@ echo "</div>";
 // Récupération des étudiants
 $students = $DB->get_records('students');
 
+echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
+    echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
+
+    echo "<form method='post' action='add_student.php?id={$id}' class='space-y-5'>";
+        echo '<input type="hidden" name="id" value="' . $id . '">';
+
+        echo '<div class="flex gap-4">';
+            echo '<input type="text" name="firstname" required placeholder="' . get_string('firstname', 'mod_studentqcm') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+            echo '<input type="text" name="lastname" required placeholder="' . get_string('lastname', 'mod_studentqcm') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+        echo '</div>';
+
+        echo '<div class="flex gap-4 w-full">';
+            echo '<div class="w-full">';
+            echo '<input type="email" name="email" required placeholder="' . get_string('email', 'mod_studentqcm') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+            echo '</div>';
+
+            echo '<div class="w-full py-2 ml-2">';
+            echo '<div class="w-full flex items-center gap-2">';
+                echo '<label class="font-semibold text-gray-400 text-lg">' . get_string('tier_temps', 'mod_studentqcm') . ' ?</label>';
+                echo '<label class="relative inline-flex items-center cursor-pointer">';
+                    echo '<input type="checkbox" name="istiertemps" value="1" class="sr-only peer">';
+                    echo '<span class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-indigo-400 peer-checked:after:translate-x-full peer-checked:after:bg-white 
+                                after:content-\'\' after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 
+                                after:rounded-full after:h-5 after:w-5 after:transition-all"></span>';
+                echo '</label>';
+            echo '</div>';
+            echo '</div>';
+
+        echo '</div>';
+
+    // Bouton d'ajout
+    echo '<div class="text-center">';
+    echo '<button type="submit" name="add_student" class="w-full px-6 py-2 bg-indigo-400 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 transition">';
+    echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('add', 'mod_studentqcm');
+    echo '</button>';
+    echo '</div>';
+
+echo '</form>';
+echo '</div>';
+
 echo '<div class="mt-8">';
 echo '<table class="min-w-full bg-white rounded-3xl shadow-md" id="studentTable">';
 echo '<thead>';
@@ -115,47 +155,6 @@ foreach ($students as $student) {
 
 echo '</tbody>';
 echo '</table>';
-
-echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
-    echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
-
-    echo "<form method='post' action='add_student.php?id={$id}' class='space-y-5'>";
-        echo '<input type="hidden" name="id" value="' . $id . '">';
-
-        echo '<div class="flex gap-4">';
-            echo '<input type="text" name="firstname" required placeholder="' . get_string('firstname', 'core') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
-            echo '<input type="text" name="lastname" required placeholder="' . get_string('lastname', 'core') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
-        echo '</div>';
-
-        echo '<div class="flex gap-4 w-full">';
-            echo '<div class="w-full">';
-            echo '<input type="email" name="email" required placeholder="' . get_string('email', 'mod_studentqcm') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
-            echo '</div>';
-
-            echo '<div class="w-full py-2 ml-2">';
-            echo '<div class="w-full flex items-center gap-2">';
-                echo '<label class="font-semibold text-gray-400 text-lg">' . get_string('tier_temps', 'mod_studentqcm') . ' ?</label>';
-                echo '<label class="relative inline-flex items-center cursor-pointer">';
-                    echo '<input type="checkbox" name="istiertemps" value="1" class="sr-only peer">';
-                    echo '<span class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-indigo-400 peer-checked:after:translate-x-full peer-checked:after:bg-white 
-                                after:content-\'\' after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 
-                                after:rounded-full after:h-5 after:w-5 after:transition-all"></span>';
-                echo '</label>';
-            echo '</div>';
-            echo '</div>';
-
-        echo '</div>';
-
-    // Bouton d'ajout
-    echo '<div class="text-center">';
-    echo '<button type="submit" name="add_student" class="w-full px-6 py-2 bg-indigo-400 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 transition">';
-    echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('add', 'mod_studentqcm');
-    echo '</button>';
-    echo '</div>';
-
-echo '</form>';
-echo '</div>';
-
 
 echo '</div>';
 
