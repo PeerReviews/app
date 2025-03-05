@@ -1,6 +1,8 @@
 <?php
 require_once(__DIR__ . '/../../config.php');
 
+$id = required_param('id', PARAM_INT);
+
 // Vérification si l'utilisateur est connecté et s'il est administrateur
 require_login();
 if (!is_siteadmin()) {
@@ -8,16 +10,17 @@ if (!is_siteadmin()) {
     exit;
 }
 
-$firstname = required_param('firstname', PARAM_TEXT);
-$lastname = required_param('lastname', PARAM_TEXT);
-$email = required_param('email', PARAM_EMAIL);
-$istiertemps = optional_param('istiertemps', 0, PARAM_INT);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $student_data = [];
+    foreach ($_POST as $key => $value) {
+        if ($key !== "add_student") { // Exclure le champ du bouton
+            $student_data[$key] = trim($value);
+        }
+    }
 
-// Debug : afficher les paramètres reçus pour vérifier
-// var_dump($_POST); die; // Commenté ou supprimé pour éviter l'interruption
-
+}
 // Vérifier si l'utilisateur existe déjà dans Moodle
-$user = $DB->get_record('user', ['email' => $email], 'id');
+$user = $DB->get_record('user', ['email' => $student_data['email']], 'id');
 
 if (!$user) {
     echo json_encode(['success' => false, 'message' => 'L\'utilisateur n\'existe pas dans Moodle.']);
@@ -35,7 +38,7 @@ if ($existing_student) {
 // Insérer l'étudiant dans la table mdl_students
 $new_student = new stdClass();
 $new_student->userId = $user->id;
-$new_student->isTierTemps = $istiertemps;
+$new_student->isTierTemps = $student_data['istiertemps'];
 
 try {
     $DB->insert_record('students', $new_student);
@@ -44,5 +47,5 @@ try {
     echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'insertion de l\'étudiant: ' . $e->getMessage()]);
 }
 
-exit;
+redirect(new moodle_url('/mod/studentqcm/view.php', array('id' => $id)));
 ?>

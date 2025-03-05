@@ -9,14 +9,6 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
-$nbTotalQuestionPop = 0;
-$popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
-foreach($popTypes as $popType){
-    $nbTotalQuestionPop += $popType->nbqcm + $popType->nbqcu;
-}
-
-$nbTotal_question = $studentqcm->nbqcm + $studentqcm->nbqcu + $studentqcm->nbtcs + $nbTotalQuestionPop;
-
 require_login($course, true, $cm);
 
 $PAGE->set_url('/mod/studentqcm/admin_add_user.php', array('id' => $id));
@@ -85,7 +77,6 @@ echo '<tbody>';
 
 // Affichage des étudiants
 foreach ($students as $student) {
-    $completed_questions_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
 
     $student_name = $DB->get_record('user', array('id' => $student->userid));
     $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
@@ -128,7 +119,7 @@ echo '</table>';
 echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
     echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
 
-    echo "<form method='post' action='admin_add_user.php?id={$id}' class='space-y-5'>";
+    echo "<form method='post' action='add_student.php?id={$id}' class='space-y-5'>";
         echo '<input type="hidden" name="id" value="' . $id . '">';
 
         echo '<div class="flex gap-4">';
@@ -224,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => {
             // Vérifier si la réponse est bien JSON
+            console.log(response.json());
             return response.json();
         })
         .then(data => {
