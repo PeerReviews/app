@@ -230,6 +230,10 @@ $string['teacher_dashboard'] = 'Suivi des enseignants';
 $string['production_evaluation'] = 'Évaluation des productions';
 $string[''] = '';
 
+$string['student_gestion'] = 'Gestion des étudiants';
+$string['teacher_gestion'] = 'Gestion des enseignants';
+$string['user_gestion'] = 'Gestion des utilisateurs';
+
 $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
@@ -257,6 +261,8 @@ $string['add_student'] = 'Ajouter un étudiant';
 
 
 $string['teacher_list'] = 'Liste des enseignants';
+$string['add_teacher'] = 'Ajouter un enseignant';
+$string['teacher_id'] = 'ID de l\'enseignant';
 $string['completed_evaluations'] = 'Évaluations complétées';
 
 $string['context'] = 'Contexte';
