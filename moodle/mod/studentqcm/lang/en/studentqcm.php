@@ -230,7 +230,7 @@ $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent'
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
 $string['user_gestion'] = 'Gestion des utilisateurs';
-$string['phase_gestion'] = 'Gestion du tirage au sort';
+$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
 $string[''] = '';
 
 $string['student_list'] = 'Liste des étudiants';
