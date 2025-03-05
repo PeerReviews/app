@@ -15,7 +15,7 @@ $PAGE->set_url('/mod/studentqcm/manual_attribution.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
+$PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 echo $OUTPUT->header();
 
@@ -29,16 +29,16 @@ echo "<a href='view.php?id={$id}' class='inline-block px-4 py-2 font-semibold ro
 echo "<i class='fas fa-arrow-left mr-2'></i>";
 echo get_string('back', 'mod_studentqcm');
 echo "</a>";
+
+// Bouton pour ajouter une nouvelle ligne
+echo '<button onclick="addRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 text-white no-underline">' 
+    . get_string('add_attribution', 'mod_studentqcm') . '</button>';
 echo "</div>";
 
 // Récupération des étudiants
 $students = $DB->get_records('studentqcm_assignedqcm');
 
 echo '<div class="mt-8">';
-
-// Bouton pour ajouter une nouvelle ligne
-echo '<button onclick="addRow()" class="mb-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">' 
-    . get_string('add_attribution', 'mod_studentqcm') . '</button>';
 
 // Formulaire pour enregistrer les nouvelles lignes
 echo "<form id='attributionForm' method='post' action='submit_attribution.php?id={$id}'>";
@@ -97,8 +97,8 @@ foreach ($students as $student) {
     echo '<input type="hidden" name="updatedData[]" id="updatedData-' . $student->user_id . '" value="">';
 
     // Ajout des boutons Modifier/Supprimer
-    echo '<td class="px-3 py-4 text-md text-gray-600">
-            <button type="button" onclick="editRow(this, ' . $student->user_id . ')" class="px-3 py-1 bg-blue-500 text-white rounded ml-2">Modifier</button>
+    echo '<td class="p-4 text-md text-gray-600">
+            <button type="button" onclick="editRow(this, ' . $student->user_id . ')" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl">' . get_string('edit', 'mod_studentqcm') . '</button>
           </td>';
 
     echo '</tr>';
@@ -108,8 +108,11 @@ echo '</tbody>';
 echo '</table>';
 
 // Bouton pour soumettre les nouvelles lignes
-echo '<button type="submit" id="saveStudentsButton" name="save_students" class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">'
+echo "<div class='mb-4 mt-4 flex justify-end space-x-2 text-lg'>";
+    echo '<button type="submit" id="saveStudentsButton" name="save_students" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-400 hover:bg-lime-500 text-white no-underline ">'
     . get_string('save_students', 'mod_studentqcm') . '</button>';
+echo "</div>";
+
 
 echo '</form>'; // Fermeture du formulaire
 echo '</div>';
@@ -192,7 +195,7 @@ function addRow() {
 
             let saveButton = document.createElement("button");
             saveButton.innerText = "Enregistrer";
-            saveButton.classList.add("px-3", "py-1", "bg-green-500", "text-white", "rounded");
+            saveButton.classList.add("px-4", "py-2", "bg-lime-400", "hover:bg-lime-500", "text-white", "text-md", "font-semibold", "rounded-2xl", "w-[80%]");
             saveButton.onclick = function(event) { 
                 event.preventDefault(); // Empêche le rechargement immédiat du formulaire
                 saveRow(saveButton);
