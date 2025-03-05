@@ -23,7 +23,7 @@ $qcms = array();
 
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
-    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id));
+    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
 
     foreach ($questions as $question) {
         $qcms[] = $question;
@@ -286,7 +286,6 @@ if ($qcms) {
                             echo "<span class=''>{$qcm->global_comment}</span>";
 
                         echo "</div>";
-
 
                     
                         // Colonne des réponses
