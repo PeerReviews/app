@@ -274,3 +274,4 @@ $string['prod2'] = 'Production 2 à évaluer';
 $string['prod3'] = 'Production 3 à évaluer';
 $string['add_attribution'] = 'Ajouter manuellement une attribution';
 $string['save_students'] = 'Enregistrer les modifications';
+$string['actions'] = 'Actions';
