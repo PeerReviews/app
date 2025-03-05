@@ -235,9 +235,12 @@ $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
 $string['user_gestion'] = 'Gestion des utilisateurs';
 $string['phase_gestion'] = 'Gestion du tirage au sort';
-$string[''] = '';
 
-$string['student_list'] = 'Liste de étudiants';
+$string['firstname'] = 'Nom';
+$string['lastname'] = 'Prénom';
+$string['email'] = 'Adresse email';
+
+$string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
 $string['completed_question'] = 'Questions complétées';
 $string['actions'] = 'Actions';
@@ -248,7 +251,8 @@ $string['last_connected'] = 'Dernière connexion';
 $string['never_connected'] = 'Aucune connexion';
 $string['completed_reviews'] = 'Révisions complétées';
 $string['reviewed_question'] = 'Questions révisées';
-$string[''] = '';
+$string['tier_temps'] = 'Tiers temps';
+$string['add_student'] = 'Ajouter un étudiant';
 
 
 $string['teacher_list'] = 'Liste des enseignants';

@@ -24,7 +24,7 @@ $PAGE->set_url('/mod/studentqcm/student_dashboard_phase1.php', array('id' => $id
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
+$PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 // Vérifie si le professeur a cliqué sur un bouton pour changer d'utilisateur
 if (isset($_GET['switch_to_user'])) {
@@ -107,7 +107,7 @@ foreach ($students as $student) {
     echo '</td>';
 
     $colorClass = ($completed_questions_count == 0) ? 'text-red-400' : 
-                  (($completed_questions_count == $nbTotal_question) ? 'text-green-400' : 'text-gray-600');
+                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-500' : 'text-gray-600');
 
     echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question .  '</td>';
 

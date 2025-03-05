@@ -9,7 +9,6 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
-
 $nbTotalQuestionPop = 0;
 $popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
 foreach($popTypes as $popType){
@@ -20,10 +19,9 @@ $nbTotal_question = $studentqcm->nbqcm + $studentqcm->nbqcu + $studentqcm->nbtcs
 
 require_login($course, true, $cm);
 
-$PAGE->set_url('/mod/studentqcm/student_dashboard_phase3.php', array('id' => $id));
+$PAGE->set_url('/mod/studentqcm/admin_add_user.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
-
 $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 // Vérifie si le professeur a cliqué sur un bouton pour changer d'utilisateur
@@ -63,7 +61,7 @@ echo '<tr class="bg-gray-100 text-left">';
 $columns = [
     'student_id' => get_string('student_id', 'mod_studentqcm'),
     'full_name' => get_string('full_name', 'mod_studentqcm'),
-    'reviewed_question' => get_string('reviewed_question', 'mod_studentqcm'),
+    'tier_temps' => get_string('tier_temps', 'mod_studentqcm'),
     'last_connected' => get_string('last_connected', 'mod_studentqcm'),
     'actions' => get_string('actions', 'mod_studentqcm')
 ];
@@ -76,12 +74,6 @@ foreach ($columns as $key => $label) {
               onclick="sortTable(' . $columnIndex . ')">
               ' . mb_strtoupper($label, 'UTF-8');
 
-    // Ajout du bouton "œil" pour la colonne "Nom complet"
-    if ($key === 'full_name') {
-        echo ' <button onclick="toggleAllNames()" class="ml-2 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full">';
-        echo '<i class="fas fa-eye" id="eye-icon-all"></i></button>';
-    }
-
     echo ' <i class="fas fa-sort ml-2"></i>';
     echo '</th>';
     $columnIndex++;
@@ -93,7 +85,7 @@ echo '<tbody>';
 
 // Affichage des étudiants
 foreach ($students as $student) {
-    $reviewed_questions_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'is_improved' => 1));
+    $completed_questions_count = $DB->count_records('studentqcm_question', array('userid' => $student->userid, 'status' => 1));
 
     $student_name = $DB->get_record('user', array('id' => $student->userid));
     $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
@@ -102,14 +94,17 @@ foreach ($students as $student) {
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . $student->userid . '</td>';
 
+    echo '<td class="px-3 py-4 text-md text-gray-600">' . $student_fullname . '</div>';
+
     echo '<td class="px-3 py-4 text-md text-gray-600">';
-    echo '<div id="name-' . $student->userid . '" class="text-gray-600 hidden">' . $student_fullname . '</div>';
+    
+    if ($student->istiertemps) {
+        echo '<i class="fas fa-clock text-sky-500"></i>';
+    } else {
+        echo '<i class="fas fa-xmark text-yellow-500"></i>';
+    }
+    
     echo '</td>';
-
-    $colorClass = ($reviewed_questions_count == 0) ? 'text-red-400' : 
-                  (($reviewed_questions_count == $nbTotal_question) ? 'text-lime-500' : 'text-gray-600');
-
-    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $reviewed_questions_count . " / " . $nbTotal_question .  '</td>';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . 
          ($student_name->lastaccess > 0 
@@ -129,6 +124,48 @@ foreach ($students as $student) {
 
 echo '</tbody>';
 echo '</table>';
+
+echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
+    echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
+
+    echo '<form action="" method="post" class="space-y-5">';
+        echo '<input type="hidden" name="id" value="' . $id . '">';
+
+        echo '<div class="flex gap-4">';
+            echo '<input type="text" name="firstname" required placeholder="' . get_string('firstname', 'core') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+            echo '<input type="text" name="lastname" required placeholder="' . get_string('lastname', 'core') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+        echo '</div>';
+
+        echo '<div class="flex gap-4 w-full">';
+            echo '<div class="w-full">';
+            echo '<input type="email" name="email" required placeholder="' . get_string('email', 'mod_studentqcm') . '" class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400">';
+            echo '</div>';
+
+            echo '<div class="w-full py-2 ml-2">';
+            echo '<div class="w-full flex items-center gap-2">';
+                echo '<label class="font-semibold text-gray-400 text-lg">' . get_string('tier_temps', 'mod_studentqcm') . ' ?</label>';
+                echo '<label class="relative inline-flex items-center cursor-pointer">';
+                    echo '<input type="checkbox" name="istiertemps" value="1" class="sr-only peer">';
+                    echo '<span class="w-11 h-6 bg-gray-200 rounded-full peer-checked:bg-indigo-400 peer-checked:after:translate-x-full peer-checked:after:bg-white 
+                                after:content-\'\' after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 
+                                after:rounded-full after:h-5 after:w-5 after:transition-all"></span>';
+                echo '</label>';
+            echo '</div>';
+            echo '</div>';
+
+        echo '</div>';
+
+    // Bouton d'ajout
+    echo '<div class="text-center">';
+    echo '<button type="submit" name="add_student" class="w-full px-6 py-2 bg-indigo-400 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-500 transition">';
+    echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('add', 'mod_studentqcm');
+    echo '</button>';
+    echo '</div>';
+
+echo '</form>';
+echo '</div>';
+
+
 echo '</div>';
 
 echo $OUTPUT->footer();
@@ -159,12 +196,4 @@ function sortTable(columnIndex) {
     table.dataset.sortOrder = isAscending ? "desc" : "asc";
 }
 
-function toggleAllNames() {
-    var nameDivs = document.querySelectorAll('[id^="name-"]');
-    var eyeIcon = document.getElementById('eye-icon-all');
-
-    nameDivs.forEach(nameDiv => nameDiv.classList.toggle('hidden'));
-    eyeIcon.classList.toggle('fa-eye-slash');
-    eyeIcon.classList.toggle('fa-eye');
-}
 </script>

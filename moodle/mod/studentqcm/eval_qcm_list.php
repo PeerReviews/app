@@ -17,7 +17,7 @@ $qcms = array();
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
     // Charger les questions associées à cette production spécifique
-    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id));
+    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
 
     // Ajouter chaque question au tableau $qcms
     foreach ($questions as $question) {

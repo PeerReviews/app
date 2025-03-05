@@ -433,7 +433,7 @@ echo $OUTPUT->footer();
     </div>
 </div>
 
-<!-- Modale d'affichage en grand -->
+<!-- Modal d'affichage en grand -->
 <div id="mediaModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center hidden">
     <div class="relative bg-white p-4 rounded-lg shadow-lg max-w-3xl mt-12">
         <!-- Bouton de fermeture -->

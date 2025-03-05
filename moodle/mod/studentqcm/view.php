@@ -53,7 +53,7 @@ if ($is_teacher || $is_manager) {
         echo "<div class='p-4 bg-gray-100 rounded-3xl shadow-md'>";
             echo "<p class='font-semibold text-center text-xl text-gray-600 pb-2 w-[80%] break-words mx-auto'>" . mb_strtoupper(get_string('user_gestion', 'mod_studentqcm'), 'UTF-8') . "</p>";
             echo "<div class='flex justify-center mt-2'>";
-                echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
+                echo "<a href='admin_add_user.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
                 echo get_string('phase_available', 'mod_studentqcm');
                 echo "<i class='fas fa-arrow-right ml-4'></i>";
                 echo "</a>";
