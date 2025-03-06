@@ -288,11 +288,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Ajouter un événement directement sur le formulaire
     form.addEventListener("submit", function (e) {
         e.preventDefault();  // Empêche la soumission classique du formulaire
-        console.log("🚀 Formulaire soumis !");
+        console.log("Formulaire soumis !");
 
         // Récupérer les données du formulaire
         let formData = new FormData(form);
-        console.log("📦 Données envoyées :", Object.fromEntries(formData));
+        console.log("Données envoyées :", Object.fromEntries(formData));
 
         // Envoi des données via fetch
         fetch(form.action, {
@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(data => {
-            console.log("📩 Réponse du serveur :", data);
+            console.log("Réponse du serveur :", data);
             if (data.success) {
                 alert("L'étudiant a été ajouté avec succès !");
                 location.reload();  // Recharge la page après ajout
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
         .catch(error => {
-            console.error("❌ Erreur lors de l'envoi :", error);
+            console.error("Erreur lors de l'envoi :", error);
             alert("Une erreur est survenue. Veuillez réessayer.");
         });
     });

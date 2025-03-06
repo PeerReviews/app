@@ -68,6 +68,21 @@ foreach ($teachers as $teacher) {
     $teacher_entity = $DB->get_record('user', array('id' => $teacher->userid));
     $teacher_fullname = ucwords(strtolower($teacher_entity->firstname)) . ' ' . ucwords(strtolower($teacher_entity->lastname));
 
+    $productions = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $teacher->userid));
+    $completed_questions_count = 0;
+    $nbTotal_question = 0;
+
+    foreach ($productions as $production) {
+        $to_grade = $DB->get_records('studentqcm_question', array('userid' => $production->userid, 'status' => 1));
+        $graded = array_filter($to_grade, function($record) {
+            return $record->grade !== null;
+        });
+
+        $nbTotal_question += count($to_grade);
+        $completed_questions_count += count($graded);
+    }
+    // Nombre total de questions de toutes les productions à évaluer (tous les élèves)
+
     echo '<tr class="border-t hover:bg-gray-50">';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">';
@@ -75,9 +90,9 @@ foreach ($teachers as $teacher) {
     echo '</td>';
 
     $colorClass = ($completed_questions_count == 0) ? 'text-red-400' : 
-                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-400' : 'text-gray-600');
+                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-500' : 'text-gray-600');
 
-    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question . '</td>';
+    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question .  '</td>';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . 
          ($teacher_entity->lastaccess > 0 
