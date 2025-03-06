@@ -3,7 +3,7 @@ namespace mod_studentqcm\task;
 
 use core\task\scheduled_task;
 
-class attribution_task extends scheduled_task {
+class attribution_student_task extends scheduled_task {
 
     public function get_name() {
         return "Attribution automatique des productions aux étudiants";
