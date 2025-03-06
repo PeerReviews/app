@@ -38,16 +38,16 @@ $string['phase3'] = 'PHASE 3';
 $string['phase_start'] = 'Début';
 $string['phase_available'] = 'Commencer';
 $string['phase_unavailable'] = 'Indisponible';
-$string['phase1_title'] = 'Création de Questions';
-$string['phase2_title'] = 'Évaluation de Questions';
-$string['phase3_title'] = 'Valorisation des Questions';
+$string['phase1_title'] = 'Création de questions';
+$string['phase2_title'] = 'Évaluation de questions';
+$string['phase3_title'] = 'Valorisation de questions';
 
 $string['back'] = 'Retour';
 $string['validate'] = 'Valider';
 $string['cancel'] = 'Annuler';
 $string['delete'] = 'Supprimer';
 
-$string['qcm_list'] = 'Ma liste de Questions';
+$string['qcm_list'] = 'Ma liste de questions';
 $string['add_qcm'] = 'Ajouter un QCM';
 $string['add_qcu'] = 'Ajouter un QCU';
 $string['add_tcs'] = 'Ajouter un TCS';
@@ -93,6 +93,7 @@ $string['question_required'] = 'La question est requise.';
 $string['your_qcms'] = 'QCM';
 $string['edit'] = 'Modifier';
 
+$string['not_found'] = 'Aucune question trouvée.';
 $string['qcm_not_found'] = 'Aucun QCM trouvé.';
 $string['qcu_not_found'] = 'Aucun QCU trouvé.';
 $string['tcs_not_found'] = 'Aucun TCS trouvé.';
@@ -228,7 +229,6 @@ $string['student_dashboard_phase2'] = 'Suivi des étudiants pour la phase 2';
 $string['student_dashboard_phase3'] = 'Suivi des étudiants pour la phase 3';
 $string['teacher_dashboard'] = 'Suivi des enseignants';
 $string['production_evaluation'] = 'Évaluation des productions';
-$string[''] = '';
 
 $string['student_gestion'] = 'Gestion des étudiants';
 $string['teacher_gestion'] = 'Gestion des enseignants';

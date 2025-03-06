@@ -187,7 +187,7 @@ if ($questions) {
     
     echo "</div>";
 } else {
-    echo "<p class='text-center text-lg text-gray-600'>" . get_string('qcm_not_found', 'mod_studentqcm') . "</p>";
+    echo "<p class='text-center text-lg text-gray-600'>" . get_string('not_found', 'mod_studentqcm') . "</p>";
 }
 
 echo $OUTPUT->footer();
