@@ -14,12 +14,10 @@ $userid = $USER->id;
 // Récupérer toutes les questions créées par l'utilisateur
 $questions = $DB->get_records('studentqcm_question', array('userid' => $userid), 'id DESC');
 
-$qcms = array_filter($questions, fn($q) => $q->type === 'QCM' && !$q->ispop);
-$qcus = array_filter($questions, fn($q) => $q->type === 'QCU' && !$q->ispop);
-$tcss = array_filter($questions, fn($q) => $q->type === 'TCS' && !$q->ispop);
-$pops = array_filter($questions, fn($q) => $q->ispop);
-// Affichage de la variable $question
-
+$qcms = array_filter($questions, fn($q) => $q->type === 'QCM' && !$q->ispop && $q->status == 1);
+$qcus = array_filter($questions, fn($q) => $q->type === 'QCU' && !$q->ispop && $q->status == 1);
+$tcss = array_filter($questions, fn($q) => $q->type === 'TCS' && !$q->ispop && $q->status == 1);
+$pops = array_filter($questions, fn($q) => $q->ispop && $q->status == 1);
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
 $referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
@@ -245,16 +243,20 @@ if ($tcss) {
     echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('tcs_not_found', 'mod_studentqcm') . "</p>";
 }
 
-$popTypeCounts = array_count_values(array_filter(
-    array_map(fn($q) => isset($q->poptypeid) ? (string) $q->poptypeid : null, $pops),
-    fn($v) => !is_null($v)
-));
+$completed_pops = 0;
+$poptypes = $DB->get_records('question_pop', array('refId' => $cm->instance));
+foreach ($poptypes as $poptype) {
+    $nbquestions = count(array_filter($questions, fn($q) => $q->poptypeid == $poptype->id));
 
+    if ($poptype->nbqcu + $poptype->nbqcm === $nbquestions) {
+        $completed_pops++;
+    }
+}
 
 // Affichage des pops
 echo "<div class='flex mt-8 mx-4 justify-between border-b p-2'>";
     echo "<div class='flex text-center text-gray-500 items-end'>";
-        echo "<p class='mr-4 text-4xl font-semibold'> " . count($popTypeCounts) . "/" . $studentqcm->nbpop . "</p>";
+        echo "<p class='mr-4 text-4xl font-semibold'> " . $completed_pops . "/" . $studentqcm->nbpop . "</p>";
         echo "<p class='text-3xl'> " . get_string('completed_pops', 'mod_studentqcm') . "</p>";
     echo "</div>";
 echo "</div>";
@@ -288,117 +290,68 @@ if ($required_pops){
             echo "</div>";
         echo "</div>";
 
+        $all_questions = array_merge($qcmDone, $qcuDone);
 
+        if (!empty($all_questions)){
 
-        if ($qcmDone || $qcuDone){
-            if ($qcmDone){
-                foreach ($qcmDone as $qcm){
+            // Tri des résultats par ID (ordre croissant pour POP)
+            usort($all_questions, function($a, $b) {
+                return $a->id <=> $b->id;
+            });
 
-                    $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
-                    $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
-                    $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
+            foreach ($all_questions as $question){
 
-                    echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
+                $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
+                $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
+                $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
 
-                        // Partie gauche (question + infos)
-                        echo "<div>";
-                        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
-                        echo format_string(ucfirst($qcm->question));
-                        echo "</p>";
+                echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
 
-                        // Informations sur le référentiel, compétence et sous-compétence
-                        echo "<div class='mt-2 text-gray-600 text-sm flex flex-col space-y-1'>";
+                    // Partie gauche (question + infos)
+                    echo "<div>";
+                    echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
+                    echo format_string(ucfirst($qcm->question));
+                    echo "</p>";
 
-                        // Référentiel
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-book text-green-500'></i>";
-                        echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
-                        echo "</p>";
+                    // Informations sur le référentiel, compétence et sous-compétence
+                    echo "<div class='mt-2 text-gray-600 text-sm flex flex-col space-y-1'>";
 
-                        // Compétence
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-bookmark text-orange-500'></i>";
-                        echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
-                        echo "</p>";
+                    // Référentiel
+                    echo "<p class='flex items-center gap-2'>";
+                    echo "<i class='fas fa-book text-green-500'></i>";
+                    echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
+                    echo "</p>";
 
-                        // Sous-compétence
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-award text-purple-500'></i>";
-                        echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
-                        echo "</p>";
+                    // Compétence
+                    echo "<p class='flex items-center gap-2'>";
+                    echo "<i class='fas fa-bookmark text-orange-500'></i>";
+                    echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
+                    echo "</p>";
 
-                        echo "</div>";
-                        echo "</div>";
+                    // Sous-compétence
+                    echo "<p class='flex items-center gap-2'>";
+                    echo "<i class='fas fa-award text-purple-500'></i>";
+                    echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
+                    echo "</p>";
 
-                        $buttonClass = $qcm->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
-                        $iconClass = $qcm->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
-
-                        // Partie droite (boutons)
-                        echo "<div class='flex space-x-2'>";
-                            echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
-                            echo "<i class='{$iconClass}'></i>";
-                            echo "</a>";
-                        echo "</div>";
                     echo "</div>";
-                }
-            }
-
-            if ($qcuDone){
-                foreach ($qcuDone as $qcu){
-
-                    $nom_referentiel = isset($referentiels[$qcu->referentiel]) ? $referentiels[$qcu->referentiel] : get_string('unknown', 'mod_studentqcm');
-                    $nom_competency = isset($competencies[$qcu->competency]) ? $competencies[$qcu->competency] : get_string('unknown', 'mod_studentqcm');
-                    $nom_subcompetency = isset($subcompetencies[$qcu->subcompetency]) ? $subcompetencies[$qcu->subcompetency] : get_string('unknown', 'mod_studentqcm');
-
-                    echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
-
-                        // Partie gauche (question + infos)
-                        echo "<div>";
-                        echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
-                        echo format_string(ucfirst($qcu->question));
-                        echo "</p>";
-
-                        // Informations sur le référentiel, compétence et sous-compétence
-                        echo "<div class='mt-2 text-gray-600 text-sm flex flex-col space-y-1'>";
-
-                        // Référentiel
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-book text-green-500'></i>";
-                        echo "<span>" . get_string('referentiel', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_referentiel) . "</strong></span>";
-                        echo "</p>";
-
-                        // Compétence
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-bookmark text-orange-500'></i>";
-                        echo "<span>" . get_string('competency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_competency) . "</strong></span>";
-                        echo "</p>";
-
-                        // Sous-compétence
-                        echo "<p class='flex items-center gap-2'>";
-                        echo "<i class='fas fa-award text-purple-500'></i>";
-                        echo "<span>" . get_string('subcompetency', 'mod_studentqcm') . " : <strong>" . ucfirst($nom_subcompetency) . "</strong></span>";
-                        echo "</p>";
-
-                        echo "</div>";
-                        echo "</div>";
-
-                        $buttonClass = $qcu->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
-                        $iconClass = $qcu->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
-
-                        // Partie droite (boutons)
-                        echo "<div class='flex space-x-2'>";
-                            echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcu->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
-                            echo "<i class='{$iconClass}'></i>";
-                            echo "</a>";
-                        echo "</div>";
                     echo "</div>";
-                }
+
+                    $buttonClass = $qcm->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
+                    $iconClass = $qcm->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
+
+                    // Partie droite (boutons)
+                    echo "<div class='flex space-x-2'>";
+                        echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
+                        echo "<i class='{$iconClass}'></i>";
+                        echo "</a>";
+                    echo "</div>";
+                echo "</div>";
             }
         }
         else {
             echo "<p class='text-center text-lg text-gray-600 mt-4'>" . get_string('pop_not_found', 'mod_studentqcm') . "</p>";
         }
-        
     }
     echo "</div>";
 }

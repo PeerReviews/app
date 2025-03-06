@@ -12,16 +12,16 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 $userid = $USER->id;
 
 // Charger les questions de la production assignée
-$qcms = array();
+$questions = array();
 
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
     // Charger les questions associées à cette production spécifique
-    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
+    $qs = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
 
     // Ajouter chaque question au tableau $qcms
-    foreach ($questions as $question) {
-        $qcms[] = $question;
+    foreach ($qs as $q) {
+        $questions[] = $q;
     }
 }
 
@@ -53,40 +53,40 @@ echo "<div class='flex mt-8 text-lg justify-between'>";
     echo "</a>";
 echo "</div>";
 
-if ($qcms) {
+if ($questions) {
     echo "<div class='space-y-4 mt-4'>";
 
     // Trier les questions par popTypeId
-    usort($qcms, function($a, $b) {
+    usort($questions, function($a, $b) {
         return $a->poptypeid <=> $b->poptypeid;
     });
 
     $previousPopTypeId = null;
     
-    foreach ($qcms as $qcm) {
-        $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
-        $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
-        $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
+    foreach ($questions as $question) {
+        $nom_referentiel = isset($referentiels[$question->referentiel]) ? $referentiels[$question->referentiel] : get_string('unknown', 'mod_studentqcm');
+        $nom_competency = isset($competencies[$question->competency]) ? $competencies[$question->competency] : get_string('unknown', 'mod_studentqcm');
+        $nom_subcompetency = isset($subcompetencies[$question->subcompetency]) ? $subcompetencies[$question->subcompetency] : get_string('unknown', 'mod_studentqcm');
 
-        // Vérifier si ce QCM a déjà été évalué par l'utilisateur
-        $evaluation = $DB->get_record('studentqcm_evaluation', array('question_id' => $qcm->id, 'userid' => $USER->id));
+        // Vérifier si cette question a déjà été évalué par l'utilisateur
+        $evaluation = $DB->get_record('studentqcm_evaluation', array('question_id' => $question->id, 'userid' => $USER->id));
 
         if ($evaluation && $evaluation->status == 1) {
-            // Si le QCM a été évalué
+            // Si la question a été évalué
             $buttonText = get_string('evaluated', 'mod_studentqcm');
             $buttonIcon = 'fas fa-check-circle';
             $buttonColor = 'bg-lime-400 hover:bg-lime-500';
             $buttonTextColor = 'text-white';
         } else {
-            // Si le QCM n'a pas été évalué
+            // Si la question n'a pas été évalué
             $buttonText = get_string('to_be_evaluated', 'mod_studentqcm');
             $buttonIcon = 'fas fa-pen-to-square';
             $buttonColor = 'bg-indigo-400 hover:bg-indigo-500';
             $buttonTextColor = 'text-white';
         }
 
-        if ($qcm->poptypeid !== $previousPopTypeId) {
-            $popInfo = $DB->get_record('question_pop', array('id' => $qcm->poptypeid));
+        if ($question->poptypeid !== $previousPopTypeId) {
+            $popInfo = $DB->get_record('question_pop', array('id' => $question->poptypeid));
     
             if ($popInfo) {
                 echo "<h2 class='text-xl font-semibold text-gray-700 text-center my-4 bg-gray-100 p-2 rounded-lg'>";
@@ -98,7 +98,7 @@ if ($qcms) {
                 echo "</h2>";
             }
     
-            $previousPopTypeId = $qcm->poptypeid;
+            $previousPopTypeId = $question->poptypeid;
         }
 
         echo "<div class='bg-white rounded-3xl shadow flex items-center justify-between'>";
@@ -107,11 +107,11 @@ if ($qcms) {
             echo "<div class='flex items-stretch gap-x-4'>";
 
             // Définir les couleurs en fonction du type de question
-            if ($qcm->ispop == 1) {
+            if ($question->ispop == 1) {
                 $bgColor = 'bg-yellow-200';
                 $textColor = 'text-yellow-400';
             } else {
-                switch ($qcm->type) {
+                switch ($question->type) {
                     case 'QCM':
                         $bgColor = 'bg-indigo-200';
                         $textColor = 'text-indigo-400';
@@ -134,7 +134,7 @@ if ($qcms) {
                 }
             }
 
-            $displayType = ($qcm->ispop == 1) ? "POP - " . ucfirst($qcm->type) : ucfirst($qcm->type);
+            $displayType = ($question->ispop == 1) ? "POP - " . ucfirst($question->type) : ucfirst($question->type);
 
             // Type de question
             echo "<div class='{$bgColor} rounded-l-3xl py-4 px-2 flex items-center w-16 justify-center'>"; 
@@ -148,7 +148,7 @@ if ($qcms) {
             echo "<div class='flex flex-col justify-between p-4'>";
 
             echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-2'>";
-            echo format_string(ucfirst($qcm->question));
+            echo format_string(ucfirst($question->question));
             echo "</p>";
 
             // Informations sur le référentiel, compétence et sous-compétence
@@ -178,7 +178,7 @@ if ($qcms) {
             echo "</div>"; // Fin de la partie gauche
 
             echo "<div class='flex space-x-2 p-4'>";
-            echo "<a href='eval_qcm_view.php?id={$id}&prod_id={$prod_id}&qcm_id={$qcm->id}' class='px-4 py-2 min-w-40 {$buttonColor} {$buttonTextColor} text-lg font-semibold rounded-2xl hover:{$buttonColor}'>";
+            echo "<a href='eval_qcm_view.php?id={$id}&prod_id={$prod_id}&qcm_id={$question->id}' class='px-4 py-2 min-w-40 {$buttonColor} {$buttonTextColor} text-lg font-semibold rounded-2xl hover:{$buttonColor}'>";
             echo "<i class='{$buttonIcon} mr-2'></i> {$buttonText}";
             echo "</a>";
             echo "</div>";
