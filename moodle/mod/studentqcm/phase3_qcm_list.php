@@ -301,16 +301,16 @@ if ($required_pops){
 
             foreach ($all_questions as $question){
 
-                $nom_referentiel = isset($referentiels[$qcm->referentiel]) ? $referentiels[$qcm->referentiel] : get_string('unknown', 'mod_studentqcm');
-                $nom_competency = isset($competencies[$qcm->competency]) ? $competencies[$qcm->competency] : get_string('unknown', 'mod_studentqcm');
-                $nom_subcompetency = isset($subcompetencies[$qcm->subcompetency]) ? $subcompetencies[$qcm->subcompetency] : get_string('unknown', 'mod_studentqcm');
+                $nom_referentiel = isset($referentiels[$question->referentiel]) ? $referentiels[$question->referentiel] : get_string('unknown', 'mod_studentqcm');
+                $nom_competency = isset($competencies[$question->competency]) ? $competencies[$question->competency] : get_string('unknown', 'mod_studentqcm');
+                $nom_subcompetency = isset($subcompetencies[$question->subcompetency]) ? $subcompetencies[$question->subcompetency] : get_string('unknown', 'mod_studentqcm');
 
                 echo "<div class='p-4 bg-white rounded-3xl shadow flex items-center justify-between'>";
 
                     // Partie gauche (question + infos)
                     echo "<div>";
                     echo "<p class='font-semibold text-2xl text-gray-700 flex items-center gap-2 mb-4'>";
-                    echo format_string(ucfirst($qcm->question));
+                    echo format_string(ucfirst($question->question));
                     echo "</p>";
 
                     // Informations sur le référentiel, compétence et sous-compétence
@@ -337,12 +337,12 @@ if ($required_pops){
                     echo "</div>";
                     echo "</div>";
 
-                    $buttonClass = $qcm->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
-                    $iconClass = $qcm->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
+                    $buttonClass = $question->is_improved ? 'bg-lime-400 hover:bg-lime-500' : 'bg-sky-400 hover:bg-sky-500';
+                    $iconClass = $question->is_improved ? 'fas fa-check-circle' : 'fas fa-edit';
 
                     // Partie droite (boutons)
                     echo "<div class='flex space-x-2'>";
-                        echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$qcm->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
+                        echo "<a href='phase3_valorise_qcm.php?id={$id}&qcm_id={$question->id}' class='px-3 py-2 {$buttonClass} text-white rounded-lg'>";
                         echo "<i class='{$iconClass}'></i>";
                         echo "</a>";
                     echo "</div>";
