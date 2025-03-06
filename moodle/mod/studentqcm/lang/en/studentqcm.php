@@ -4,7 +4,7 @@
 $string['pluginname'] = 'Student QCM';
 $string['modulename'] = 'Student QCM';
 $string['modulenameplural'] = 'Student QCMs';
-$string['modulename_help'] = 'Cet outil permet aux étudiants de créer leurs propres QCM et aux enseignants de les évaluer.';
+$string['modulename_help'] = 'Cet outil permet aux étudiants de créer leurs propres questions et aux enseignants de les évaluer.';
 $string['name'] = 'Nom';
 $string['name_plugin'] = 'Nom de la session';
 $string['name_referentiel'] = 'Nom du référentiel';
@@ -38,16 +38,16 @@ $string['phase3'] = 'PHASE 3';
 $string['phase_start'] = 'Début';
 $string['phase_available'] = 'Commencer';
 $string['phase_unavailable'] = 'Indisponible';
-$string['phase1_title'] = 'Création de QCMs';
-$string['phase2_title'] = 'Évaluation de QCMs';
-$string['phase3_title'] = 'Valorisation des QCMs';
+$string['phase1_title'] = 'Création de Questions';
+$string['phase2_title'] = 'Évaluation de Questions';
+$string['phase3_title'] = 'Valorisation des Questions';
 
 $string['back'] = 'Retour';
 $string['validate'] = 'Valider';
 $string['cancel'] = 'Annuler';
 $string['delete'] = 'Supprimer';
 
-$string['qcm_list'] = 'Ma liste de QCMs';
+$string['qcm_list'] = 'Ma liste de Questions';
 $string['add_qcm'] = 'Ajouter un QCM';
 $string['add_qcu'] = 'Ajouter un QCU';
 $string['add_tcs'] = 'Ajouter un TCS';
@@ -79,8 +79,8 @@ $string['competency'] = 'Compétence';
 $string['subcompetency'] = 'Sous-compétence';
 $string['keywords'] = 'Mots-clés';
 $string['addmore'] = 'Ajouter + ';
-$string['qcm_saved'] = 'QCM enregistré !';
-$string['qcm_updated'] = 'QCM modifié !';
+$string['qcm_saved'] = 'Question enregistré !';
+$string['qcm_updated'] = 'Question modifiée !';
 
 $string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
 $string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
@@ -118,10 +118,10 @@ $string['no_assigned_prod'] = 'Aucune production ne vous a été assigné pour l
 $string['assigned_prod_list'] = "Vos productions assignées";
 
 $string['message_delete'] = 'Confirmer la suppression';
-$string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer ce QCM ? Cette action est irréversible';
+$string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer cette question ? Cette action est irréversible';
 $string['delete'] = 'Supprimer';
 
-$string['qcm_deleted'] = 'QCM Supprimé';
+$string['qcm_deleted'] = 'Question Supprimée';
 
 // Productions
 
@@ -152,7 +152,7 @@ $string['media_explanation'] = 'Médias de l\'explication';
 
 // PHASE 3
 
-$string['value_list'] = 'Je valorise mes QCMs';
+$string['value_list'] = 'Je valorise mes questions';
 $string['student_evaluation'] = 'Évaluation';
 $string['no_evaluation_found'] = "Aucune évaluation trouvée";
 

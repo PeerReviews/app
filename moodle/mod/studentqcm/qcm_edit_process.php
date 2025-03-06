@@ -40,8 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $question_record->subcompetency = isset($question['subcompetency']) ? clean_param($question['subcompetency'], PARAM_INT) : null;
             $question_record->type = $type;
             $question_record->is_improved = $is_improved;
-            $question_record->status = isset($_POST['submit']) ? 1 : 0;
-
+            if ($is_improved == 0){
+                $question_record->status = isset($_POST['submit']) ? 1 : 0;
+            }
+            else{
+                $question_record->status = 1;
+            }
 
             $question_record->id = $q_id;
             $DB->update_record('studentqcm_question', $question_record);
