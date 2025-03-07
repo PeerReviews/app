@@ -103,9 +103,9 @@ foreach ($students as $student) {
     $productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $student->userid], 'prod1_id, prod2_id, prod3_id');
     $nbTotal_revision = 0;
 
-    if ($productions) { // Vérifier si la requête a retourné un résultat
+    if ($productions) {
         foreach ((array) $productions as $production_id) {
-            if (!empty($production_id)) { // Vérifier si l'ID de production est valide
+            if (!empty($production_id)) {
                 $to_evaluate = $DB->get_records('studentqcm_question', array('userid' => $production_id, 'status' => 1));
                 $nbTotal_revision += count($to_evaluate);
             }
@@ -140,7 +140,7 @@ foreach ($students as $student) {
                 <i class="fas fa-p"></i>
             </a>';
  
-        echo '<a href="show_production.php?id=' . $id . '&prod_id=' . $student->userid . '" 
+        echo '<a href="show_revisions.php?id=' . $id . '&studentid=' . $student->userid . '" 
                 class="px-3 py-2 text-white bg-indigo-400 hover:bg-indigo-500 rounded-lg shadow-md" 
                 title="' . get_string('show_revision', 'mod_studentqcm') . '">
                 <i class="fas fa-r"></i>

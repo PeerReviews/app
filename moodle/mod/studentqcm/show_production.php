@@ -34,26 +34,6 @@ $nb_eval_questions = count(array_filter($qcms, function($q) {
     return $q->grade !== null;
 }));
 
-$user_evaluations = [];
-
-foreach ($qcms as $qcm) {
-    $evaluations = $DB->get_records('studentqcm_evaluation', array('question_id' => $qcm->id));
-
-    foreach ($evaluations as $evaluation) {
-        $userid_eval = $evaluation->userid;
-
-        if (!isset($user_evaluations[$userid_eval])) {
-            $user_evaluations[$userid_eval] = ['evaluated' => 0, 'total' => 0];
-        }
-
-        $user_evaluations[$userid_eval]['total']++;
-
-        if ($evaluation->grade !== null) {
-            $user_evaluations[$userid_eval]['evaluated']++;
-        }
-    }
-}
-
 
 require_login($course, true, $cm);
 

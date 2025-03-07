@@ -98,6 +98,7 @@ $string['qcm_not_found'] = 'Aucun QCM trouvé.';
 $string['qcu_not_found'] = 'Aucun QCU trouvé.';
 $string['tcs_not_found'] = 'Aucun TCS trouvé.';
 $string['pop_not_found'] = 'Aucun POP de ce type trouvé.';
+$string['revision_not_found'] = 'Aucune révision trouvée.';
 
 $string['completed_qcms'] = 'QCMs complétés';
 $string['completed_qcus'] = 'QCUs complétés';
