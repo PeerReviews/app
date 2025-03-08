@@ -9,7 +9,7 @@ class attribution_teacher_task extends scheduled_task {
         return "Attribution automatique des productions aux étudiants";
     }
 
-    public function execute() {
+    public function execute(bool $force = false) {
         global $DB;
 
         $records = $DB->get_records('studentqcm', null, 'id DESC', '*', 0, 1);
@@ -21,8 +21,8 @@ class attribution_teacher_task extends scheduled_task {
         }
 
         // Vérifie si la tâche a déjà été effectuée
-        if ($studentqcm->attribution_teacher_completed == 1) {
-            mtrace("La tâche a déjà été effectuée.");
+        if (!$force && $studentqcm->attribution_teacher_completed == 1) {
+            mtrace("L'attribution automatique aux professeurs a déjà été effectuée.");
             die();  // Si déjà effectuée, on arrête l'exécution
         }
 
@@ -35,10 +35,13 @@ class attribution_teacher_task extends scheduled_task {
         }
 
         // Exécution de l'attribution automatique
-        mtrace("Déclenchement de l'attribution automatique !");
+
+        // Supprimer les anciennes attributions
+        $DB->delete_records('pr_assigned_student_teacher');
+        $DB->execute("ALTER TABLE {pr_assigned_student_teacher} AUTO_INCREMENT = 1");
 
         // Récupération des enseignants
-        $teachers = $DB->get_records('teachers', null, '', 'id');
+        $teachers = $DB->get_records('teachers', null, '', 'userId');
         if (empty($teachers)) {
             mtrace("Erreur : aucun enseignant trouvé.");
             die();
@@ -64,7 +67,7 @@ class attribution_teacher_task extends scheduled_task {
         foreach ($students as $student) {
             $teacher_id = $teacher_ids[$index % $num_teachers]; // Attribution équilibrée
             $assignments[] = [
-                'userid' => $student->id,
+                'studentid' => $student->id,
                 'teacherid' => $teacher_id
             ];
             $index++;
@@ -73,8 +76,8 @@ class attribution_teacher_task extends scheduled_task {
         // Insérer les attributions dans la table `pr_assigned_student_teacher`
         foreach ($assignments as $assignment) {
             $record = new \stdClass();
-            $record->userid = $assignment['student_id'];
-            $record->teacherid = $assignment['teacher_id'];
+            $record->userid = $assignment['studentid'];
+            $record->teacherid = $assignment['teacherid'];
 
             $DB->insert_record('pr_assigned_student_teacher', $record);
         }
@@ -82,6 +85,6 @@ class attribution_teacher_task extends scheduled_task {
         // Marquer la tâche comme terminée
         $studentqcm->attribution_teacher_completed = 1;
         $DB->update_record('studentqcm', $studentqcm);
-        mtrace("Attribution des productions terminée !");
+        mtrace("Attribution des productions aux enseignants terminée !");
     }
 }
