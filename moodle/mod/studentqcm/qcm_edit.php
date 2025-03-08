@@ -161,9 +161,10 @@ echo "<div class='mt-8'>";
 
         // Ajouter l'élément <img> avec l'URL
         $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+        if (!strpos($question->context, $file->get_filename()) !== false) {
+            $question->context = $question->context . $img_text;
+        }        
     }
-    
-    $question->context = $question->context . $img_text;
 
     // Afficher l'éditeur avec le contenu préchargé
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
@@ -216,9 +217,10 @@ echo "<div class='mt-8'>";
 
                 // Ajouter l'élément <img> avec l'URL
                 $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+                if (!strpos($answer->answer, $file->get_filename()) !== false) {
+                    $answer->answer = $answer->answer . $img_text;
+                }  
             }
-
-            $answer->answer = $answer->answer . $img_text;
         
             // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
@@ -260,9 +262,11 @@ echo "<div class='mt-8'>";
 
                     // Ajouter l'élément <img> avec l'URL
                     $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
+                    if (!strpos($answer->explanation, $file->get_filename()) !== false) {
+                        print_r($img_text);
+                        $answer->explanation = $answer->explanation . $img_text;
+                    }  
                 }
-
-                $answer->explanation = $answer->explanation . $img_text;
                 
                 // Explication
                 echo "<div class='py-2 grid grid-cols-12 w-full'>";
@@ -361,7 +365,7 @@ tinymce.init({
     media_dimensions: true,
     height: 180,
     images_upload_url: 'upload.php',
-    automatic_uploads: true,
+    automatic_uploads: false,
     setup: function (editor) {
       editor.on('init', function () {
         // Assure que chaque formulaire parent a 'novalidate'
@@ -399,6 +403,8 @@ tinymce.init({
                     console.log('Contenu de la réponse en erreur:', response.text());
                     throw new Error('Erreur HTTP ' + response.status);
                 }
+                console.log('filearea : ' + filearea + 'itemid' + itemid);
+                console.log('file', file);
                 return response.json();
             })
             .then(data => {

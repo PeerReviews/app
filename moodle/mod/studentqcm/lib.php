@@ -222,7 +222,7 @@ function getImageFile($contextid, $component, $filearea, $itemid, $filename) {
         $contextid,
         $component,
         $filearea,
-        $itemid,
+        abs($itemid),
         'sortorder', // ou un autre critère de tri
         false // Inclure les fichiers supprimés ou non
     );

@@ -5,10 +5,12 @@ require_login();
 
 header('Content-Type: application/json'); // Assurer un retour en JSON
 
-try {
+try{ 
     $cmid = required_param('cmid', PARAM_INT); // Récupération de l'ID du module
     $filearea = required_param('filearea', PARAM_TEXT);
-    $itemid = required_param('itemid', PARAM_INT);
+    $itemid = required_param('itemid', PARAM_RAW);
+    $itemid = intval($itemid);
+
     $id_referentiel = optional_param('id_referentiel', null, PARAM_INT);
     $id_competency = optional_param('id_competency', null, PARAM_INT);
     
@@ -30,10 +32,10 @@ try {
         'contextid' => $context->id,
         'component' => 'mod_studentqcm',
         'filearea' => $filearea,
-        'itemid' => $itemid,
+        'itemid' => abs($itemid),
         'filepath' => '/',
         'filename' => $filename,
-        'userid' => $USER->id 
+        'userid' => $USER->id, 
     ];
     
 
@@ -50,8 +52,19 @@ try {
     error_log("Tentative d'enregistrement du fichier : " . print_r($file, true));
 
     // Enregistrer le fichier dans Moodle
-    $stored_file = $fs->create_file_from_pathname($file_record, $file['tmp_name']);
-
+    try {
+        $stored_file = $fs->create_file_from_pathname($file_record, $file['tmp_name']);
+        
+        if ($itemid <= 0){
+            $file_id = $stored_file->get_id(); 
+            $DB->set_field('files', 'referencefileid', 0, array('id' => $file_id));
+        }
+    }
+    catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Stored file', 'details' => $e->getMessage()]);
+        exit;
+    }
     error_log("Fichier stored : " . print_r($stored_file, true));
 
     if ($stored_file) {
@@ -70,8 +83,13 @@ try {
             $file_record->iscourse = 0;
         }
 
+        try {
         $file_record->id = $DB->insert_record('studentqcm_file', $file_record);
-
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Stored file in studentqcm_file', 'details' => $e->getMessage()]);
+            exit;
+        }
         // Génération de l'URL du fichier
         $file_url = moodle_url::make_pluginfile_url(
             $context->id, 'mod_studentqcm', $filearea, $itemid, '/', $filename

@@ -41,7 +41,18 @@ echo "</a>";
 echo "</div>";
 
 // Formulaire
-echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}&pop_type_id={$popTypeId}'>";
+// Construction de l'URL de manière conditionnelle
+$form_action = "<form method='post' action='submit_qcm.php?id={$id}&type={$type}";
+
+if ($popTypeId !== null) {
+    $form_action .= "&pop_type_id={$popTypeId}";
+}
+
+$form_action .= "'>";
+
+// Affichage du formulaire
+echo $form_action;
+// echo "<form method='post' action='submit_qcm.php?id={$id}&type={$type}&pop_type_id={$popTypeId}'>";
 echo "<div class='mt-8'>";
 
     // Référentiel, compétence et sous-compétence
@@ -223,7 +234,7 @@ tinymce.init({
     media_dimensions: true,
     height: 180,
     images_upload_url: 'upload.php',
-    automatic_uploads: true,
+    automatic_uploads: false,
     setup: function (editor) {
       editor.on('init', function () {
         // Assure que chaque formulaire parent a 'novalidate'
@@ -522,11 +533,6 @@ $(document).ready(function() {
     $('form').on('submit', function(e) {
 
         var submitterName = e.originalEvent.submitter.name;
-
-        if (submitterName === "save") {
-            return;
-        }
-
         var isValid = true;
         var errorMessage = '';
         var urlParams = new URLSearchParams(window.location.search);
@@ -534,6 +540,23 @@ $(document).ready(function() {
 
         // Réinitialiser la liste d'erreurs
         $('#error-messages').empty();
+
+        if (submitterName === "save") {
+            // Vérification de la question
+            if ($('#question_1').val().trim() === "") {
+                isValid = false;
+                $('#error-messages').append('<li>La question est requise.</li>');
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+
+                // Afficher les messages d'erreur dans le modal
+                $('#error-modal').removeClass('hidden');
+            }
+            
+            return;
+        }
 
         // Vérification du référentiel
         if ($('#referentiel_1').val() === "") {
