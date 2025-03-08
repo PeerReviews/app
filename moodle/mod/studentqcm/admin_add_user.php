@@ -32,11 +32,11 @@ echo "</a>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between gap-4'>";
-    echo '<a href="?id=' . $id . '&gestion=student" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-lg shadow-md hover:bg-sky-400 transition">';
+    echo '<a href="?id=' . $id . '&gestion=student" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
     echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('student_gestion', 'mod_studentqcm');
     echo '</a>';
 
-    echo '<a href="?id=' . $id . '&gestion=teacher" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-lg shadow-md hover:bg-sky-400 transition">';
+    echo '<a href="?id=' . $id . '&gestion=teacher" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
     echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('teacher_gestion', 'mod_studentqcm');
     echo '</a>';
 echo "</div>";
@@ -128,12 +128,12 @@ if ($gestion_type === 'student') {
 
         echo '<td class="px-3 py-4 text-md text-gray-600">' . $student_fullname . '</div>';
 
-        echo '<td class="px-3 py-4 text-md text-gray-600">';
+        echo '<td class="px-3 py-4 text-lg text-gray-600">';
         
         if ($student->istiertemps) {
-            echo '<i class="fas fa-clock text-sky-500"></i>';
+            echo '<i class="fas fa-clock text-sky-300"></i>';
         } else {
-            echo '<i class="fas fa-xmark text-yellow-500"></i>';
+            echo '<i class="fas fa-xmark text-yellow-400"></i>';
         }
         
         echo '</td>';

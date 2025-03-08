@@ -98,6 +98,7 @@ $string['qcm_not_found'] = 'Aucun QCM trouvé.';
 $string['qcu_not_found'] = 'Aucun QCU trouvé.';
 $string['tcs_not_found'] = 'Aucun TCS trouvé.';
 $string['pop_not_found'] = 'Aucun POP de ce type trouvé.';
+$string['revision_not_found'] = 'Aucune révision trouvée.';
 
 $string['completed_qcms'] = 'QCMs complétés';
 $string['completed_qcus'] = 'QCUs complétés';
@@ -126,7 +127,7 @@ $string['qcm_deleted'] = 'Question Supprimée';
 
 // Productions
 
-$string['production1'] = 'Contenu de la production 1';
+$string['production1'] = 'Contenu de la production';
 $string['production2'] = 'Contenu de la production 2';
 $string['production3'] = 'Contenu de la production 3';
 
@@ -239,7 +240,7 @@ $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
 $string['user_gestion'] = 'Gestion des utilisateurs';
 $string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
-$string[''] = '';
+$string['grade_gestion'] = 'Gestion des notes';
 
 $string['student_list'] = 'Liste des étudiants';
 $string['student_list'] = 'Liste des étudiants';
@@ -267,7 +268,9 @@ $string['completed_evaluations'] = 'Évaluations complétées';
 
 $string['context'] = 'Contexte';
 $string['note_for_question'] = 'Attribuez une note pour cette question';
+$string['attributed_note_question'] = 'Note attribuée pour cette question';
 $string['note_for_revision'] = 'Attribuez une note pour cette révision';
+$string['attributed_note_revision'] = 'Note attribuée pour cette révision';
 $string['no_evaluation_for_this_question'] = 'Pas d\'évaluation pour cette question';
 $string['student_revision'] = 'Révision faite par l\'étudiant';
 $string['nb_evaluated_question'] = 'Questions évaluées';
@@ -281,6 +284,12 @@ $string[''] = '';
 $string['autocomplete_question_success'] = 'Notes des questions auto-complétées avec succès !';
 $string['autocomplete_review_success'] = 'Notes des révisions auto-complétées avec succès !';
 $string[''] = '';
+
+$string['total_grade_questions'] = 'Note production';
+$string['total_grade_revisions'] = 'Note révisions';
+$string['total_general'] = 'Note générale';
+$string['show_production'] = 'Voir la production';
+$string['show_revision'] = 'Voir les révisions';
 
 // Gestion des attributions
 $string['attribution_list'] = 'Liste des attributions de productions';
