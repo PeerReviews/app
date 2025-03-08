@@ -13,6 +13,8 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 require_login($course, true, $cm);
 
+$context = context_system::instance();
+
 // Vérifier que la requête est bien un POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $questions = $_POST['questions'];
@@ -52,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             : null;
             
             $question_record->context = (!empty($question['context'])) 
-            ? clean_param($question['context'], PARAM_TEXT) 
+            ? clean_param($question['context'], PARAM_RAW) 
             : null;
 
             $question_record->referentiel = (!empty($question['referentiel']) && $question['referentiel'] > 0) 
@@ -102,7 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Récupérer tous les fichiers de mdl_files en une seule requête
                 $sql = "SELECT * FROM {files} 
                         WHERE userid = :userid 
-                        AND itemid <= 0 
+                        AND itemid = 0
+                        AND referencefileid = 0
                         AND filearea = :filearea";
             
                 $params = [
@@ -121,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Mettre à jour les fichiers de mdl_files en dehors de la boucle précédente
                 foreach ($mdl_files as $mdl_file) {
                     $mdl_file->itemid = $question_id;
+                    $mdl_file->referencefileid = null;
                     $DB->update_record('files', $mdl_file);
                 }
             }
@@ -133,8 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $answer_record = new stdClass();
                     $answer_record->question_id = $question_id;
                     $answer_record->indexation = $indexation;
-                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
-                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
+                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_RAW) : null;
+                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_RAW) : null;
                     $answer_record->isTrue = isset($answer['correct']) && $answer['correct'] == '1' ? 1 : 0;
 
                     try {
@@ -155,7 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             // Récupérer tous les fichiers de mdl_files en une seule requête pour chaque filearea
                             $sql = "SELECT * FROM {files} 
                                     WHERE userid = :userid 
-                                    AND itemid <= 0 
+                                    AND itemid BETWEEN 1 AND 5 
+                                    AND referencefileid = 0
                                     AND filearea = :filearea";
                         
                             $params = [
@@ -168,24 +173,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             // Mettre à jour les fichiers de mdl_studentqcm_file
                             foreach ($files[$area] as $file) {
                                 // Si l'itemid correspond à $indexation, on effectue la mise à jour
-                                if ($file->itemid === $indexation) {
+
+                                if (abs($file->itemid) === $indexation) {
                                     $file->itemid = $inserted_answer_id;
                                     $DB->update_record('studentqcm_file', $file);
                                 }
                             }
+
+                            
                         
                             // Mettre à jour les fichiers de mdl_files
                             foreach ($mdl_files as $mdl_file) {
                                 // Si l'itemid correspond à $indexation, on effectue la mise à jour
-                                if ($mdl_file->itemid === $indexation) {
+
+                                if (intval($mdl_file->itemid) === $indexation) {
                                     $mdl_file->itemid = $inserted_answer_id;
-                                    $DB->update_record('files', $mdl_file);
+                                    $mdl_file->referencefileid = null;
+                                    $id = $DB->update_record('files', $mdl_file);
+                                    if (!$id) {
+                                        throw new moodle_exception('Error updating files: ' . print_r($mdl_file, true));
+                                    }
+
+                                    $filename = $mdl_file->filename;
+                                    $real_url = moodle_url::make_pluginfile_url($context->id, 'mod_studentqcm', $area, $mdl_file->itemid, '/', $filename)->out();
+
+                                    if ($area === 'answerfiles') {
+                                        // Utilisation de preg_replace_callback pour remplacer les balises <img>
+                                        $answer_record->answer = preg_replace_callback('/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*>/i', function($matches) use ($filename, $real_url) {
+                                            if (strpos($matches[1], $filename) !== false) {
+                                                return "<img src='{$real_url}' alt='{$filename}' />";
+                                            }
+                                            return $matches[0];  // Sinon, garder la balise telle quelle
+                                        }, $answer_record->answer);
+                                    } else {
+                                        // Utilisation de preg_replace_callback pour remplacer les balises <img>
+                                        $answer_record->explanation = preg_replace_callback('/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*>/i', function($matches) use ($filename, $real_url) {
+                                            if (strpos($matches[1], $filename) !== false) {
+                                                return "<img src='{$real_url}' alt='{$filename}' />";
+                                            }
+                                            return $matches[0];  // Sinon, garder la balise telle quelle
+                                        }, $answer_record->explanation);
+                                    }
+                                    
                                 }
                             }
                         }
                     }
 
-            
+                    $answer_record->id = $inserted_answer_id; // Assurez-vous de définir l'ID pour que la mise à jour affecte l'enregistrement existant
+                    $updated = $DB->update_record('studentqcm_answer', $answer_record);
+                    if (!$updated) {
+                        throw new moodle_exception('Error updating answer: ' . print_r($answer_record, true));
+                    }
                     
                     $indexation++;
                 }
@@ -227,9 +266,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    
 }
 
-if (isset($_POST['submit'])) {
-    redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
-}
+// if (isset($_POST['submit'])) {
+//     redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)), get_string('qcm_saved', 'mod_studentqcm'), 2);
+// }
 
-// Si la requête n'est pas un POST, rediriger
-redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));
+// // Si la requête n'est pas un POST, rediriger
+// redirect(new moodle_url('/mod/studentqcm/qcm_list.php', array('id' => $id)));

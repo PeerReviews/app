@@ -14,6 +14,9 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 require_login($course, true, $cm);
 
+$context = context_system::instance(); // Contexte de Moodle
+$file_storage = get_file_storage();
+
 // Vérifier que la requête est bien un POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $questions = $_POST['questions'];
@@ -31,10 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
 
             $question_record = new stdClass();
+            $question_record->id = $q_id;
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
             $question_record->global_comment = clean_param($question['global_comment'], PARAM_TEXT);
-            $question_record->context = clean_param($question['context'], PARAM_TEXT);
+            $question_record->context = $question['context'];
             $question_record->referentiel = isset($question['referentiel']) ? clean_param($question['referentiel'], PARAM_INT) : null;
             $question_record->competency = isset($question['competency']) ? clean_param($question['competency'], PARAM_INT) : null;
             $question_record->subcompetency = isset($question['subcompetency']) ? clean_param($question['subcompetency'], PARAM_INT) : null;
@@ -47,7 +51,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $question_record->status = 1;
             }
 
-            $question_record->id = $q_id;
+            // Récupérer les fichiers liés au contexte
+            $filearea = 'contextfiles';
+            $file_records = $file_storage->get_area_files(
+                $context->id, 'mod_studentqcm', $filearea, $q_id, 'sortorder', false
+            );
+
+            // Récupérer les balises <img> dans le contexte
+            // echo 'CONTEXTE : ' . print_r($question_record->context, true);
+            // echo 'CONTEXTE PARAM : ' . print_r($question['context'], true);
+
+            $images_in_text = [];
+            if (!empty($question['context'])) {
+                $dom = new DOMDocument();
+                $dom->loadHTML('<?xml encoding="utf-8" ?>' . $question_record->context);                
+                foreach ($dom->getElementsByTagName('img') as $img) {
+                    $url = $img->getAttribute('src');
+                    preg_match("/pluginfile\.php.*$/", $url, $normalized_url);
+                    $images_in_text[] = $normalized_url;
+                }
+            }
+
+            // echo 'IMAGES IN TEXT'. print_r($images_in_text,true);
+          
+            // Supprimer les fichiers qui n'apparaissent pas dans le contexte
+            foreach ($file_records as $file) {
+                $file_url = moodle_url::make_pluginfile_url(
+                    $context->id, 'mod_studentqcm', $filearea, $q_id,
+                    $file->get_filepath(), $file->get_filename()
+                )->out();
+
+                preg_match("/pluginfile\.php.*$/", $file_url, $normalized_url);
+
+                // echo 'FILE URL : ' . print_r($file_url,true);
+
+                if (!in_array($normalized_url, $images_in_text)) {
+                    $file->delete();
+                }
+            }
+            // echo 'CONTEXTE : ' . print_r($question_record->context, true);
             $DB->update_record('studentqcm_question', $question_record);
 
 
@@ -64,11 +106,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $answer_record = new stdClass();
                     $answer_record->question_id = $q_id;
                     $answer_record->indexation = $indexation++;
-                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_TEXT) : null;
-                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_TEXT) : null;
+                    $answer_record->answer = !empty($answer['answer']) ? clean_param($answer['answer'], PARAM_RAW) : null;
+                    $answer_record->explanation = !empty($answer['explanation']) ? clean_param($answer['explanation'], PARAM_RAW) : null;
                     $answer_record->isTrue = (isset($answer['correct']) && in_array($answer['correct'], ['1', 1])) ? 1 : 0;
 
                     if ($existing_answer) {
+
+                        $fileareas = ['answerfiles', 'explanationfiles'];
+                        foreach($fileareas as $filearea){
+
+                            if ($filearea === 'answerfiles') {
+                                $content = $answer_record->answer;
+                            } elseif ($filearea === 'explanationfiles') {
+                                $content = $answer_record->explanation;
+                            }
+
+                            $file_records = $file_storage->get_area_files(
+                                $context->id, 'mod_studentqcm', $filearea, $existing_answer->id, 'sortorder', false
+                            );
+
+                            $images_in_text = [];
+                            if (!empty($content)) {
+                                $dom = new DOMDocument();
+                                $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content);                
+                                foreach ($dom->getElementsByTagName('img') as $img) {
+                                    $url = $img->getAttribute('src');
+                                    preg_match("/pluginfile\.php.*$/", $url, $normalized_url);
+                                    if (!empty($normalized_url[0])) {
+                                        $images_in_text[] = $normalized_url[0]; // Stocke l'URL normalisée
+                                    }
+                                }
+                            }
+
+
+                            // Supprimer les fichiers qui n'apparaissent pas dans le contexte
+                            foreach ($file_records as $file) {
+                                $file_url = moodle_url::make_pluginfile_url(
+                                    $context->id, 'mod_studentqcm', $filearea, $existing_answer->id,
+                                    $file->get_filepath(), $file->get_filename()
+                                )->out();
+
+                                preg_match("/pluginfile\.php.*$/", $file_url, $normalized_url);
+
+                                if (!empty($normalized_url[0])) {                    
+                                    if (!in_array($normalized_url[0], $images_in_text)) {
+                                        $file->delete();
+                                    }
+                                } 
+                            }
+                        }
+
                         // Mise à jour de la réponse existante
                         $answer_record->id = $existing_answer->id;
                         $DB->update_record('studentqcm_answer', $answer_record);
@@ -76,7 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         // Insertion d'une nouvelle réponse
                         $DB->insert_record('studentqcm_answer', $answer_record);
                     }
-                    
                 }
             }
 
