@@ -21,7 +21,7 @@ class attribution_student_task extends scheduled_task {
         }
 
         // Vérifie si la tâche a déjà été effectuée
-        if ($studentqcm->attribution_completed == 1) {
+        if ($studentqcm->attribution_student_completed == 1) {
             mtrace("La tâche a déjà été effectuée.");
             die();  // Si déjà effectuée, on arrête l'exécution
         }
@@ -86,7 +86,7 @@ class attribution_student_task extends scheduled_task {
             }
         }
         // Marquer la tâche comme terminée
-        $studentqcm->attribution_completed = 1;
+        $studentqcm->attribution_student_completed = 1;
         $DB->update_record('studentqcm', $studentqcm);
         mtrace("Attribution des productions terminée !");
     }
