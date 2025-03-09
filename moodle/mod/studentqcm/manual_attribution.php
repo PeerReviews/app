@@ -35,26 +35,29 @@ echo "</a>";
 // Gestion étudiant/enseignant
 echo "<div class='flex mt-8 text-lg justify-between gap-4'>";
     echo '<a href="?id=' . $id . '&gestion=student" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
-    echo '<i class="fas fa-user-shift mr-2"></i>' . get_string('student_gestion', 'mod_studentqcm');
+    echo '<i class="fa-solid fa-user-graduate"></i>   ' . get_string('student_gestion', 'mod_studentqcm');
     echo '</a>';
 
     echo '<a href="?id=' . $id . '&gestion=teacher" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
-    echo '<i class="fas fa-user-shift mr-2"></i>' . get_string('teacher_gestion', 'mod_studentqcm');
+    echo '<i class="fa-solid fa-user-tie"></i>   ' . get_string('teacher_gestion', 'mod_studentqcm');
     echo '</a>';
 echo "</div>";
+echo "</div>"; 
 
 if ($gestion_type === 'student') {
 
     // Récupération des étudiants
     $students = $DB->get_records('studentqcm_assignedqcm');
 
+    echo "<div class='flex justify-center gap-6 mb-6'>";
     // Bouton pour déclencher manuellement l'attribution automatique
-    echo '<button onclick="triggerStudentAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 text-white no-underline">'
-        . get_string('trigger_attribution', 'mod_studentqcm') . '</button>';
+    echo '<button onclick="triggerStudentAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-indigo-300 hover:bg-indigo-400 text-white no-underline">';
+    echo '<i class="fa-solid fa-sync mr-2"></i>' . get_string('trigger_attribution', 'mod_studentqcm') . '</button>';
 
     // Bouton pour ajouter une nouvelle ligne
-    echo '<button onclick="addRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 text-white no-underline">' 
-        . get_string('add_attribution', 'mod_studentqcm') . '</button>';
+    echo '<button onclick="addRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-indigo-300 hover:bg-indigo-400 text-white no-underline">';
+    echo '<i class="fa-solid fa-plus mr-2"></i>' . get_string('add_attribution', 'mod_studentqcm') . '</button>';
+    
     echo "</div>";
 
     echo '<div class="mt-8">';
@@ -141,11 +144,11 @@ else {
     $teachers = $DB->get_records('pr_assigned_student_teacher');
 
     // Bouton pour déclencher manuellement l'attribution automatique
-    echo '<button onclick="triggerTeacherAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 text-white no-underline">'
+    echo '<button onclick="triggerTeacherAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-orange-300 hover:bg-orange-400 text-white no-underline">'
         . get_string('trigger_attribution', 'mod_studentqcm') . '</button>';
 
     // Bouton pour ajouter une nouvelle ligne
-    echo '<button onclick="addTeacherRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 text-white no-underline">' 
+    echo '<button onclick="addTeacherRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-orange-300 hover:bg-orange-400 text-white no-underline">' 
         . get_string('add_attribution', 'mod_studentqcm') . '</button>';
     echo "</div>";
 
