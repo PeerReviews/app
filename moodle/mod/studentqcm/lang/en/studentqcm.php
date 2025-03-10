@@ -92,6 +92,7 @@ $string['question_required'] = 'La question est requise.';
 
 $string['your_qcms'] = 'QCM';
 $string['edit'] = 'Modifier';
+$string['duplicate'] = 'Dupliquer';
 
 $string['not_found'] = 'Aucune question trouvée.';
 $string['qcm_not_found'] = 'Aucun QCM trouvé.';
@@ -234,13 +235,12 @@ $string['production_evaluation'] = 'Évaluation des productions';
 $string['student_gestion'] = 'Gestion des étudiants';
 $string['teacher_gestion'] = 'Gestion des enseignants';
 $string['user_gestion'] = 'Gestion des utilisateurs';
+$string['session_gestion'] = 'Gestion des sessions';
+$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
+$string['grade_gestion'] = 'Gestion des notes';
 
 $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
-
-$string['user_gestion'] = 'Gestion des utilisateurs';
-$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
-$string['grade_gestion'] = 'Gestion des notes';
 
 $string['student_list'] = 'Liste des étudiants';
 $string['student_list'] = 'Liste des étudiants';
@@ -298,5 +298,11 @@ $string['prod3'] = 'Production 3 à évaluer';
 $string['add_attribution'] = 'Ajouter manuellement une attribution';
 $string['save_students'] = 'Enregistrer les modifications';
 $string['save_teachers'] = 'Enregistrer les modifications';
-$string['actions'] = 'Actions';
 $string['trigger_attribution'] = 'Déclencher l\'attribution automatique';
+
+$string['session_name'] = 'Nom de la session';
+$string['session_start'] = 'Date de début';
+$string['session_end'] = 'Date de fin';
+$string['time_created'] = 'Date de création';
+$string['archived'] = 'Archivé';
+$string['session_list'] = 'Liste des sessions';
