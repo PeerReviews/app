@@ -16,7 +16,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         // Informations principales du référentiel.
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="mb-8 text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('text', 'name_plugin', get_string('name_plugin', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('name_plugin', PARAM_TEXT);
@@ -58,7 +58,25 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
             <div id="choice_add_competence"></div>
 
+            <div id="info-json" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+                <div class="bg-white rounded-3xl py-4 px-16 max-w-lg w-full">
+                    <div class="flex flex-row-reverse">
+                        <button type="button" id="close-info-json" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
+                    </div>
+                    <p>Format attendu:</p>
+                </div>
+            </div>
+
             <script>
+
+                function showInfoJSON() {
+                    document.getElementById("info-json").classList.remove("hidden");
+                }
+                
+                document.getElementById("close-info-json").addEventListener("click", function () {
+                    document.getElementById("info-json").classList.add("hidden");
+                });
+
                 document.addEventListener("DOMContentLoaded", function () {
                     const manual = document.getElementById("choice_add_competence_manual");
                     const files  = document.getElementById("choice_add_competence_files");
@@ -100,8 +118,13 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     displayCoursesCompetence(arrayFilesCourses);
 
                     let html = `
-                        <p>' . get_string('desc_files_competence', 'mod_studentqcm') . '</p>
-                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer">
+                        <div class="flex items-center">
+                                <p>' . get_string('desc_files_competence', 'mod_studentqcm') . '</p>
+                                <a href="#" onclick="showInfoJSON()">
+                                    <i class="fa-solid fa-circle-info ml-2 text-indigo-600"></i>
+                                </a>
+                        </div>
+                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border-2 border-dashed border-white flex flex-col justify-center items-center text-center cursor-pointer">
                             <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
                             <p>Glissez et déposer pour uploader le fichier</p>
                             <p>Ou</p>
@@ -542,7 +565,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $mform->setType('courses_files_data', PARAM_RAW);
 
         $mform->addElement('html', '
-        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer"
+        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border-2 border-dashed border-white flex flex-col justify-center items-center text-center cursor-pointer"
             ondrop="dropHandlerCourses(event);"
             ondragleave="dragLeaveHandlerCourses(event);"
             ondragover="dragOverHandlerCourses(event);">
@@ -708,7 +731,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="mb-4 text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('html', '
             <style>
@@ -1023,7 +1046,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
         $options = ['0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', '10' => '10', '11' => '11', '12' => '12', '13' => '13', '14' => '14', '15' => '15', '16' => '16', '17' => '17', '18' => '18'];
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('type_eval_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="mb-5 text-3xl font-bold">' . get_string('type_eval_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('select', 'choix_qcu', get_string('nb_qcu', 'mod_studentqcm'), $options);
         $mform->addElement('select', 'choix_qcm', get_string('nb_qcm', 'mod_studentqcm'), $options);
@@ -1231,6 +1254,17 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
             });
         </script>');
+
+        $mform->addElement('html', '
+        <style>
+            #fitem_id_nb_reviewer {
+                font-weight: bold !important;
+                margin-top: 30px !important;
+            }
+        </style>
+        ');
+        $mform->addElement('select', 'nb_reviewer', get_string('nb_reviewer', 'mod_studentqcm'), ['0'=>'1', '1'=>'2', '2'=>'3']);
+
 
         $mform->addElement('html', '</div>');
 

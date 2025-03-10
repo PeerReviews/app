@@ -227,6 +227,7 @@ $string['add_malus'] = 'Ajouter un malus';
 
 $string['add_tiers_temps_phase'] = 'Voulez vous prendre en compte les tiers-temps ?';
 
+$string['nb_reviewer'] = 'Nombre de relecteurs';
 
 
 // INTERFACE PROF
