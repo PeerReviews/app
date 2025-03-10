@@ -3,13 +3,13 @@ namespace mod_studentqcm\task;
 
 use core\task\scheduled_task;
 
-class attribution_task extends scheduled_task {
+class attribution_student_task extends scheduled_task {
 
     public function get_name() {
         return "Attribution automatique des productions aux étudiants";
     }
 
-    public function execute() {
+    public function execute(bool $force = false) {
         global $DB;
 
         $records = $DB->get_records('studentqcm', null, 'id DESC', '*', 0, 1);
@@ -21,8 +21,8 @@ class attribution_task extends scheduled_task {
         }
 
         // Vérifie si la tâche a déjà été effectuée
-        if ($studentqcm->attribution_completed == 1) {
-            mtrace("La tâche a déjà été effectuée.");
+        if (!$force && $studentqcm->attribution_student_completed == 1) {
+            mtrace("L'attribution automatique a déjà été effectuée.");
             die();  // Si déjà effectuée, on arrête l'exécution
         }
 
@@ -36,7 +36,10 @@ class attribution_task extends scheduled_task {
         }
 
         // Exécution de l'attribution automatique
-        mtrace("Déclenchement de l'attribution automatique !");
+
+        // Supprimer les anciennes attributions
+        $DB->delete_records('studentqcm_assignedqcm');
+        $DB->execute("ALTER TABLE {studentqcm_assignedqcm} AUTO_INCREMENT = 1");
 
         // Récupérer tous les étudiants
         $students = $DB->get_records('user', null, '', 'id');
@@ -86,8 +89,8 @@ class attribution_task extends scheduled_task {
             }
         }
         // Marquer la tâche comme terminée
-        $studentqcm->attribution_completed = 1;
+        $studentqcm->attribution_student_completed = 1;
         $DB->update_record('studentqcm', $studentqcm);
-        mtrace("Attribution des productions terminée !");
+        mtrace("Attribution des productions entre étudiants terminée !");
     }
 }

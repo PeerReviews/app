@@ -104,7 +104,7 @@ if ($gestion_type === 'student') {
         $roundedClass = ($columnIndex == 0) ? 'rounded-tl-3xl' : (($columnIndex == count($columns) - 1) ? 'rounded-tr-3xl' : '');
 
         echo '<th class="px-3 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer ' . $roundedClass . '"
-                  onclick="sortTable(' . $columnIndex . ')">
+                  onclick="sortTable(' . $columnIndex . ', \'studentTable\')">
                   ' . mb_strtoupper($label, 'UTF-8');
 
         echo ' <i class="fas fa-sort ml-2"></i>';
@@ -206,7 +206,7 @@ else if ($gestion_type === 'teacher') {
         $roundedClass = ($columnIndex == 0) ? 'rounded-tl-3xl' : (($columnIndex == count($columns) - 1) ? 'rounded-tr-3xl' : '');
 
         echo '<th class="px-3 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider cursor-pointer ' . $roundedClass . '"
-                  onclick="sortTable(' . $columnIndex . ')">
+                  onclick="sortTable(' . $columnIndex . ', \'teacherTable\')">
                   ' . mb_strtoupper($label, 'UTF-8');
 
         echo ' <i class="fas fa-sort ml-2"></i>';
@@ -249,8 +249,8 @@ echo $OUTPUT->footer();
 
 
 <script>
-function sortTable(columnIndex) {
-    var table = document.getElementById("teacherTable");
+function sortTable(columnIndex, table) {
+    var table = document.getElementById(table);
     var rows = Array.from(table.rows).slice(1);
     var isAscending = table.dataset.sortOrder === "asc";
 
