@@ -71,49 +71,38 @@ echo '<tbody id="tableBody">';
 // Affichage des étudiants
 foreach ($sessions as $session) {
 
-    $formatted_timecreated = userdate($session->timecreated);
-
     echo '<tr id="row-' . $session->id . '" class="border-t hover:bg-gray-50">';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . $session->name . '</td>';
-    echo '<td class="px-3 py-4 text-md text-gray-600">' . $formatted_timecreated . '</td>';
+    echo '<td class="px-3 py-4 text-md text-gray-600">' . date('d/m/Y', $session->timecreated) . '</td>';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . ($session->archived == 1 ? 'Oui' : 'Non') . '</td>';
 
-    // Bouton "Modifier"
-    echo '<td class="p-4 text-md text-gray-600">';
-    echo '<a href="edit_session.php?id=' . $id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl">';
-    echo get_string('edit', 'mod_studentqcm');
-    echo '</a>';
+    echo '<td class="p-4 text-md text-gray-600 flex items-center space-x-2">';
+        echo '<a href="edit_session.php?id=' . $id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center">';
+        echo get_string('edit', 'mod_studentqcm');
+        echo '</a>';
+
+        echo '<form action="duplicate_session.php?id=' . $id . '" method="post" style="display:inline;">';
+            echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
+            echo '<button type="submit" class="px-4 py-2 min-w-40 bg-lime-400 hover:bg-lime-500 text-white text-md font-semibold rounded-2xl">';
+            echo get_string('duplicate', 'mod_studentqcm');
+            echo '</button>';
+        echo '</form>';
+
+        echo '<form action="archive_session.php?id=' . $id . '" method="post" style="display:inline;">';
+            echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
+            echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl">';
+            echo get_string('archive', 'mod_studentqcm');
+            echo '</button>';
+        echo '</form>';
+
+        echo '<form action="delete_session.php?id=' . $id . '" method="post" onsubmit="return confirm(\'Êtes-vous sûr de vouloir supprimer cette session ?\nCette action est irréversible.\')" style="display:inline;">';
+            echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
+            echo '<button type="submit" class="px-4 py-2 min-w-40 bg-red-500 hover:bg-red-600 text-white text-md font-semibold rounded-2xl">';
+            echo get_string('delete', 'mod_studentqcm');
+            echo '</button>';
+        echo '</form>';
     echo '</td>';
 
-    // Formulaire "Dupliquer"
-    echo '<td class="p-4 text-md text-gray-600">';
-    echo '<form action="duplicate_session.php?id=' . $id . '" method="post" style="display:inline;">';
-    echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-    echo '<button type="submit" class="px-4 py-2 min-w-40 bg-lime-400 hover:bg-lime-500 text-white text-md font-semibold rounded-2xl">';
-    echo get_string('duplicate', 'mod_studentqcm');
-    echo '</button>';
-    echo '</form>';
-    echo '</td>';
-
-    // Formulaire "Archiver"
-    echo '<td class="p-4 text-md text-gray-600">';
-    echo '<form action="archive_session.php?id=' . $id . '" method="post" style="display:inline;">';
-    echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-    echo '<button type="submit" class="px-4 py-2 min-w-40 bg-gray-500 hover:bg-gray-600 text-white text-md font-semibold rounded-2xl">';
-    echo get_string('archive', 'mod_studentqcm');
-    echo '</button>';
-    echo '</form>';
-    echo '</td>';
-
-    // Formulaire "Supprimer"
-    echo '<td class="p-4 text-md text-gray-600">';
-    echo '<form action="delete_session.php?id=' . $id . '" method="post" onsubmit="return confirm(\'Êtes-vous sûr de vouloir supprimer cette session ?\nCette action est irréversible.\')" style="display:inline;">';
-    echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-    echo '<button type="submit" class="px-4 py-2 min-w-40 bg-red-500 hover:bg-red-600 text-white text-md font-semibold rounded-2xl">';
-    echo get_string('delete', 'mod_studentqcm');
-    echo '</button>';
-    echo '</form>';
-    echo '</td>';
     echo '</tr>';
 }
 
