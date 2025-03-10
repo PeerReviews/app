@@ -292,6 +292,7 @@ $string['total_grade_revisions'] = 'Note révisions';
 $string['total_general'] = 'Note générale';
 $string['show_production'] = 'Voir la production';
 $string['show_revision'] = 'Voir les révisions';
+$string['show_modification'] = 'Modifier les notes';
 
 // Gestion des attributions
 $string['attribution_list'] = 'Liste des attributions de productions';

@@ -337,7 +337,10 @@ echo "<div class='mt-8'>";
     // Commentaire / explication globale
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<label for='global_comment' class='block font-semibold text-gray-700 text-lg'>" . get_string('global_comment', 'mod_studentqcm') . " :</label>";
-    echo "<input type='text' id='global_comment' name='questions[1][global_comment]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required value='{$question->global_comment}'>";
+    echo "<textarea id='global_comment' name='questions[1][global_comment]' rows='4' maxlength='5000' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
+    echo htmlspecialchars($question->global_comment);
+    echo "</textarea>";
+    echo "<div id='char-count' class='text-gray-600 mt-1'></div>";
     echo "</div>";
 
 
@@ -358,7 +361,7 @@ echo "<script src='https://cdn.jsdelivr.net/npm/tinymce@6.8.0/tinymce.min.js'></
 echo "<script>
 
 tinymce.init({
-    selector: 'textarea',
+    selector: 'textarea:not(#global_comment)', 
     plugins: ['image', 'media', 'link', 'table'],
     toolbar: 'undo redo | bold italic underline | image media | link | table',
     image_advtab: true,
@@ -453,6 +456,17 @@ document.getElementById('show_new_subcompetency').addEventListener('click', func
     } else {
         newSubcompetencyField.classList.add('hidden');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('global_comment');
+    var charCount = document.getElementById('char-count');
+
+    charCount.textContent = input.value.length + ' / 5000';
+
+    input.addEventListener('input', function() {
+        charCount.textContent = input.value.length + ' / 5000';
+    });
 });
 
 $(document).ready(function() {
