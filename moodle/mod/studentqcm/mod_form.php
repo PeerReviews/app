@@ -10,6 +10,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         global $CFG, $DB, $PAGE;
 
         $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
+        $PAGE->requires->js(new moodle_url('/mod/studentqcm/mod_studentqcm.js', array('v' => time()))); // Inclure le fichier JS externe
 
         $mform = $this->_form;
 
@@ -42,14 +43,14 @@ class mod_studentqcm_mod_form extends moodleform_mod
             'html', '
             <div id="error_competence"></div>
             <div class="mt-4">
-                <p>' . get_string('upload_compentence', 'mod_studentqcm') . '</p>
+                <p>' . get_string('upload_competence', 'mod_studentqcm') . '</p>
             </div>
             <div class="flex justify-center items-center">
                 <button type="button" id="choice_add_competence_manual" onclick="manualAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
-            . get_string('add_manual_compentence', 'mod_studentqcm') .
+            . get_string('add_manual_competence', 'mod_studentqcm') .
             '</button>
                 <button type="button" id="choice_add_competence_files" onclick="filesAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
-            . get_string('add_files_compentence', 'mod_studentqcm') .
+            . get_string('add_files_competence', 'mod_studentqcm') .
             '</button>
             </div>
 
@@ -90,7 +91,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     displayCoursesCompetence(arrayFilesCourses);
 
                     let html = `
-                        <p>' . get_string('desc_files_compentence', 'mod_studentqcm') . '</p>
+                        <p>' . get_string('desc_files_competence', 'mod_studentqcm') . '</p>
                         <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer">
                             <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
                             <p>Glissez et déposer pour uploader le fichier</p>
@@ -283,7 +284,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     competencesData = [];
 
                     let html= `
-                        <p>' . get_string('desc_manual_compentence', 'mod_studentqcm') . '</p>
+                        <p>' . get_string('desc_manual_competence', 'mod_studentqcm') . '</p>
                         <div class="flex justify-center items-center">
                             <button id="add_competences" onclick="addCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
             . get_string('add_competences', 'mod_studentqcm') .
@@ -532,9 +533,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
             ondragleave="dragLeaveHandlerCourses(event);"
             ondragover="dragOverHandlerCourses(event);">
             <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
-            <p>Glissez et déposer pour uploader le fichier</p>
-            <p>Ou</p>
-            <p>Charger un fichier</p>
+            <p>' . get_string('drag_drop', 'mod_studentqcm'). '</p>
+            <p> ' . get_string('or', 'mod_studentqcm'). '</p>
+            <p>' . get_string('upload_file', 'mod_studentqcm'). '</p>
             <input type="file" id="fileInputCourses" multiple hidden>
         </div>
         <div id="file-list-courses"></div>
@@ -574,51 +575,34 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     handleFilesCourses(e.target.files);
                 });
 
-
-                async function generateSHA1(data) {
-                    const encoder = new TextEncoder();
-                    const dataBuffer = encoder.encode(data);
-                    const hashBuffer = await crypto.subtle.digest(`SHA-1`, dataBuffer);
-                    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, `0`)).join(``);
-                }
-
-               async function handleFilesCourses(files) {
-                    let filesCourses = [];
-                    let promises = [];
-
+                async function handleFilesCourses(files) {
                     for (let file of files) {
                         arrayFilesCourses.push(file);
-                        let reader = new FileReader();
-                        let promise = new Promise((resolve) => {
-                            reader.onload = function (event) {
-                                let fileContent = event.target.result.split(",")[1]; 
-                
-                                // Générer un hash SHA1 pour le contenthash
-                                let contentHash = generateSHA1(fileContent);
-
-                                filesCourses.push({
-                                    id: indexCourses,
-                                    filename: file.name,
-                                    filetype: file.type,
-                                    filesize: file.size,
-                                    filecontent: fileContent, 
-                                    contenthash: contentHash
-                                });
-                                indexCourses++;
-                                
-                                resolve();
-                            };
-                            reader.readAsDataURL(file);
-                        });
-
-                        promises.push(promise);
+                        await uploadFile(file);  // Envoi du fichier immédiatement après sélection
                     }
 
                     displayCoursesCompetence(arrayFilesCourses);
-                        
-                    Promise.all(promises).then(() => {
-                        document.querySelector(`input[name="courses_files_data"]`).value = JSON.stringify(filesCourses);
-                    });
+                }
+
+                async function uploadFile(file) {
+                    let formData = new FormData();
+                    formData.append("file", file);
+
+                    try {
+                        let response = await fetch("/mod/studentqcm/upload.php?filearea=coursefiles", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            let result = await response.json();
+                            console.log("Upload réussi :", result);
+                        } else {
+                            console.error("Erreur lors de l\'upload, statut : " + response.status);
+                        }
+                    } catch (error) {
+                        console.error("Erreur réseau :", error);
+                    }
                 }
 
             function displayCoursesCompetence(files) {

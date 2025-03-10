@@ -165,16 +165,19 @@ $string['info_referentiel_title'] = 'Informations principales du référentiel';
 $string['date_start_referentiel'] = 'Date début session';
 $string['date_end_referentiel'] = 'Date fin session';
 
-$string['upload_compentence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
-$string['desc_manual_compentence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
-$string['add_manual_compentence'] = "Ajouter manuellement les compétences";
-$string['desc_files_compentence'] = "Déposer un fichier de compétences";
-$string['add_files_compentence'] = "Ajouter un fichier de compétences";
-$string['competences_title'] = 'Compétences:';
+$string['upload_competence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
+$string['desc_manual_competence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
+$string['add_manual_competence'] = "Ajouter manuellement les compétences";
+$string['desc_files_competence'] = "Déposer un fichier de compétences";
+$string['add_files_competence'] = "Ajouter un fichier de compétences";
+$string['competences_title'] = 'Compétences :';
 $string['add_competences'] = 'Ajouter une compétence';
 $string['info_competence'] = 'Nouvelle compétence';
 $string['name_competence'] = 'Nom de la compétence';
 $string['choice_comp'] = 'Veuillez choisir une compétence associée';
+$string['drag_drop'] = 'Glissez et déposer pour uploader le fichier';
+$string['or'] = 'Ou';
+$string['upload_file'] = 'Charger un fichier';
 
 $string['subcompetences_title'] = 'Sous-compétences:';
 $string['add_subcompetences'] = 'Ajouter une sous-compétence';
@@ -235,14 +238,12 @@ $string['production_evaluation'] = 'Évaluation des productions';
 $string['student_gestion'] = 'Gestion des étudiants';
 $string['teacher_gestion'] = 'Gestion des enseignants';
 $string['user_gestion'] = 'Gestion des utilisateurs';
+$string['session_gestion'] = 'Gestion des sessions';
+$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
+$string['grade_gestion'] = 'Gestion des notes';
 
 $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
-
-$string['user_gestion'] = 'Gestion des utilisateurs';
-$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
-$string['grade_gestion'] = 'Gestion des notes';
-$string['session_gestion'] = 'Gestion des sessions';
 
 $string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
@@ -303,5 +304,12 @@ $string['prod3'] = 'Production 3 à évaluer';
 $string['add_attribution'] = 'Ajouter manuellement une attribution';
 $string['save_students'] = 'Enregistrer les modifications';
 $string['save_teachers'] = 'Enregistrer les modifications';
-$string['actions'] = 'Actions';
 $string['trigger_attribution'] = 'Déclencher l\'attribution automatique';
+
+$string['session_name'] = 'Nom de la session';
+$string['session_start'] = 'Date de début';
+$string['session_end'] = 'Date de fin';
+$string['time_created'] = 'Date de création';
+$string['archived'] = 'Archivé';
+$string['archive'] = "Archiver";
+$string['session_list'] = 'Liste des sessions';

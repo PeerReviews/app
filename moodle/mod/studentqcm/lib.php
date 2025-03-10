@@ -12,7 +12,7 @@
  * @return int ID de l'instance ajoutée
  */
 function studentqcm_add_instance($data, $mform = null) {
-    global $CFG, $DB;
+    global $CFG, $DB, $USER;
 
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -128,6 +128,49 @@ function studentqcm_add_instance($data, $mform = null) {
     } else {
         throw new moodle_exception('invaliddate', 'studentqcm', '', $competences_data);
     }
+        
+    // Data questions
+    $record->nbQcm = $data->choix_qcm;
+    $record->nbQcu = $data->choix_qcu;
+    $record->nbTcs = $data->choix_tcs;
+    $record->nbPop = $data->choix_pop;
+
+    $popsArray = json_decode($data->pops_data, true);
+    if (!empty($popsArray)) {
+        foreach ($popsArray as $pop) {
+            // Insérer un pop
+            $pop_record = new stdClass();
+            $pop_record->nbqcm = $pop['qcm'];
+            $pop_record->nbqcu = $pop['qcu'];
+            $pop_record->refId = $referentiel_id;
+            $pop_id = $DB->insert_record('question_pop', $pop_record);
+        }
+    }
+
+    // Course files
+
+    if (!empty($data->selectedCourse)) {
+        $selectedCourses = json_decode($data->selectedCourse, true);
+        
+        foreach($selectedCourses as $fileId => $file){
+            $file_record = $DB->get_record('studentqcm_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
+            $competency = $DB->get_record('competency', ['name' => $file['competency_name']]);
+            
+            $file_record->id_referentiel = $referentiel_id;
+            $file_record->id_competency = $competency->id;
+            $file_id = $DB->update_record('studentqcm_file', $file_record);
+        }
+    }
+
+    if (empty($record->name)) {
+        throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+    }
+
+    // Insérer l'instance principale dans la table 'studentqcm'
+    $id = $DB->insert_record('studentqcm', $record);
+    if (!$id) {
+        throw new moodle_exception('insertfailed', 'studentqcm');
+    }
 
     $record_course = new stdClass();
     $record_course->fullname = trim($data->name_plugin);
@@ -164,7 +207,6 @@ function studentqcm_update_instance($data, $mform = null) {
     if (!isset($data->name) || empty(trim($data->name))) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
-
 
     // Mise à jour des données dans la table studentqcm.
     return $DB->update_record('studentqcm', $data);

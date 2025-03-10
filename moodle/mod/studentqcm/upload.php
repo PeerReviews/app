@@ -6,16 +6,33 @@ require_login();
 header('Content-Type: application/json'); // Assurer un retour en JSON
 
 try{ 
-    $cmid = required_param('cmid', PARAM_INT); // Récupération de l'ID du module
+    $cmid = optional_param('cmid', 0, PARAM_INT); // Récupération de l'ID du module (0 par défaut si non fourni)
     $filearea = required_param('filearea', PARAM_TEXT);
-    $itemid = required_param('itemid', PARAM_RAW);
+    $itemid = optional_param('itemid', 0, PARAM_RAW);
     $itemid = intval($itemid);
 
-    $id_referentiel = optional_param('id_referentiel', null, PARAM_INT);
-    $id_competency = optional_param('id_competency', null, PARAM_INT);
+    if ($filearea == 'coursefiles') {
+        $record = $DB->get_record_sql(
+            "SELECT itemid FROM {files} WHERE filearea = ? ORDER BY id DESC LIMIT 1",
+            ['coursefiles']
+        );
+    
+        if ($record) {
+            $itemid = $record->itemid + 1; // Prend l'itemid du fichier ayant le plus grand id
+        } else {
+            $itemid = 1; // Premier fichier, on met itemid à 1
+        }
+    }
     
     $context = context_system::instance();
     $fs = get_file_storage();
+
+    if ($_FILES) {
+        error_log(print_r($_FILES, true)); // Enregistre les détails du fichier téléchargé
+    } else {
+        error_log("Aucun fichier reçu");
+    }
+    
 
     // Vérifier la présence d'un fichier
     if (!isset($_FILES['file'])) {
@@ -72,16 +89,9 @@ try{
         $file_record = new stdClass();
         $file_record->itemid = $itemid;
         $file_record->userid = $USER->id;
+        $file_record->filename = clean_param($file['name'], PARAM_FILE);
         $file_record->filearea = $filearea;
         $file_record->mimetype = $stored_file->get_mimetype();
-        if ($id_referentiel !== null && $id_competency !== null) {
-            $file_record->id_referentiel = $id_referentiel;
-            $file_record->id_competency = $id_competency;
-            $file_record->iscourse = 1;
-        }
-        else {
-            $file_record->iscourse = 0;
-        }
 
         try {
         $file_record->id = $DB->insert_record('studentqcm_file', $file_record);
