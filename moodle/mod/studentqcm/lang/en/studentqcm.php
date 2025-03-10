@@ -161,9 +161,10 @@ $string['no_evaluation_found'] = "Aucune évaluation trouvée";
 
 // Creation réferentiel de compétences
 
-$string['info_referentiel_title'] = 'Informations principales du référentiel';
+$string['info_referentiel_title'] = 'Informations principales de la session';
 $string['date_start_referentiel'] = 'Date début session';
 $string['date_end_referentiel'] = 'Date fin session';
+$string['date_jury'] = 'Date jury';
 
 $string['upload_competence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
 $string['desc_manual_competence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";

@@ -16,10 +16,10 @@ function studentqcm_add_instance($data, $mform = null) {
 
     require_once("$CFG->libdir/resourcelib.php");
 
-    // echo '<pre>';
-    // print_r($data);
-    // echo '</pre>';
-    // exit;
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+    exit;
 
     // Initialisation des dates
     $data->timecreated = time();
@@ -40,6 +40,7 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->timemodified = $data->timemodified;
     $record->date_start_referentiel = $data->date_start_referentiel;
     $record->date_end_referentiel = $data->date_end_referentiel;
+    $record->date_jury = $data->date_jury;
     $record->studentqcm_instance_id = $id_instance;
 
 
@@ -149,8 +150,8 @@ function studentqcm_add_instance($data, $mform = null) {
 
     // Course files
 
-    if (!empty($data->selectedCourse)) {
-        $selectedCourses = json_decode($data->selectedCourse, true);
+    if (!empty($data->courses_files_data)) {
+        $selectedCourses = json_decode($data->courses_files_data, true);
         
         foreach($selectedCourses as $fileId => $file){
             $file_record = $DB->get_record('studentqcm_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
