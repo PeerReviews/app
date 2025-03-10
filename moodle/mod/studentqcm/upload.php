@@ -89,6 +89,7 @@ try{
         $file_record = new stdClass();
         $file_record->itemid = $itemid;
         $file_record->userid = $USER->id;
+        $file_record->filename = clean_param($file['name'], PARAM_FILE);
         $file_record->filearea = $filearea;
         $file_record->mimetype = $stored_file->get_mimetype();
 
