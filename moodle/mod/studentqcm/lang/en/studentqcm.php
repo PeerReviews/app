@@ -305,4 +305,5 @@ $string['session_start'] = 'Date de début';
 $string['session_end'] = 'Date de fin';
 $string['time_created'] = 'Date de création';
 $string['archived'] = 'Archivé';
+$string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
