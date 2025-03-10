@@ -1017,6 +1017,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
     // Fonction pour gérer la création d'un nouveau référentiel, compétence, sous-compétence et mot-clé
     public function validation($data, $files) {
+        global $DB;
         $errors = parent::validation($data, $files);
 
         // Création d'un référentiel si nécessaire
