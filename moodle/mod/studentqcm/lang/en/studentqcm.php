@@ -92,6 +92,7 @@ $string['question_required'] = 'La question est requise.';
 
 $string['your_qcms'] = 'QCM';
 $string['edit'] = 'Modifier';
+$string['duplicate'] = 'Dupliquer';
 
 $string['not_found'] = 'Aucune question trouvée.';
 $string['qcm_not_found'] = 'Aucun QCM trouvé.';
@@ -241,8 +242,8 @@ $string['teacher'] = 'Actions réalisables par l\'enseignant';
 $string['user_gestion'] = 'Gestion des utilisateurs';
 $string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
 $string['grade_gestion'] = 'Gestion des notes';
+$string['session_gestion'] = 'Gestion des sessions';
 
-$string['student_list'] = 'Liste des étudiants';
 $string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
 $string['firstname'] = 'Nom';
@@ -260,6 +261,10 @@ $string['reviewed_question'] = 'Questions révisées';
 $string['tier_temps'] = 'Tiers temps';
 $string['add_student'] = 'Ajouter un étudiant';
 
+$string['session_list'] = 'Liste des sessions';
+$string['session_id'] = 'ID de la session';
+$string['session_name'] = 'Nom de la session';
+$string['session_deleted'] = 'Session Suprimée';
 
 $string['teacher_list'] = 'Liste des enseignants';
 $string['add_teacher'] = 'Ajouter un enseignant';

@@ -94,7 +94,7 @@ if ($gestion_type === 'student') {
     $columns = [
         'student_id' => get_string('student_id', 'mod_studentqcm'),
         'full_name' => get_string('full_name', 'mod_studentqcm'),
-        'tier_temps' => get_string('tier_temps', 'mod_studentqcm'),
+        'tier_temps ' => get_string('tier_temps', 'mod_studentqcm'),
         'last_connected' => get_string('last_connected', 'mod_studentqcm'),
         'actions' => get_string('actions', 'mod_studentqcm')
     ];

@@ -16,6 +16,11 @@ function studentqcm_add_instance($data, $mform = null) {
 
     require_once("$CFG->libdir/resourcelib.php");
 
+    // echo '<pre>';
+    // print_r($data);
+    // echo '</pre>';
+    // exit;
+
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
@@ -29,13 +34,16 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->introformat = isset($data->intro['format']) ? $data->intro['format'] : 0;
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
-    $record->date_start_referentiel = $data->date_start_referentiel;
-    $record->date_end_referentiel = $data->date_end_referentiel;
+    $record->date_start_referentiel = (int) $data->date_start_referentiel;
+    $record->date_end_referentiel = (int) $data->date_end_referentiel;
+
 
     $record_referentiel = new stdClass();
     $record_referentiel->name = trim($data->name_referentiel);
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
     $record->referentiel = $referentiel_id;
+
+    
 
     // Validation des dates
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
@@ -146,13 +154,25 @@ function studentqcm_add_instance($data, $mform = null) {
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
+    // echo '<pre>';
+    // print_r($record);
+    // echo '</pre>';
+    // exit;   
+    
+    // var_dump($record);
+    // die();
 
     // Insérer l'instance principale dans la table 'studentqcm'
     $id = $DB->insert_record('studentqcm', $record);
     if (!$id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
     }
+
     
+
+    $record_studentqcm_instance = new stdClass();
+    $record_studentqcm_instance->name = trim($data->name_plugin);
+    $DB->insert_record('studentqcm_instance', $record_studentqcm_instance);
 
     return $id;
 }
