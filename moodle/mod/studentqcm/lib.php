@@ -12,7 +12,7 @@
  * @return int ID de l'instance ajoutée
  */
 function studentqcm_add_instance($data, $mform = null) {
-    global $CFG, $DB;
+    global $CFG, $DB, $USER;
 
     require_once("$CFG->libdir/resourcelib.php");
 
@@ -80,52 +80,8 @@ function studentqcm_add_instance($data, $mform = null) {
     } else {
         throw new moodle_exception('invaliddate', 'studentqcm', '', $competences_data);
     }
-
-
-    # AJOUT D'UN COURS
-    // $coursData = $data->courses_files_data;
-    // if (!empty($coursData)) {
-    //     $cours = json_decode($coursData, true);
-    
-    //     foreach ($cours as $file) {
-    //         $contenthash = $file['contenthash'];
-    //         $filename = $file['filename'];
-    //         $filepath = '/'; 
-    //         $mimetype = $file['filetype'];
-    //         $filesize = $file['filesize'];
-    //         $contextid = 1; 
-    //         $component = 'user';
-    //         $filearea = 'draft';
-    //         $itemid = 0;
-    
-    //         $pathnamehash = sha1($contextid . $component . $filearea . $itemid . $filepath . $filename);
-    
-    //         $record = new stdClass();
-    //         $record->contenthash = $contenthash;
-    //         $record->pathnamehash = $pathnamehash;
-    //         $record->contextid = $contextid;
-    //         $record->component = $component;
-    //         $record->filearea = $filearea;
-    //         $record->itemid = $itemid;
-    //         $record->filepath = $filepath;
-    //         $record->filename = $filename;
-    //         $record->mimetype = $mimetype;
-    //         $record->filesize = $filesize;
-    //         $record->timecreated = time();
-    //         $record->timemodified = time();
-
-    //         $DB->insert_record('files', $record);
-
-    //         $folder1 = substr($contenthash, 0, 2);
-    //         $folder2 = substr($contenthash, 2, 2);
-    //         $save_path = "/var/www/moodledata/filedir/$folder1/$folder2/$contenthash";
-
-    //         file_put_contents($save_path, base64_decode($file['filecontent']));
-    //     }
-    // }
         
-
-    //Data questions
+    // Data questions
     $record->nbQcm = $data->choix_qcm;
     $record->nbQcu = $data->choix_qcu;
     $record->nbTcs = $data->choix_tcs;
@@ -143,6 +99,21 @@ function studentqcm_add_instance($data, $mform = null) {
         }
     }
 
+    // Course files
+
+    if (!empty($data->selectedCourse)) {
+        $selectedCourses = json_decode($data->selectedCourse, true);
+        
+        foreach($selectedCourses as $fileId => $file){
+            $file_record = $DB->get_record('studentqcm_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
+            $competency = $DB->get_record('competency', ['name' => $file['competency_name']]);
+            
+            $file_record->id_referentiel = $referentiel_id;
+            $file_record->id_competency = $competency->id;
+            $file_id = $DB->update_record('studentqcm_file', $file_record);
+        }
+    }
+
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
@@ -152,7 +123,6 @@ function studentqcm_add_instance($data, $mform = null) {
     if (!$id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
     }
-    
 
     return $id;
 }
@@ -178,7 +148,6 @@ function studentqcm_update_instance($data, $mform = null) {
     if (!isset($data->name) || empty(trim($data->name))) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
-
 
     // Mise à jour des données dans la table studentqcm.
     return $DB->update_record('studentqcm', $data);
