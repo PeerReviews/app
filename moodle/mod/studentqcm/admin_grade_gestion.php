@@ -128,68 +128,6 @@ foreach ($students as $student) {
     $student_name = $DB->get_record('user', array('id' => $student->userid));
     $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
 
-    // echo '<tr class="border-t hover:bg-gray-50">';
-
-    // echo '<td class="px-3 py-4 text-md text-gray-600">' . $student->userid . '</td>';
-
-    // echo '<td class="px-3 py-4 text-md text-gray-600">';
-    // echo '<div id="name-' . $student->userid . '" class="text-gray-600 hidden">' . $student_fullname . '</div>';
-    // echo '</td>';
-
-    // // echo '<td class="px-3 py-4 text-md text-gray-600">' . $total_grade_questions . " / " . ($nbTotal_question * 5) .  '</td>';
-    // // echo '<td class="px-3 py-4 text-md text-gray-600">' . $total_grade_revisions . " / " . ($nbTotal_revision * 5) .  '</td>';
-    
-    // // Modification de la colonne $total_grade_questions avec un formulaire
-    // echo '<td class="px-3 py-4 text-md text-gray-600">
-    // <form action="update_grades.php" method="POST" style="display: inline;">
-    //     <input type="hidden" name="studentid" value="' . htmlspecialchars($student->userid) . '">
-    //     <input type="number" name="total_grade_questions" value="' . htmlspecialchars($total_grade_questions) . '" class="text-gray-600 w-20 text-center">
-    //     / ' . ($nbTotal_question * 5) . '
-    //     <button type="submit" class="hidden">Update</button>
-    // </form>
-    // </td>';
-
-    // // Modification de la colonne $total_grade_revisions avec un formulaire
-    // echo '<td class="px-3 py-4 text-md text-gray-600">
-    // <form action="update_grades.php" method="POST" style="display: inline;">
-    //     <input type="hidden" name="studentid" value="' . htmlspecialchars($student->userid) . '">
-    //     <input type="number" name="total_grade_revisions" value="' . htmlspecialchars($total_grade_revisions) . '" class="text-gray-600 w-20 text-center">
-    //     / ' . ($nbTotal_revision * 5) . '
-    //     <button type="submit" class="hidden">Update</button>
-    // </form>
-    // </td>';
-    
-    // echo '<td class="px-3 py-4 text-md text-gray-600">' . $total_general . " / " . ($nbTotal_question * 5 + $nbTotal_revision * 5) .  '</td>';
-
-    // echo '<td class="px-3 py-4 text-md text-gray-600">' . 
-    //      ($student_name->lastaccess > 0 
-    //         ? date('d/m/Y', $student_name->lastaccess) 
-    //         : mb_strtoupper(get_string('never_connected', 'mod_studentqcm'), 'UTF-8')) . 
-    //      '</td>';
-
-    // echo '<td class="px-3 py-4 text-md text-gray-600 flex space-x-2">';
-    //     echo '<a href="show_production.php?id=' . $id . '&prod_id=' . $student->userid . '" 
-    //             class="px-3 py-2 text-white bg-sky-300 hover:bg-sky-400 rounded-lg shadow-md" 
-    //             title="' . get_string('show_production', 'mod_studentqcm') . '">
-    //             <i class="fas fa-p"></i>
-    //         </a>';
- 
-    //     echo '<a href="show_revisions.php?id=' . $id . '&studentid=' . $student->userid . '" 
-    //             class="px-3 py-2 text-white bg-indigo-400 hover:bg-indigo-500 rounded-lg shadow-md" 
-    //             title="' . get_string('show_revision', 'mod_studentqcm') . '">
-    //             <i class="fas fa-r"></i>
-    //         </a>';
-
-    //     echo '<button class="px-3 py-2 text-white bg-lime-400 hover:bg-lime-500 rounded-lg shadow-md edit-button" 
-    //             title="' . get_string('show_modification', 'mod_studentqcm') . '" 
-    //             data-studentid="' . $student->userid . '">
-    //             <i class="fas fa-pen-to-square"></i>
-    //         </button>';
-
-    // echo '</td>';
-
-    // echo '</tr>';
-
     // AVANT
     //     echo '<form action="edit_grade.php" method="POST" class="grade-form">';
 
@@ -407,14 +345,15 @@ function editRow(button, studentId) {
         // Activer les champs de saisie pour modifier les produits
         cells.forEach((cell, index) => {
             if (index === 2 || index === 3) {
-                console.log("cell : ", cell);
-                let cellContent = cell.innerHTML.trim();
-                let input = document.createElement("input");
-                input.type = "number";
-                input.value = cellContent;
-                input.name = "grade" + (index - 1);
-                cell.innerHTML = '';
-                cell.appendChild(input);
+                let input = cell.querySelector("input");
+                if (input) {
+                    input.type = "number";
+                    input.value = cell.innerHTML.trim();
+                    input.name = "grade" + (index - 1);
+                    input.removeAttribute("disabled"); // Rendre éditable
+                    cell.prepend(input);
+                }
+            
             }
         });
 
