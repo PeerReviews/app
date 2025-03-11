@@ -58,16 +58,16 @@ if ($is_teacher || $is_manager) {
             echo "<div class='flex justify-center mt-2 space-x-4'>";
                 // Bouton existant
                 echo "<a href='admin_add_user.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
-                echo get_string('phase_available', 'mod_studentqcm');
+                echo get_string('add_individual', 'mod_studentqcm');
                 echo "<i class='fas fa-arrow-right ml-4'></i>";
                 echo "</a>";
     
                 // Bouton "Ajout en masse"
                 $mass_enroll_url = new moodle_url('/local/mass_enroll/massenrol.php', array('id' => $course_id));
-                echo html_writer::tag('a', get_string('mass_enroll', 'local_mass_enroll'), array(
-                    'href' => $mass_enroll_url,
-                    'class' => 'inline-block px-4 py-2 font-semibold rounded-2xl bg-blue-500 hover:bg-blue-600 text-white cursor-pointer no-underline'
-                ));
+                echo "<a href='$mass_enroll_url' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-600 no-underline'>";
+                echo get_string('mass_enroll', 'local_mass_enroll');
+                echo "<i class='fas fa-arrow-right ml-4'></i>";
+                echo "</a>";
             echo "</div>";
         echo "</div>";
 

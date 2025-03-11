@@ -59,13 +59,47 @@ class mod_studentqcm_mod_form extends moodleform_mod
             <div id="choice_add_competence"></div>
 
             <div id="info-json" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
-                <div class="bg-white rounded-3xl py-4 px-16 max-w-lg w-full">
+                <div class="bg-white rounded-3xl py-4 px-16 max-w-xl w-full">
                     <div class="flex flex-row-reverse">
                         <button type="button" id="close-info-json" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
                     </div>
-                    <p>Format attendu:</p>
+                    <p class="font-semibold text-lg mb-2">Format attendu :</p>
+                    <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
+[
+    {
+        "id": 0,
+        "name": "Compétence 1",
+        "subCompetences": [
+            {
+                "name": "Sous-compétence 1.1",
+                "keywords": [
+                    "Mot-cle 1.1.1"
+                ]
+            },
+            {
+                "name": "Sous-compétence 1.2",
+                "keywords": []
+            }
+        ]
+    },
+    {
+        "id": 1,
+        "name": "Compétence 2",
+        "subCompetences": [
+            {
+                "name": "Sous-compétence 2.1",
+                "keywords": [
+                    "Mot-cle 2.1.1",
+                    "Mot-cle 2.1.2"
+                ]
+            }
+        ]
+    }
+]
+                    </pre>
                 </div>
             </div>
+
 
             <script>
 
@@ -731,6 +765,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
+        $mform->addElement('hidden', 'checkbox_tt_data');
+        $mform->setType('checkbox_tt_data', PARAM_RAW);
+
         $mform->addElement('html', '<h2 class="mb-4 text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('html', '
@@ -782,6 +819,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         tiersElements.forEach(elt => {
                             elt.style.display = checkbox.checked ? "flex" : "none";
                         });
+                        let checkbox_tt = document.querySelector(`[name="checkbox_tt_data"]`);
+                        checkbox_tt.value = checkbox.checked;
                     }
 
                     checkbox.addEventListener("change", toggleTiersTemps);
@@ -803,6 +842,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
         </style>
         ');
 
+        $mform->addElement('hidden', 'hours_minutes_data');
+        $mform->setType('hours_minutes_data', PARAM_RAW);
 
         $mform->addElement('html', '<div class="bg-sky-200 py-2 rounded text-sky-700 my-4">');
             $mform->addElement('html', '<div class=" m-3">');
@@ -810,7 +851,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addRule('start_date_1', null, 'required', null, 'client');  
 
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
                 <select id="start_hour_1" name="start_hour_1[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -820,11 +861,15 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
 
             <script>
+
+                let arrayHourMinute = {};
+                let hoursMinutesData = document.querySelector(`input[name="hours_minutes_data"]`);
+
                 // Générer les options pour les heures et minutes
                 const optionsHours = Array.from({ length: 24 }, (_, i) => i);
                 const optionsMinutes = Array.from({ length: 12 }, (_, i) => i * 5);
 
-                function generateOptions(selectId, options) {
+                function generateOptions(selectId, options, defaultValue) {
                     const select = document.getElementById(selectId);
                     if (!select) return; 
 
@@ -833,16 +878,81 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         const option = document.createElement("option");
                         option.value = value;
                         option.textContent = value.toString().padStart(2, "0"); // Format "00", "01", ...
+                        
+                        // Appliquer la valeur par défaut
+                        if (value === defaultValue) {
+                            option.selected = true;
+                        }
+
                         select.appendChild(option);
                     });
+                }
+                function saveHourMinute(type) {
+                    if (type === "start") {
+                        arrayHourMinute["start"] = [];
+                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_start"); // Sélectionne tous les blocs d\'heure et minute
+
+                        hourMinute.forEach((hmBlock, index) => {
+                        // Récupérer les valeurs sélectionnées pour hour et minute
+                           let hourValue = hmBlock.querySelector(`select[name="start_hour_${index+1}[]"]`).value;
+                            let minuteValue = hmBlock.querySelector(`select[name="start_minute_${index+1}[]"]`).value;
+
+                            // Stocker dans un objet
+                            let hmData = {
+                                hour: hourValue,
+                                minute: minuteValue
+                            };
+
+                            arrayHourMinute["start"].push(hmData);
+                        });
+                    } else if (type === "end") {
+                        arrayHourMinute["end"] = [];
+                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_end"); // Sélectionne tous les blocs d\'heure et minute
+
+                        hourMinute.forEach((hmBlock, index) => {
+                            // Récupérer les valeurs sélectionnées pour hour et minute
+                            let hourValue = hmBlock.querySelector(`select[name="end_hour_${index+1}[]"]`).value;
+                            let minuteValue = hmBlock.querySelector(`select[name="end_minute_${index+1}[]"]`).value;
+
+                            // Stocker dans un objet
+                            let hmData = {
+                                hour: hourValue,
+                                minute: minuteValue
+                            };
+
+                            arrayHourMinute["end"].push(hmData);
+                        });
+                    } else {
+                        arrayHourMinute["tt"]= [];
+                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_tt"); // Sélectionne tous les blocs d\'heure et minute
+
+                        hourMinute.forEach((hmBlock, index) => {
+                            // Récupérer les valeurs sélectionnées pour hour et minute
+                            let hourValue = hmBlock.querySelector(`select[name="end_hour_tt_${index+1}[]"]`).value;
+                            let minuteValue = hmBlock.querySelector(`select[name="end_minute_tt_${index+1}[]"]`).value;
+
+                            // Stocker dans un objet
+                            let hmData = {
+                                hour: hourValue,
+                                minute: minuteValue
+                            };
+
+                            arrayHourMinute["tt"].push(hmData);
+                        });
+                    }
+                        
+                    console.log("arrayHourMinute: ", arrayHourMinute);
+
+                    hoursMinutesData.value = JSON.stringify(arrayHourMinute);
                 }
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_1", optionsHours);
-                    generateOptions("start_minute_1", optionsMinutes);
+                    generateOptions("start_hour_1", optionsHours, 8); // 8h par défaut
+                    generateOptions("start_minute_1", optionsMinutes, 0); // 00 min par défaut
                 });
             </script>
+
             ');
             $mform->addElement('html', '</div>');
 
@@ -852,7 +962,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addRule('end_date_1', null, 'required', null, 'client');
 
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
                 <select id="end_hour_1" name="end_hour_1[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -864,8 +974,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_1", optionsHours);
-                    generateOptions("end_minute_1", optionsMinutes);
+                    generateOptions("end_hour_1", optionsHours, 8);
+                    generateOptions("end_minute_1", optionsMinutes, 0);
                 });
             </script>
             ');
@@ -887,8 +997,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_1", optionsHours);
-                    generateOptions("end_minute_tt_1", optionsMinutes);
+                    generateOptions("end_hour_tt_1", optionsHours, 8);
+                    generateOptions("end_minute_tt_1", optionsMinutes, 0);
                 });
             </script>
             ');
@@ -900,7 +1010,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addElement('date_selector', 'start_date_2', get_string('start_date_2', 'mod_studentqcm'));
             $mform->addRule('start_date_2', null, 'required', null, 'client');
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
                 <select id="start_hour_2" name="start_hour_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -912,8 +1022,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_2", optionsHours);
-                    generateOptions("start_minute_2", optionsMinutes);
+                    generateOptions("start_hour_2", optionsHours, 8);
+                    generateOptions("start_minute_2", optionsMinutes, 0);
                 });
             </script>
             ');
@@ -923,7 +1033,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addElement('date_selector', 'end_date_2', get_string('end_date_2', 'mod_studentqcm'));
             $mform->addRule('end_date_2', null, 'required', null, 'client');
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
                 <select id="end_hour_2" name="end_hour_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -935,8 +1045,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_2", optionsHours);
-                    generateOptions("end_minute_2", optionsMinutes);
+                    generateOptions("end_hour_2", optionsHours, 8);
+                    generateOptions("end_minute_2", optionsMinutes, 0);
                 });
             </script>
             ');
@@ -958,8 +1068,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_2", optionsHours);
-                    generateOptions("end_minute_tt_2", optionsMinutes);
+                    generateOptions("end_hour_tt_2", optionsHours, 8);
+                    generateOptions("end_minute_tt_2", optionsMinutes, 0);
                 });
             </script>
             ');
@@ -971,7 +1081,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addElement('date_selector', 'start_date_3', get_string('start_date_3', 'mod_studentqcm'));
             $mform->addRule('start_date_3', null, 'required', null, 'client');
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
                 <select id="start_hour_3" name="start_hour_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -983,8 +1093,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_3", optionsHours);
-                    generateOptions("start_minute_3", optionsMinutes);
+                    generateOptions("start_hour_3", optionsHours, 8);
+                    generateOptions("start_minute_3", optionsMinutes, 0);
+                    saveHourMinute("start");
                 });
             </script>
             ');
@@ -994,7 +1105,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             $mform->addElement('date_selector', 'end_date_3', get_string('end_date_3', 'mod_studentqcm'));
             $mform->addRule('end_date_3', null, 'required', null, 'client');
             $mform->addElement('html', '
-            <div id="timeSelectorContainer" class="flex gap-2 m-1">
+            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
                 <select id="end_hour_3" name="end_hour_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
                 <p class="mt-2">h</p>
 
@@ -1006,8 +1117,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_3", optionsHours);
-                    generateOptions("end_minute_3", optionsMinutes);
+                    generateOptions("end_hour_3", optionsHours, 8);
+                    generateOptions("end_minute_3", optionsMinutes, 0);
+                    saveHourMinute("end");
                 });
             </script>
             ');
@@ -1015,7 +1127,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
             $mform->addElement('html', '<div class=" m-3">');
             $mform->addElement('date_selector', 'end_date_tt_3', get_string('end_date_tt_3', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-            $mform->addRule('end_date_tt_3', null, 'required', null, 'client');
+
             $mform->addElement('html', '
             <div id="timeSelectorContainer_tt" class="flex gap-2 m-1">
                 <select id="end_hour_tt_3" name="end_hour_tt_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
@@ -1029,12 +1141,42 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 // Exécuter la génération après chargement du DOM
                 document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_3", optionsHours);
-                    generateOptions("end_minute_tt_3", optionsMinutes);
+                    generateOptions("end_hour_tt_3", optionsHours, 8);
+                    generateOptions("end_minute_tt_3", optionsMinutes, 0);
+                    saveHourMinute("tt");
                 });
             </script>
             ');
             $mform->addElement('html', '</div>');
+
+        $mform->addElement('html', '<script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            let selectElementStart = document.querySelectorAll(`[id^="start_hour_"], [id^="start_minute_"]`);
+            selectElementStart.forEach(select => {
+                select.addEventListener("change", function() {
+                    saveHourMinute("start");
+                });
+            });
+            let selectElementEnd = document.querySelectorAll(`[id^="end_hour_"], [id^="end_minute_"]`);
+            selectElementEnd.forEach(select => {
+                select.addEventListener("change", function() {
+                    saveHourMinute("end");
+                });
+            });
+            let selectElementTT = document.querySelectorAll(`[id^="end_hour_tt_"], [id^="end_minute_tt_"]`);
+            selectElementTT.forEach(select => {
+                select.addEventListener("change", function() {
+                    saveHourMinute("tt");
+                });
+            });
+
+            let endDateSelect = document.querySelectorAll(`[id^="fitem_id_end_date_tt_"]`);
+            console.log("endDateSelect: ", endDateSelect);
+        });
+
+        </script>
+        ');
         $mform->addElement('html', '</div>');
 
 
@@ -1263,8 +1405,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             }
         </style>
         ');
-        $mform->addElement('select', 'nb_reviewer', get_string('nb_reviewer', 'mod_studentqcm'), ['0'=>'1', '1'=>'2', '2'=>'3']);
-
+        $mform->addElement('select', 'nb_reviewer', get_string('nb_reviewer', 'mod_studentqcm'), ['1'=>'1', '2'=>'2', '3'=>'3']);
 
         $mform->addElement('html', '</div>');
 
@@ -1279,6 +1420,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 let form = document.querySelector(".mform"); // Sélection du formulaire Moodle
 
                 form.addEventListener("submit", function(event) {
+                    // recherche si au moins une compétence a été rempli
                     let errors = [];
 
                     let comp_data = document.querySelector(`input[name="competences_data"]`);
@@ -1292,6 +1434,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         event.preventDefault();
                         alert(errors.join("\n"));
                     }
+                    
                 });
             });
             </script>

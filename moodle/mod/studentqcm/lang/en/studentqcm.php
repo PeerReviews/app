@@ -65,6 +65,8 @@ $string['create_pop'] = 'Je crée mon POP';
 $string['create_question'] = 'Je crée mon';
 $string['edit_question'] = 'Je modifie mon';
 
+$string['add_individual'] = 'Ajout individuel';
+
 // QCM 
 $string['question'] = 'Question';
 $string['context'] = 'Contexte';
