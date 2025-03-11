@@ -29,16 +29,26 @@ $fields = [
     'nbqcu' => 'Nombre de QCU',
     'nbtcs' => 'Nombre de TCS',
     'nbpop' => 'Nombre de Pop',
-    'introformat' => 'Format de l\'introduction'
 ];
 
 foreach ($fields as $field => $label) {
     echo '<div class="form-group">';
     echo '<label for="' . $field . '">' . $label . ' : </label>';
-    $type = in_array($field, ['referentiel', 'nbqcm', 'nbqcu', 'nbtcs', 'nbpop', 'introformat']) ? 'number' : 'text';
-    echo '<input type="' . $type . '" id="' . $field . '" name="' . $field . '" value="' . htmlspecialchars($session->$field) . '" required>';
+    
+    // Vérifier si le champ est "referentiel"
+    if ($field == 'referentiel') {
+        // Récupérer le nom du référentiel à partir de son ID
+        $referentiel_name = $DB->get_field('referentiel', 'name', ['id' => $session->$field]);
+        echo '<input type="text" id="' . $field . '" name="' . $field . '" value="' . htmlspecialchars($referentiel_name) . '" required>';
+    } else {
+        // Pour les autres champs, déterminer le type d'entrée
+        $type = in_array($field, ['nbqcm', 'nbqcu', 'nbtcs', 'nbpop']) ? 'number' : 'text';
+        echo '<input type="' . $type . '" id="' . $field . '" name="' . $field . '" value="' . htmlspecialchars($session->$field) . '" required>';
+    }
+
     echo '</div>';
 }
+
 
 // Champs de date
 $date_fields = ['start_date_1', 'end_date_1', 'end_date_tt_1',

@@ -31,8 +31,21 @@ if (isset($_POST['intro'])) {
 }
 
 if (isset($_POST['referentiel'])) {
-    $session->referentiel = $_POST['referentiel'];
+    $referentiel_record = $DB->get_record_sql(
+        'SELECT * FROM {referentiel} WHERE ' . $DB->sql_compare_text('name') . ' = :name',
+        ['name' => $_POST['referentiel']]
+    );
+
+    if (!$referentiel_record) {
+        $referentiel_id = $DB->insert_record('referentiel', ['name' => $_POST['referentiel']]);
+    }
+    else{
+        $referentiel_id = $referentiel_record->id;
+    }
+    
+    $session->referentiel = intval($referentiel_id);
 }
+
 
 if (isset($_POST['nbqcm'])) {
     $session->nbQcm = $_POST['nbqcm'];
@@ -48,10 +61,6 @@ if (isset($_POST['nbtcs'])) {
 
 if (isset($_POST['nbpop'])) {
     $session->nbPop = $_POST['nbpop'];
-}
-
-if (isset($_POST['introformat'])) {
-    $session->introformat = $_POST['introformat'];
 }
 
 if (isset($_POST['start_date_1'])) {
