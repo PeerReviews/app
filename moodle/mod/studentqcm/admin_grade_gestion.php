@@ -84,31 +84,36 @@ echo '</tr>';
 echo '</thead>';
 echo '<tbody>';
 
+$current_timestamp = time(); 
+$start_timestamp = $studentqcm->date_jury;
+
 // Affichage des étudiants
 foreach ($students as $student) {
-    // Récupérer la somme des notes des questions complétées de l'étudiant
-    // $sql_questions = "SELECT SUM(grade) as total_grade 
-    //     FROM {studentqcm_question} 
-    //     WHERE userid = ? AND status = 1";
-    // $total_grade_questions = $DB->get_field_sql($sql_questions, array($student->userid));
-    // $total_grade_questions = $total_grade_questions !== null ? $total_grade_questions : 0;
+    // Vérifier si la date du jury est atteinte
+    if ($current_timestamp < $start_timestamp) {
+        // Récupérer la somme des notes des questions complétées de l'étudiant
+        $sql_questions = "SELECT SUM(grade) as total_grade 
+            FROM {studentqcm_question} 
+            WHERE userid = ? AND status = 1";
+        $total_grade_questions = $DB->get_field_sql($sql_questions, array($student->userid));
+        $total_grade_questions = $total_grade_questions !== null ? $total_grade_questions : 0;
 
-    // // Récupérer la somme des notes des révisions de l'étudiant
-    // $sql_revisions = "SELECT SUM(grade) as total_grade 
-    //     FROM {studentqcm_evaluation} 
-    //     WHERE userid = ? AND status = 1";
-    // $total_grade_revisions = $DB->get_field_sql($sql_revisions, array($student->userid));
-    // $total_grade_revisions = $total_grade_revisions !== null ? $total_grade_revisions : 0;
+        // Récupérer la somme des notes des révisions de l'étudiant
+        $sql_revisions = "SELECT SUM(grade) as total_grade 
+            FROM {studentqcm_evaluation} 
+            WHERE userid = ? AND status = 1";
+        $total_grade_revisions = $DB->get_field_sql($sql_revisions, array($student->userid));
+        $total_grade_revisions = $total_grade_revisions !== null ? $total_grade_revisions : 0;
+    }
+    else {
+        // Production_grade
+        $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
+        $total_grade_questions = $record ? intval($record->production_grade) : 0;
 
-    // Production_grade
-
-    $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
-    $total_grade_questions = $record ? intval($record->production_grade) : 0;
-
-    // Revision_grade
-
-    $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
-    $total_grade_revisions = $record ? intval($record->revision_grade) : 0;
+        // Revision_grade
+        $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
+        $total_grade_revisions = $record ? intval($record->revision_grade) : 0;
+    }
 
     // Calcul du total général
     $total_general = $total_grade_questions + $total_grade_revisions;
@@ -123,6 +128,17 @@ foreach ($students as $student) {
                 $nbTotal_revision += count($to_evaluate);
             }
         }
+    }
+
+    if ($current_timestamp < $start_timestamp){
+        $total_questions =  ($nbTotal_question * 5);
+        $total_revisions = ($nbTotal_revision * 5);
+        $total = $total_questions + $total_revisions;
+    }
+    else {
+        $total_questions = 20;
+        $total_revisions = 20;
+        $total = 20;
     }
 
     $student_name = $DB->get_record('user', array('id' => $student->userid));
@@ -140,19 +156,19 @@ foreach ($students as $student) {
         echo '<td class="px-3 py-4 text-md text-gray-600">
             <input type="number" name="total_grade_questions" value="' . htmlspecialchars($total_grade_questions) . '" 
                 class="text-gray-600 w-20 text-center grade-input" data-studentid="' . $student->userid . '" id="total_grade_questions-' . $student->userid . '" disabled>
-            / ' . ($nbTotal_question * 5) . '
+            / ' . $total_questions . '
         </td>';
 
         // Modification de la colonne $total_grade_revisions
         echo '<td class="px-3 py-4 text-md text-gray-600">
             <input type="number" name="total_grade_revisions" value="' . htmlspecialchars($total_grade_revisions) . '" 
                 class="text-gray-600 w-20 text-center grade-input" data-studentid="' . $student->userid . '" id="total_grade_revisions-' . $student->userid . '" disabled>
-            / ' . ($nbTotal_revision * 5) . '
+            / ' . $total_revisions . '
         </td>';
 
         echo '<input type="hidden" name="updatedData[]" id="updatedData-' . $student->userid . '" value="">';
 
-        echo '<td class="px-3 py-4 text-md text-gray-600">' . $total_general . " / " . ($nbTotal_question * 5 + $nbTotal_revision * 5) . '</td>';
+        echo '<td class="px-3 py-4 text-md text-gray-600">' . $total_general . " / " . $total . '</td>';
 
         echo '<td class="px-3 py-4 text-md text-gray-600">' . 
             ($student_name->lastaccess > 0 
@@ -173,12 +189,14 @@ foreach ($students as $student) {
                     <i class="fas fa-r"></i>
                 </a>';
 
-            echo '<button type="button" class="px-3 py-2 text-white bg-lime-400 hover:bg-lime-500 rounded-lg shadow-md edit-button" 
+            if ($current_timestamp >= $start_timestamp){
+                echo '<button type="button" class="px-3 py-2 text-white bg-lime-400 hover:bg-lime-500 rounded-lg shadow-md edit-button" 
                     title="' . get_string('show_modification', 'mod_studentqcm') . '" 
                     data-studentid="' . $student->userid . '" onclick="editRow(this, ' . $student->userid . ')">
                     <i class="fas fa-pen-to-square"></i>
                 </button>';
-
+            }
+           
         echo '</td>';
 
     

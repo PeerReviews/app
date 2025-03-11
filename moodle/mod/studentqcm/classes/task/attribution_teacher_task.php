@@ -12,8 +12,7 @@ class attribution_teacher_task extends scheduled_task {
     public function execute(bool $force = false) {
         global $DB;
 
-        $records = $DB->get_records('studentqcm', null, 'id DESC', '*', 0, 1);
-        $studentqcm = reset($records); // Prendre le premier élément
+        $studentqcm = $DB->get_record('studentqcm', ['archived' => 0]);
 
         if (!$studentqcm || empty($studentqcm->end_date_tt_3)) {
             mtrace("Erreur : date de lancement introuvable.");
@@ -26,11 +25,11 @@ class attribution_teacher_task extends scheduled_task {
             die();  // Si déjà effectuée, on arrête l'exécution
         }
 
+        $current_timestamp = time(); 
         $start_timestamp = $studentqcm->end_date_tt_3;
-        $current_timestamp = time();
 
         if ($current_timestamp < $start_timestamp) {
-            mtrace("La date de lancement n'est pas encore atteinte. Attente...");
+            mtrace("La date de lancement n'est pas encore atteinte.");
             die();
         }
 
