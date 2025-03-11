@@ -25,6 +25,7 @@ $fields = [
     'name' => 'Nom de la session',
     'intro' => 'Introduction',
     'referentiel' => 'Référentiel',
+    'nbreviewers' => 'Nombre de relecteurs',
     'nbqcm' => 'Nombre de QCM',
     'nbqcu' => 'Nombre de QCU',
     'nbtcs' => 'Nombre de TCS',
@@ -42,16 +43,15 @@ foreach ($fields as $field => $label) {
         echo '<input type="text" id="' . $field . '" name="' . $field . '" value="' . htmlspecialchars($referentiel_name) . '" required>';
     } else {
         // Pour les autres champs, déterminer le type d'entrée
-        $type = in_array($field, ['nbqcm', 'nbqcu', 'nbtcs', 'nbpop']) ? 'number' : 'text';
+        $type = in_array($field, ['nbqcm', 'nbqcu', 'nbtcs', 'nbpop', 'nbreviewers']) ? 'number' : 'text';
         echo '<input type="' . $type . '" id="' . $field . '" name="' . $field . '" value="' . htmlspecialchars($session->$field) . '" required>';
     }
 
     echo '</div>';
 }
 
-
 // Champs de date
-$date_fields = ['start_date_1', 'end_date_1', 'end_date_tt_1',
+$date_fields = ['start_date_session', 'end_date_session', 'date_jury', 'start_date_1', 'end_date_1', 'end_date_tt_1',
                 'start_date_2', 'end_date_2', 'end_date_tt_2',
                 'start_date_3', 'end_date_3', 'end_date_tt_3'];
 

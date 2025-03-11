@@ -20,33 +20,42 @@ $context = context_module::instance($cm->id);
 if (!has_capability('moodle/course:manageactivities', $context)) {
     throw new moodle_exception('Vous n\'avez pas les permissions nécessaires pour accéder à cette page.');
 }
+// Liste des champs à exclure
+$exclude_fields = ['nbqcm', 'nbqcu', 'nbpop', 'nbtcs'];
 
-// Mise à jour directe des champs de l'objet session
-if (isset($_POST['name'])) {
-    $session->name = $_POST['name'];
-}
-
-if (isset($_POST['intro'])) {
-    $session->intro = $_POST['intro'];
-}
-
-if (isset($_POST['referentiel'])) {
-    $referentiel_record = $DB->get_record_sql(
-        'SELECT * FROM {referentiel} WHERE ' . $DB->sql_compare_text('name') . ' = :name',
-        ['name' => $_POST['referentiel']]
-    );
-
-    if (!$referentiel_record) {
-        $referentiel_id = $DB->insert_record('referentiel', ['name' => $_POST['referentiel']]);
+// Parcours des champs de $_POST
+foreach ($_POST as $key => $value) {
+    if (in_array($key, $exclude_fields)) {
+        continue; // Ignore les champs exclus
     }
-    else{
-        $referentiel_id = $referentiel_record->id;
+
+    // Gestion spécifique pour le champ referentiel
+    if ($key === 'referentiel') {
+        $referentiel_record = $DB->get_record_sql(
+            'SELECT * FROM {referentiel} WHERE ' . $DB->sql_compare_text('name') . ' = :name',
+            ['name' => $value]
+        );
+
+        if (!$referentiel_record) {
+            $referentiel_id = $DB->insert_record('referentiel', ['name' => $value]);
+        } else {
+            $referentiel_id = $referentiel_record->id;
+        }
+
+        $session->referentiel = intval($referentiel_id);
+        continue; // Passe au champ suivant
     }
-    
-    $session->referentiel = intval($referentiel_id);
+
+    // Gestion des dates (conversion en timestamp)
+    if (strpos($key, 'date') !== false){
+        $session->$key = strtotime($value);
+    } 
+    else {
+        $session->$key = $value;
+    }
 }
 
-
+// Mise à jour des champs exclus manuellement
 if (isset($_POST['nbqcm'])) {
     $session->nbQcm = $_POST['nbqcm'];
 }
@@ -63,48 +72,9 @@ if (isset($_POST['nbpop'])) {
     $session->nbPop = $_POST['nbpop'];
 }
 
-if (isset($_POST['start_date_1'])) {
-    $session->start_date_1 = strtotime($_POST['start_date_1']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_1'])) {
-    $session->end_date_1 = strtotime($_POST['end_date_1']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_tt_1'])) {
-    $session->end_date_tt_1 = strtotime($_POST['end_date_tt_1']);  // Conversion en timestamp
-}
-
-if (isset($_POST['start_date_2'])) {
-    $session->start_date_2 = strtotime($_POST['start_date_2']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_2'])) {
-    $session->end_date_2 = strtotime($_POST['end_date_2']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_tt_2'])) {
-    $session->end_date_tt_2 = strtotime($_POST['end_date_tt_2']);  // Conversion en timestamp
-}
-
-if (isset($_POST['start_date_3'])) {
-    $session->start_date_3 = strtotime($_POST['start_date_3']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_3'])) {
-    $session->end_date_3 = strtotime($_POST['end_date_3']);  // Conversion en timestamp
-}
-
-if (isset($_POST['end_date_tt_3'])) {
-    $session->end_date_tt_3 = strtotime($_POST['end_date_tt_3']);  // Conversion en timestamp
-}
-
-
 // Mise à jour dans la base de données
 $session->timemodified = time();
-
 $DB->update_record('studentqcm', $session);
-
 
 // Redirection avec message de succès
 redirect(new moodle_url('/mod/studentqcm/admin_sessions.php', ['id' => $id]), get_string('sessionsaved', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);

@@ -4,10 +4,10 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/studentqcm/lib.php');
 
 $id = required_param('id', PARAM_INT); // ID du module de cours.
-$id = $DB->get_record('studentqcm', array('archived' => 0), '*', MUST_EXIST)->id;
+$session_id = $DB->get_record('studentqcm', array('archived' => 0), '*', MUST_EXIST)->id;
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
+$studentqcm = $DB->get_record('studentqcm', array('id' => $session_id), '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 

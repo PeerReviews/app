@@ -318,6 +318,7 @@ $string['archived'] = 'Archivé';
 $string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
 $string['sessionsaved'] = 'Session sauvegardée !';
+$string['set_current_session'] = 'Rendre cette session courante';
 
 
 // Capabilities
