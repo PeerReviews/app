@@ -5,6 +5,7 @@ global $DB;
 
 // Récupérer les données envoyées
 $data = json_decode(file_get_contents("php://input"), true);
+$referentiel = $data['referentiel'];
 $competenceName = $data['name'];
 $subCompetences = $data['subCompetences'];
 
@@ -16,6 +17,7 @@ if (!$competenceName) {
 // Insérer la compétence
 $competence = new stdClass();
 $competence->name = $competenceName;
+$competence->referentiel = $referentiel;
 $competenceId = $DB->insert_record('competency', $competence);
 
 foreach ($subCompetences as $sub) {

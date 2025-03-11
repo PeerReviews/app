@@ -308,6 +308,7 @@ function saveCompetence(index_competence) {
     });
 
     let competenceData = {
+        referentiel : <?php echo json_encode($session->referentiel); ?>,
         name: competenceName,
         subCompetences: subCompetences
     };
