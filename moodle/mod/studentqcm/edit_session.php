@@ -54,7 +54,13 @@ echo '<div class="grid grid-cols-1 gap-6 mt-6">';
             echo '<label class="font-semibold mb-2 text-lg text-gray-600">' . $label . ':</label>';
             $type = in_array($field, ['nbqcm', 'nbqcu', 'nbtcs', 'nbpop', 'nbreviewers']) ? 'number' : 'text';
             $required = $field !== 'intro' ? 'required' : '';
-            echo '<input class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-300" type="' . $type . '" name="' . $field . '" value="' . htmlspecialchars($session->$field) . '" ' . $required . ' />';
+            if ($field == 'referentiel') {
+                $referentiel_name = $DB->get_field('referentiel', 'name', ['id' => $session->$field]);
+                echo '<input class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-300" type="' . $type . '" name="' . $field . '" value="' . htmlspecialchars($referentiel_name) . '" ' . $required . ' />';
+            } 
+            else {
+                echo '<input class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-300" type="' . $type . '" name="' . $field . '" value="' . htmlspecialchars($session->$field) . '" ' . $required . ' />';
+            }
             echo '</div>';
         }
     }
@@ -384,9 +390,6 @@ function saveCompetence(index_competence) {
         return; 
     }
 
-    // let formattedCompetenceData = JSON.stringify(competenceData).replace(/"/g, "'");
-    let formattedCompetenceData = JSON.stringify(competenceData).replace(/\\/g, '');
-
     fetch('add_competence.php?', {
         method: 'POST',
         headers: {
@@ -397,7 +400,6 @@ function saveCompetence(index_competence) {
     .then(response => {
         return response.text().then(text => {
             try {
-                console.log(text);
                 const data = JSON.parse(text); 
                 return data; 
             } catch (e) {
