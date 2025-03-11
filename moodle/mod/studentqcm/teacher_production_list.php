@@ -16,7 +16,7 @@ require_login($course, true, $cm);
 $user_id = $USER->id;
 
 // Récupérer les productions assignées à l'étudiant
-$assigned_students = $DB->get_record('pr_assigned_student_teacher', array('teacherid' => $user_id), 'userid');
+$assigned_students = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $user_id), 'userid');
 
 
 // Définir l'URL de la page et les informations de la page
@@ -45,9 +45,10 @@ echo "</div>";
 if ($assigned_students) {
     echo "<div class='space-y-4 mt-4'>";
     $nb = 1;
+
     foreach ($assigned_students as $student) {
         
-        $prod_id = $student;
+        $prod_id = $student->userid;
 
         // Charger les questions de la production assignée
         $qcms = array();
