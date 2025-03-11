@@ -153,36 +153,36 @@ function sortTable(columnIndex, table) {
     table.dataset.sortOrder = isAscending ? "desc" : "asc";
 }
 
-// Soumettre le formulaire manuellement
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('saveButton').addEventListener('click', function() {
+// // Soumettre le formulaire manuellement
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.getElementById('saveButton').addEventListener('click', function() {
         
-        document.querySelectorAll('input[name="updatedData[]"]').forEach(input => {
-            if (input.value.trim() === "" || input.value === "{}") {
-                input.remove();
-            }
-        });
+//         document.querySelectorAll('input[name="updatedData[]"]').forEach(input => {
+//             if (input.value.trim() === "" || input.value === "{}") {
+//                 input.remove();
+//             }
+//         });
 
-        // Vérifier que `updatedData` contient uniquement des entrées valides
-        updatedData = updatedData.filter(item => Object.keys(item).length > 1);
+//         // Vérifier que `updatedData` contient uniquement des entrées valides
+//         updatedData = updatedData.filter(item => Object.keys(item).length > 1);
 
-        // Ajouter les données mises à jour au formulaire
-        updatedData.forEach(item => {
-            let input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "updatedData[]";  // Si plusieurs étudiants sont envoyés
-            input.value = JSON.stringify(item);
-            document.getElementById("sessionForm").appendChild(input);
-        });
+//         // Ajouter les données mises à jour au formulaire
+//         updatedData.forEach(item => {
+//             let input = document.createElement("input");
+//             input.type = "hidden";
+//             input.name = "updatedData[]";  // Si plusieurs étudiants sont envoyés
+//             input.value = JSON.stringify(item);
+//             document.getElementById("sessionForm").appendChild(input);
+//         });
 
-        // Soumettre le formulaire
-        let form = document.getElementById('sessionForm');
-        if (form) {
-            form.submit();
-        } else {
-            console.error("Formulaire 'sessionForm' introuvable !");
-        }
-    });
-});
+//         // Soumettre le formulaire
+//         let form = document.getElementById('sessionForm');
+//         if (form) {
+//             form.submit();
+//         } else {
+//             console.error("Formulaire 'sessionForm' introuvable !");
+//         }
+//     });
+// });
 
 </script>

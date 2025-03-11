@@ -27,13 +27,16 @@ class attribution_student_task extends scheduled_task {
         }
 
 
-        $start_timestamp = $studentqcm->start_date_2;
-        $current_timestamp = time();
+        $current_timestamp = strtotime("now"); // ou une autre source fiable
+        $start_timestamp = strtotime("11 March 2025 08:00");
 
         if ($current_timestamp < $start_timestamp) {
+            mtrace('Date actuelle : ' . date('Y-m-d H:i:s', $current_timestamp));
+            mtrace('Date de lancement : ' . date('Y-m-d H:i:s', $start_timestamp));
             mtrace("La date de lancement n'est pas encore atteinte. Attente...");
             die();
         }
+
 
         // Exécution de l'attribution automatique
 
@@ -41,33 +44,78 @@ class attribution_student_task extends scheduled_task {
         $DB->delete_records('studentqcm_assignedqcm');
         $DB->execute("ALTER TABLE {studentqcm_assignedqcm} AUTO_INCREMENT = 1");
 
-        // Récupérer tous les étudiants
+        // // Récupérer tous les étudiants
+        // $students = $DB->get_records('user', null, '', 'id');
+        // $student_ids = array_keys($students);
+
+        // if (count($student_ids) < 2) {
+        //     mtrace("Il faut au moins 2 étudiants pour faire l'attribution !");
+        //     die();
+        // }
+
+        // shuffle($student_ids); // Mélanger la liste des étudiants
+
+        // // Dictionnaire pour compter les assignations
+        // $assignment_count = array_fill_keys($student_ids, 0);
+
+        // foreach ($student_ids as $student_id) {
+        //     $assignments = [];
+
+        //     // Liste des étudiants disponibles (pas soi-même et max 3 assignations)
+        //     $possible_assignees = array_values(array_filter($student_ids, function ($id) use ($student_id, $assignment_count) {
+        //         return $id !== $student_id && ($assignment_count[$id] ?? 0) < 3;
+        //     }));
+
+        //     shuffle($possible_assignees);
+
+        //     // Déterminer combien on doit en assigner (2 ou 3)
+        //     $num_assignees = min(rand(2, 3), count($possible_assignees));
+        //     $assigned_students = array_slice($possible_assignees, 0, $num_assignees);
+
+        //     // Stocker les attributions
+        //     $record = new \stdClass();
+        //     $record->user_id = $student_id;
+        //     $record->prod1_id = $assigned_students[0] ?? null;
+        //     $record->prod2_id = $assigned_students[1] ?? null;
+        //     $record->prod3_id = $assigned_students[2] ?? null;
+
+        //     $DB->insert_record('studentqcm_assignedqcm', $record);
+
+        //     // Mettre à jour le compteur d'assignations
+        //     foreach ($assigned_students as $assignee) {
+        //         $assignment_count[$assignee] = ($assignment_count[$assignee] ?? 0) + 1;
+                
+        //         // Si un étudiant atteint 3 assignations, on le retire des choix futurs
+        //         if ($assignment_count[$assignee] >= 3) {
+        //             unset($assignment_count[$assignee]);
+        //         }
+        //     }
+        // }
+
         $students = $DB->get_records('user', null, '', 'id');
         $student_ids = array_keys($students);
+        $num_students = count($student_ids);
 
-        if (count($student_ids) < 2) {
-            mtrace("Il faut au moins 2 étudiants pour faire l'attribution !");
+        $nbReviewers = $studentqcm->nbreviewers;
+
+        if ($num_students < 2 || $nbReviewers >= $num_students) {
+            mtrace("Il faut au moins 2 étudiants et nbReviewers < nombre d'étudiants !");
             die();
         }
 
-        shuffle($student_ids); // Mélanger la liste des étudiants
-
-        // Dictionnaire pour compter les assignations
-        $assignment_count = array_fill_keys($student_ids, 0);
+        $remaining_assignments = array_fill_keys($student_ids, $nbReviewers);
 
         foreach ($student_ids as $student_id) {
             $assignments = [];
 
             // Liste des étudiants disponibles (pas soi-même et max 3 assignations)
-            $possible_assignees = array_values(array_filter($student_ids, function ($id) use ($student_id, $assignment_count) {
-                return $id !== $student_id && ($assignment_count[$id] ?? 0) < 3;
+            $possible_assignees = array_values(array_filter($student_ids, function ($id) use ($student_id, $remaining_assignments) {
+                return $id !== $student_id && ($remaining_assignments[$id] ?? 0) > 0;
             }));
 
             shuffle($possible_assignees);
 
-            // Déterminer combien on doit en assigner (2 ou 3)
-            $num_assignees = min(rand(2, 3), count($possible_assignees));
-            $assigned_students = array_slice($possible_assignees, 0, $num_assignees);
+            $assigned_students = array_slice($possible_assignees, 0, $nbReviewers);
 
             // Stocker les attributions
             $record = new \stdClass();
@@ -80,17 +128,11 @@ class attribution_student_task extends scheduled_task {
 
             // Mettre à jour le compteur d'assignations
             foreach ($assigned_students as $assignee) {
-                $assignment_count[$assignee] = ($assignment_count[$assignee] ?? 0) + 1;
-                
-                // Si un étudiant atteint 3 assignations, on le retire des choix futurs
-                if ($assignment_count[$assignee] >= 3) {
-                    unset($assignment_count[$assignee]);
-                }
+                $remaining_assignments[$assignee] = ($remaining_assignments[$assignee] ?? 0) - 1;
             }
         }
-        // Marquer la tâche comme terminée
-        $studentqcm->attribution_student_completed = 1;
-        $DB->update_record('studentqcm', $studentqcm);
-        mtrace("Attribution des productions entre étudiants terminée !");
+
+        mtrace("Attribution des productions terminée !");
+
     }
 }
