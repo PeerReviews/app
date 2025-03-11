@@ -317,3 +317,10 @@ $string['time_created'] = 'Date de création';
 $string['archived'] = 'Archivé';
 $string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
+$string['sessionsaved'] = 'Session sauvegardée !';
+
+
+// Capabilities
+$string['studentqcm:manage'] = 'Gérer une instance de session';
+$string['studentqcm:addinstance'] = 'Ajouter une instance de session';
+$string['studentqcm:view'] = 'Voir une instance de session';

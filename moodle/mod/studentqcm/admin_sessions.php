@@ -77,7 +77,7 @@ foreach ($sessions as $session) {
     echo '<td class="px-3 py-4 text-md text-gray-600">' . ($session->archived == 1 ? 'Oui' : 'Non') . '</td>';
 
     echo '<td class="p-4 text-md text-gray-600 flex items-center space-x-2">';
-        echo '<a href="edit_session.php?id=' . $id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center">';
+        echo '<a href="edit_session.php?id=' . $id . '&session_id=' . $session->id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center">';
         echo get_string('edit', 'mod_studentqcm');
         echo '</a>';
 
