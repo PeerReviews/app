@@ -17,15 +17,18 @@ $string['choice_courses'] = 'Choix des cours à ajouter';
 
 // Ajouter les chaînes pour les nouveaux champs de date
 $string['phases_title'] = 'Choix dates des phases';
-$string['start_date_1'] = 'Phase 1 : date début';
-$string['end_date_1'] = 'Phase 1 : date fin';
-$string['end_date_tt_1'] = 'Phase 1 : date fin tiers-temps';
-$string['start_date_2'] = 'Phase 2 : date début';
-$string['end_date_2'] = 'Phase 2 : date fin';
-$string['end_date_tt_2'] = 'Phase 2 : date fin tiers-temps';
-$string['start_date_3'] = 'Phase 3 : date début';
-$string['end_date_3'] = 'Phase 3 : date fin';
-$string['end_date_tt_3'] = 'Phase 3 : date fin tiers-temps';
+$string['start_date_1'] = 'Phase 1 - Date début';
+$string['end_date_1'] = 'Phase 1 - Date fin';
+$string['end_date_tt_1'] = 'Phase 1 - Date fin tiers-temps';
+$string['start_date_2'] = 'Phase 2 - Date début';
+$string['end_date_2'] = 'Phase 2 - Date fin';
+$string['end_date_tt_2'] = 'Phase 2 - Date fin tiers-temps';
+$string['start_date_3'] = 'Phase 3 - Date début';
+$string['end_date_3'] = 'Phase 3 - Date fin';
+$string['end_date_tt_3'] = 'Phase 3 - Date fin tiers-temps';
+$string['start_date_session'] = 'Date début session';
+$string['end_date_session'] = 'Date fin session';
+$string['date_jury'] = 'Date du jury';
 
 $string['newreferentiel'] = 'Référentiel';
 $string['newcompetency'] = 'Compétence';
@@ -328,3 +331,7 @@ $string['set_current_session'] = 'Rendre cette session courante';
 $string['studentqcm:manage'] = 'Gérer une instance de session';
 $string['studentqcm:addinstance'] = 'Ajouter une instance de session';
 $string['studentqcm:view'] = 'Voir une instance de session';
+
+$string['edit_session'] = 'Édition de la session';
+$string['info_section_date'] = 'Informations liées aux dates';
+$string['info_section_question'] = 'Informations liées aux questions';

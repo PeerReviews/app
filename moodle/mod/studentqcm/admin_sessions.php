@@ -71,7 +71,7 @@ echo '<tbody id="tableBody">';
 // Affichage des étudiants
 foreach ($sessions as $session) {
 
-    $row_class = $session->archived == 1 ? 'bg-gray-50 hover:bg-gray-200' : 'hover:bg-gray-50'; // Classe grise pour les sessions archivées
+    $row_class = $session->archived == 1 ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50';
 
     echo '<tr id="row-' . $session->id . '" class="border-t ' . $row_class . '">';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . $session->name . '</td>';
