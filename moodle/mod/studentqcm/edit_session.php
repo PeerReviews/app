@@ -332,7 +332,6 @@ function saveCompetence(index_competence) {
     .then(response => {
         return response.text().then(text => {
             try {
-                console.log(text);
                 const data = JSON.parse(text); 
                 return data; 
             } catch (e) {
