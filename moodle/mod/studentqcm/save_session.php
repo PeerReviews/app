@@ -14,7 +14,7 @@ $session_id = required_param('session_id', PARAM_INT);
 $session = $DB->get_record('studentqcm', ['id' => $session_id], '*', MUST_EXIST);
 
 // Vérification du contexte et des permissions
-$cm = get_coursemodule_from_instance('studentqcm', $id);
+$cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 if (!has_capability('moodle/course:manageactivities', $context)) {
