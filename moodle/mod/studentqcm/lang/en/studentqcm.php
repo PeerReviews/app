@@ -335,3 +335,6 @@ $string['studentqcm:view'] = 'Voir une instance de session';
 $string['edit_session'] = 'Édition de la session';
 $string['info_section_date'] = 'Informations liées aux dates';
 $string['info_section_question'] = 'Informations liées aux questions';
+$string['info_section_competency'] = 'Informations liées aux compétences';
+
+$string['competency_not_found'] = 'Aucune compétence trouvée';

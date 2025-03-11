@@ -26,7 +26,7 @@ $exclude_fields = ['nbqcm', 'nbqcu', 'nbpop', 'nbtcs'];
 // Parcours des champs de $_POST
 foreach ($_POST as $key => $value) {
     if (in_array($key, $exclude_fields)) {
-        continue; // Ignore les champs exclus
+        continue;
     }
 
     // Gestion spécifique pour le champ referentiel

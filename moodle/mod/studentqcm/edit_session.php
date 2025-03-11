@@ -136,6 +136,8 @@ echo '</div>';
 
 // Récupération des données de compétences
 $competencies = $DB->get_records('competency', ['referentiel' => $session->referentiel]);
+echo "<script>console.log($session->referentiel);</script>";
+
 
 $competency_data = [];
 foreach ($competencies as $competency) {
@@ -168,6 +170,12 @@ echo "<script>let competencies = $competency_json;</script>";
 <form action="save_session.php?id=<?= $id ?>&session_id=<?= $session->id ?>" method="post" class="session-form">
     <input type="hidden" name="session_id" value="<?= $session->id ?>">
 
+    <div class="border-b p-2" style="margin-top: 4rem !important;">
+        <div class="flex text-center text-gray-600 items-end">
+            <p class="text-3xl font-semibold"><?php echo get_string('info_section_competency', 'mod_studentqcm'); ?></p>
+        </div>    
+    </div>
+
     <div id="add_competences-container"></div>
 
     <button type="submit" class="btn-save">Sauvegarder</button>
@@ -191,46 +199,68 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function editCompetenceField() {
     let container = document.getElementById("add_competences-container");
+    container.innerHTML = "";
 
+    // Vérifier si les compétences existent et si elles sont non vides
     if (!competencies || competencies.length === 0) {
-        console.warn("Aucune compétence enregistrée.");
+        let noCompetenceMessage = `
+            <div class="p-4 text-center text-gray-600 bg-gray-100 border border-gray-300 rounded-lg mt-4">
+                <p class="text-xl font-semibold"><?php echo get_string('competency_not_found', 'mod_studentqcm'); ?></p>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", noCompetenceMessage);
         return;
     }
 
+    // Si des compétences existent, on les affiche comme avant
     competencies.forEach((competence, index_competence) => {
-    let fieldHTML = `
-        <div id="competence-container${index_competence}" class="competence-block p-4 border border-gray-300 rounded-lg bg-white mt-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold">${competence.name}</h3>
-                <button type="button" class="bg-red-500 text-white px-3 py-1 rounded" onclick="deleteCompetence(${index_competence})">
-                    Supprimer
+        let fieldHTML = `
+        <div id="competence-container${index_competence}" class="p-4 rounded-3xl bg-gray-50 mt-4">
+            <div class="flex justify-between items-center border-b pb-1">
+                <div class="flex items-center">
+                    <i class="fas fa-book text-lime-400 text-xl mr-2"></i>
+                    <p class="text-2xl font-bold text-gray-600 capitalize">${competence.name}</p>
+                </div>
+                <button type="button" class="bg-red-500 text-white px-4 py-2 rounded-xl shadow-md hover:bg-red-600 transition-all" onclick="deleteCompetence(${index_competence})">
+                    <i class="fas fa-trash-alt mr-2"></i> <?php echo get_string('delete', 'mod_studentqcm'); ?>
                 </button>
             </div>
-            
-            <div id="add_subcompetences-container${index_competence}" class="mt-4">
-            ${competence.subCompetences.map((sub, subIndex) => `
-                <div id="subcompetence-container${index_competence}${subIndex}" class="mb-2" style="margin-left: 25px;">
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-xl font-semibold">${sub.name}</h4>
-                        <button type="button" class="bg-red-500 text-white px-2 py-1 rounded" onclick="deleteSubCompetence(${index_competence}, ${subIndex})">
-                            Supprimer
-                        </button>
+            <div id="add_subcompetences-container${index_competence}" class="mt-2">
+                ${competence.subCompetences.map((sub, subIndex) => 
+                    `
+                    <div id="subcompetence-container${index_competence}${subIndex}" class="mb-2 pl-6">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <div class="flex items-center">
+                                <i class="fas fa-award text-sky-400 mr-2 text-xl"></i>
+                                <h4 class="text-xl font-semibold text-gray-600 capitalize">${sub.name}</h4>
+                            </div>
+                            <button type="button" class="bg-red-500 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-red-600 transition-all" onclick="deleteSubCompetence(${index_competence}, ${subIndex})">
+                                <i class="fas fa-trash-alt"></i> <?php echo get_string('delete', 'mod_studentqcm'); ?>
+                            </button>
+                        </div>
+                        <div id="keyword-container${index_competence}${subIndex}" class="mt-2 pl-6">
+                            ${sub.keywords.map((keyword) => 
+                                `
+                                <div class="flex items-center text-gray-600 mt-2">
+                                    <i class="fas fa-tag text-gray-400 mr-2 text-md"></i>
+                                    <p class="text-md capitalize">${keyword}</p>
+                                </div>
+                                `
+                            ).join('')}
+                        </div>
                     </div>
-
-                    <div id="keyword-container${index_competence}${subIndex}" style="margin-left: 25px;">
-                    ${sub.keywords.map((keyword, keyIndex) => `
-                        <p class="text-gray-700">${keyword}</p>
-                    `).join('')}
-                    </div>
-                </div>
-            `).join('')}
+                    `
+                ).join('')}
             </div>
         </div>
-    `;
+        `;
 
-    container.insertAdjacentHTML("beforeend", fieldHTML);
-});
+        container.insertAdjacentHTML("beforeend", fieldHTML);
+    });
 }
+
+
+
 
 function deleteCompetence(index_competence) {
     let competenceId = competencies[index_competence].id;
