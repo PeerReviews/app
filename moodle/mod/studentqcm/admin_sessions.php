@@ -71,13 +71,15 @@ echo '<tbody id="tableBody">';
 // Affichage des étudiants
 foreach ($sessions as $session) {
 
-    echo '<tr id="row-' . $session->id . '" class="border-t hover:bg-gray-50">';
+    $row_class = $session->archived == 1 ? 'bg-gray-50 hover:bg-gray-200' : 'hover:bg-gray-50'; // Classe grise pour les sessions archivées
+
+    echo '<tr id="row-' . $session->id . '" class="border-t ' . $row_class . '">';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . $session->name . '</td>';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . date('d/m/Y', $session->timecreated) . '</td>';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . ($session->archived == 1 ? 'Oui' : 'Non') . '</td>';
 
     echo '<td class="p-4 text-md text-gray-600 flex items-center space-x-2">';
-        echo '<a href="edit_session.php?id=' . $id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center">';
+        echo '<a href="edit_session.php?id=' . $id . '&session_id=' . $session->id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center">';
         echo get_string('edit', 'mod_studentqcm');
         echo '</a>';
 
@@ -88,12 +90,23 @@ foreach ($sessions as $session) {
             echo '</button>';
         echo '</form>';
 
-        echo '<form action="archive_session.php?id=' . $id . '" method="post" style="display:inline;">';
-            echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-            echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl">';
-            echo get_string('archive', 'mod_studentqcm');
-            echo '</button>';
-        echo '</form>';
+        if ($session->archived == 1){
+            // Formulaire pour rendre cette session courante
+            echo '<form action="set_current_session.php?id=' . $id . '" method="post" style="display:inline;">';
+                echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
+                echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl">';
+                echo get_string('set_current_session', 'mod_studentqcm');
+                echo '</button>';
+            echo '</form>';
+        }
+        else {
+            echo '<form action="archive_session.php?id=' . $id . '" method="post" style="display:inline;">';
+                echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
+                echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl">';
+                echo get_string('archive', 'mod_studentqcm');
+                echo '</button>';
+            echo '</form>';
+        }
 
         echo '<form action="delete_session.php?id=' . $id . '" method="post" onsubmit="return confirm(\'Êtes-vous sûr de vouloir supprimer cette session ?\nCette action est irréversible.\')" style="display:inline;">';
             echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
@@ -140,36 +153,36 @@ function sortTable(columnIndex, table) {
     table.dataset.sortOrder = isAscending ? "desc" : "asc";
 }
 
-// Soumettre le formulaire manuellement
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('saveButton').addEventListener('click', function() {
+// // Soumettre le formulaire manuellement
+// document.addEventListener('DOMContentLoaded', () => {
+//     document.getElementById('saveButton').addEventListener('click', function() {
         
-        document.querySelectorAll('input[name="updatedData[]"]').forEach(input => {
-            if (input.value.trim() === "" || input.value === "{}") {
-                input.remove();
-            }
-        });
+//         document.querySelectorAll('input[name="updatedData[]"]').forEach(input => {
+//             if (input.value.trim() === "" || input.value === "{}") {
+//                 input.remove();
+//             }
+//         });
 
-        // Vérifier que `updatedData` contient uniquement des entrées valides
-        updatedData = updatedData.filter(item => Object.keys(item).length > 1);
+//         // Vérifier que `updatedData` contient uniquement des entrées valides
+//         updatedData = updatedData.filter(item => Object.keys(item).length > 1);
 
-        // Ajouter les données mises à jour au formulaire
-        updatedData.forEach(item => {
-            let input = document.createElement("input");
-            input.type = "hidden";
-            input.name = "updatedData[]";  // Si plusieurs étudiants sont envoyés
-            input.value = JSON.stringify(item);
-            document.getElementById("sessionForm").appendChild(input);
-        });
+//         // Ajouter les données mises à jour au formulaire
+//         updatedData.forEach(item => {
+//             let input = document.createElement("input");
+//             input.type = "hidden";
+//             input.name = "updatedData[]";  // Si plusieurs étudiants sont envoyés
+//             input.value = JSON.stringify(item);
+//             document.getElementById("sessionForm").appendChild(input);
+//         });
 
-        // Soumettre le formulaire
-        let form = document.getElementById('sessionForm');
-        if (form) {
-            form.submit();
-        } else {
-            console.error("Formulaire 'sessionForm' introuvable !");
-        }
-    });
-});
+//         // Soumettre le formulaire
+//         let form = document.getElementById('sessionForm');
+//         if (form) {
+//             form.submit();
+//         } else {
+//             console.error("Formulaire 'sessionForm' introuvable !");
+//         }
+//     });
+// });
 
 </script>
