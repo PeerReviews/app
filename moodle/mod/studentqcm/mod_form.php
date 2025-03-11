@@ -414,7 +414,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         <label>' . get_string('name_competence', 'mod_studentqcm') . '</label>
                         <input type="text" id="competence-name${index_competence}" name="name_competence[]" class="form-control p-2 border rounded w-full" required>
 
-                        <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addSubCompetenceField(${index_competence})">
+                        <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addSubCompetenceField(${index_competence})">
                             ' . get_string('add_subcompetences', 'mod_studentqcm') . '
                         </button>
 
@@ -445,7 +445,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         <label>' . get_string('name_subcompetence', 'mod_studentqcm') . '</label>
                         <input type="text" id="subcompetence-name${index_competence}${compteur_subcompetence}" name="name_subcompetence[]" class="form-control p-2 border rounded w-full" required>
                         <div class="flex mt-4">
-                            <button type="button" class="bg-sky-100 p-2 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addKeyword(${index_competence}, ${compteur_subcompetence})">
+                            <button type="button" class="bg-sky-100 p-2 rounded font-bold hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addKeyword(${index_competence}, ${compteur_subcompetence})">
                                 ' . get_string('add_keyword', 'mod_studentqcm') . '
                             </button>
                             <button type="button" class="bg-gray font-bold py-2 px-4 rounded mx-4" onclick="deleteAddSubCompetence(${index_competence}, ${compteur_subcompetence})">
@@ -555,7 +555,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                                     </li>
                                 `).join("")}
                             </ul>
-                            <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${competence.id})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
+                            <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${competence.id})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
 
                         </div>
                     `;

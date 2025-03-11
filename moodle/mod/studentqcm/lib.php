@@ -51,78 +51,65 @@ function studentqcm_add_instance($data, $mform = null) {
     $hours_minutes_data = json_decode($hourMinute, true);
 
     foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
-    if (isset($data->$date_field)) {
-        if (is_int($data->$date_field) && $data->$date_field > 0) {
-            // Vérification de l'existence des valeurs dans `$hourMinute`
-            if (!isset($hours_minutes_data["start"][$index]) || !isset($hours_minutes_data["end"][$index]) || !isset($hours_minutes_data["tt"][$index])) {
-                throw new moodle_exception('missinghourminute', 'studentqcm', '', $date_field);
-            }
+        if (isset($data->$date_field)) {
+            if (is_int($data->$date_field) && $data->$date_field > 0) {
+                // Vérification de l'existence des valeurs dans `$hourMinute`
+                if (!isset($hours_minutes_data["start"][$index]) || !isset($hours_minutes_data["end"][$index]) || !isset($hours_minutes_data["tt"][$index])) {
+                    throw new moodle_exception('missinghourminute', 'studentqcm', '', $date_field);
+                }
 
-            // Récupération des heures et minutes associées
-            
-            switch ($type) {
-                case 0: // Start
-                    $hour = $hours_minutes_data["start"][$index]["hour"] ?? 0;
-                    $minute = $hours_minutes_data["start"][$index]["minute"] ?? 0;
-                    break;
-                case 1: // End
-                    $hour = $hours_minutes_data["end"][$index]["hour"] ?? 0;
-                    $minute = $hours_minutes_data["end"][$index]["minute"] ?? 0;
-                    break;
-                case 2: // Tiers-temps
-                    $hour = $hours_minutes_data["tt"][$index]["hour"] ?? 0;
-                    $minute = $hours_minutes_data["tt"][$index]["minute"] ?? 0;
-                    break;
-            }
+                // Récupération des heures et minutes associées
+                
+                switch ($type) {
+                    case 0: // Start
+                        $hour = $hours_minutes_data["start"][$index]["hour"] ?? 0;
+                        $minute = $hours_minutes_data["start"][$index]["minute"] ?? 0;
+                        break;
+                    case 1: // End
+                        $hour = $hours_minutes_data["end"][$index]["hour"] ?? 0;
+                        $minute = $hours_minutes_data["end"][$index]["minute"] ?? 0;
+                        break;
+                    case 2: // Tiers-temps
+                        $hour = $hours_minutes_data["tt"][$index]["hour"] ?? 0;
+                        $minute = $hours_minutes_data["tt"][$index]["minute"] ?? 0;
+                        break;
+                }
 
-            
+                
 
-            // Vérification des valeurs avant de générer le timestamp
-            if (!is_numeric($hour) || !is_numeric($minute)) {
-                throw new moodle_exception('invalidhourminute', 'studentqcm', '', $date_field);
-            }
+                // Vérification des valeurs avant de générer le timestamp
+                if (!is_numeric($hour) || !is_numeric($minute)) {
+                    throw new moodle_exception('invalidhourminute', 'studentqcm', '', $date_field);
+                }
 
-            // Création du timestamp avec l'heure et les minutes
-            $timestamp = $data->$date_field + ($hour * 3600) + ($minute * 60);
-            if ($type != 2 || $data->checkbox_tt_data) {
-                $record->$date_field = $timestamp;
-            }
+                // Création du timestamp avec l'heure et les minutes
+                $timestamp = $data->$date_field + ($hour * 3600) + ($minute * 60);
+                if ($type != 2 || $data->checkbox_tt_data != "false") {
+                    $record->$date_field = $timestamp;
+                }
 
-            // Gestion de l'incrémentation de $type et $index
-            $type++;
-            if ($type == 3) {
-                $type = 0;
-                $index++;
+                // Gestion de l'incrémentation de $type et $index
+                $type++;
+                if ($type == 3) {
+                    $type = 0;
+                    $index++;
+                }
+            } else {
+                throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
             }
         } else {
-            throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
+            throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
         }
-    } else {
-        throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
     }
-}
-    // echo '<pre>';
-    // print_r($record);
-    // echo '</pre>';
-    // exit;
 
-    //Data questions
+    // Data questions
     $record->nbQcm = $data->choix_qcm;
     $record->nbQcu = $data->choix_qcu;
     $record->nbTcs = $data->choix_tcs;
     $record->nbPop = $data->choix_pop;
+    
 
-    $popsArray = json_decode($data->pops_data, true);
-    if (!empty($popsArray)) {
-        foreach ($popsArray as $pop) {
-            // Insérer un pop
-            $pop_record = new stdClass();
-            $pop_record->nbqcm = $pop['qcm'];
-            $pop_record->nbqcu = $pop['qcu'];
-            $pop_record->refId = $referentiel_id;
-            $pop_id = $DB->insert_record('question_pop', $pop_record);
-        }
-    }
+    $record->nbreviewers = $data->nb_reviewer;
 
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
@@ -145,7 +132,6 @@ function studentqcm_add_instance($data, $mform = null) {
     $record_referentiel->name = trim($data->name_referentiel);
     $record_referentiel->studentqcm_id = $id;
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
-    $record->referentiel = $referentiel_id;
 
     //Data compétences, sous-compétences, mot-clefs
     if (!empty($data->competences_data) || $data->competences_data == "[]") {
@@ -177,12 +163,6 @@ function studentqcm_add_instance($data, $mform = null) {
     } else {
         throw new moodle_exception('invaliddate', 'studentqcm', '', $competences_data);
     }
-        
-    // Data questions
-    $record->nbQcm = $data->choix_qcm;
-    $record->nbQcu = $data->choix_qcu;
-    $record->nbTcs = $data->choix_tcs;
-    $record->nbPop = $data->choix_pop;
 
     $popsArray = json_decode($data->pops_data, true);
     if (!empty($popsArray)) {
@@ -195,7 +175,7 @@ function studentqcm_add_instance($data, $mform = null) {
             $pop_id = $DB->insert_record('question_pop', $pop_record);
         }
     }
-
+        
     // Course files
 
     if (!empty($data->courses_files_data)) {
@@ -223,6 +203,7 @@ function studentqcm_add_instance($data, $mform = null) {
 
     $record_studentqcm= $DB->get_record('studentqcm', array('id' => $id), '*', MUST_EXIST);
     $record_studentqcm->courseid = $record_course_id; 
+    $record_studentqcm->referentiel = $referentiel_id;
 
     $DB->update_record('studentqcm', $record_studentqcm);
 
