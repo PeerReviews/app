@@ -197,8 +197,8 @@ if ($qcms) {
 
                 // Définir les couleurs en fonction du type de question
                 if ($qcm->ispop == 1) {
-                    $bgColor = 'bg-yellow-200';
-                    $textColor = 'text-yellow-400';
+                    $bgColor = 'bg-amber-200';
+                    $textColor = 'text-amber-400';
                 } else {
                     switch ($qcm->type) {
                         case 'QCM':
@@ -388,11 +388,11 @@ if ($qcms) {
         if ($index === 0) {
             echo "<div class='my-6 mx-4 text-center flex flex-col md:flex-row gap-4 justify-between items-center'>";
                 
-                echo "<button class='w-full md:w-1/2 p-4 bg-yellow-400 text-white font-semibold rounded-2xl hover:bg-yellow-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmGrades({$qcm->id})'>";
+                echo "<button class='w-full md:w-1/2 p-4 bg-amber-400 text-white font-semibold rounded-2xl hover:bg-amber-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmGrades({$qcm->id})'>";
                 echo "<span class='text-white font-bold'>" . get_string('autocomplete_question', 'mod_studentqcm') . "</span>";
                 echo "</button>";
         
-                echo "<button class='w-full md:w-1/2 p-4 bg-yellow-400 text-white font-semibold rounded-2xl hover:bg-yellow-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmEvalGrades(" . json_encode($firstEvaluationId) . ")'>";
+                echo "<button class='w-full md:w-1/2 p-4 bg-amber-400 text-white font-semibold rounded-2xl hover:bg-amber-300 hover:shadow-md transition text-xl' onclick='applyFirstQcmEvalGrades(" . json_encode($firstEvaluationId) . ")'>";
                 echo "<span class='text-white font-bold'>" . get_string('autocomplete_review', 'mod_studentqcm') . "</span>";
                 echo "</button>";
         

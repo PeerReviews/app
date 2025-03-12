@@ -148,11 +148,11 @@ else {
 
     echo "<div class='flex mt-8 text-lg justify-center gap-4'>";
         // Bouton pour déclencher manuellement l'attribution automatique
-        echo '<button onclick="triggerTeacherAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-yellow-400 hover:bg-yellow-500 text-white no-underline">'
+        echo '<button onclick="triggerTeacherAttribution()" class="block px-4 py-2 font-semibold rounded-2xl bg-amber-400 hover:bg-amber-500 text-white no-underline">'
             . get_string('trigger_attribution', 'mod_studentqcm') . '</button>';
 
         // Bouton pour ajouter une nouvelle ligne
-        echo '<button onclick="addTeacherRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-yellow-400 hover:bg-yellow-500 text-white no-underline">' 
+        echo '<button onclick="addTeacherRow()" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-amber-400 hover:bg-amber-500 text-white no-underline">' 
             . get_string('add_attribution', 'mod_studentqcm') . '</button>';
     echo "</div>";
 
