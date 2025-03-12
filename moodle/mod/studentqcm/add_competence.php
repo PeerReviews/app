@@ -9,7 +9,7 @@ $referentiel = $data['referentiel'];
 $competenceName = $data['name'];
 $subCompetences = $data['subCompetences'];
 
-$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+$session_id = required_param('session_id', PARAM_INT);
 
 if (!$competenceName) {
     echo json_encode(['success' => false, 'error' => $name]);
@@ -20,7 +20,7 @@ if (!$competenceName) {
 $competence = new stdClass();
 $competence->name = $competenceName;
 $competence->referentiel = $referentiel;
-$competence->sessionid = $session->id;
+$competence->sessionid = $session_id;
 $competenceId = $DB->insert_record('competency', $competence);
 
 foreach ($subCompetences as $sub) {

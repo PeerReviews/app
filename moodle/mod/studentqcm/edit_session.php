@@ -193,7 +193,7 @@ function editCompetenceField() {
     let container = document.getElementById("add_competences-container");
 
     if (!competencies || competencies.length === 0) {
-        console.warn("Aucune compétence enregistrée.");
+        console.warn("Aucune compétence enregistrée.", competencies);
         return;
     }
 
@@ -235,7 +235,7 @@ function editCompetenceField() {
 function deleteCompetence(index_competence) {
     let competenceId = competencies[index_competence].id;
 
-    fetch('delete_competence.php', {
+    fetch('delete_competence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -260,7 +260,7 @@ function deleteCompetence(index_competence) {
 function deleteSubCompetence(index_competence, subIndex) {
     let subCompetenceId = competencies[index_competence].subCompetences[subIndex].id;
 
-    fetch('delete_subcompetence.php', {
+    fetch('delete_subcompetence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -390,7 +390,7 @@ function saveCompetence(index_competence) {
         return; 
     }
 
-    fetch('add_competence.php?', {
+    fetch('add_competence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

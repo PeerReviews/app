@@ -47,16 +47,25 @@ $session->referentiel = $new_referentiel->id;
 $competencies = $DB->get_records('competency', ['referentiel' => $referentiel_id, 'sessionid' => $session->id]);
 foreach($competencies as $competency){
     $new_competency = clone $competency;
-    $new_competency->referentiel = $new_referentiel->id;
     $new_competency->sessionid = $new_session_id;
+    $new_competency->referentiel = $new_referentiel->id;
     $new_competency_id = $DB->insert_record('competency', $new_competency);
 
     // Récupérer les sous-compétences associées à la compétence de base
     $subcompetencies = $DB->get_records('subcompetency', ['competency' => $competency->id, 'sessionid' => $session->id]);
     foreach($subcompetencies as $subcompetency){
         $new_subcompetency = clone $subcompetency;
+        $new_subcompetency->sessionid = $new_session_id;
         $new_subcompetency->competency = $new_competency_id;
         $new_subcompetency_id = $DB->insert_record('subcompetency', $new_subcompetency);
+
+        $keywords = $DB->get_records('keyword', ['subcompetency' => $subcompetency->id, 'sessionid' => $session->id]);
+        foreach($keywords as $keyword){
+            $new_keyword = clone $keyword;
+            $new_keyword->sessionid = $new_session_id;
+            $new_keyword->subcompetency = $new_subcompetency_id;
+            $DB->insert_record('keyword', $new_keyword);
+        }
     }
 }
 

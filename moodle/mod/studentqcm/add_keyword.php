@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+$session_id = required_param('session_id', PARAM_INT);
 
 // Récupérer et nettoyer les données
 $word = isset($_POST['word']) ? trim($_POST['word']) : '';
@@ -30,7 +30,7 @@ if (!$subcompetency) {
 $record = new stdClass();
 $record->word = $word;
 $record->subcompetency = $subcompetency_id;
-$record->sessionid = $session->id;
+$record->sessionid = $session_id;
 $record->isCustom = 1;
 
 try {
