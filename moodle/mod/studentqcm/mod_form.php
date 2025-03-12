@@ -10,7 +10,6 @@ class mod_studentqcm_mod_form extends moodleform_mod
         global $CFG, $DB, $PAGE;
 
         $PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
-        $PAGE->requires->js(new moodle_url('/mod/studentqcm/mod_studentqcm.js', array('v' => time()))); // Inclure le fichier JS externe
 
         $mform = $this->_form;
 
