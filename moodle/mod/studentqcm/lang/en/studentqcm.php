@@ -30,10 +30,10 @@ $string['start_date_session'] = 'Date début session';
 $string['end_date_session'] = 'Date fin session';
 $string['date_jury'] = 'Date du jury';
 
-$string['newreferentiel'] = 'Référentiel';
-$string['newcompetency'] = 'Compétence';
-$string['newsubcompetency'] = 'Sous-compétence';
-$string['newkeyword'] = 'Mot-clé';
+$string['newreferentiel'] = 'Nouveau Référentiel';
+$string['newcompetency'] = 'Nouvelle compétence';
+$string['newsubcompetency'] = 'Nouvelle sous-compétence';
+$string['newkeyword'] = 'Nouveau mot-clé';
 
 $string['phase1'] = 'PHASE 1';
 $string['phase2'] = 'PHASE 2';
@@ -67,6 +67,8 @@ $string['create_pop'] = 'Je crée mon POP';
 
 $string['create_question'] = 'Je crée mon';
 $string['edit_question'] = 'Je modifie mon';
+
+$string['add_individual'] = 'Ajout individuel';
 
 // QCM 
 $string['question'] = 'Question';
@@ -164,9 +166,10 @@ $string['no_evaluation_found'] = "Aucune évaluation trouvée";
 
 // Creation réferentiel de compétences
 
-$string['info_referentiel_title'] = 'Informations principales du référentiel';
+$string['info_referentiel_title'] = 'Informations principales de la session';
 $string['date_start_referentiel'] = 'Date début session';
 $string['date_end_referentiel'] = 'Date fin session';
+$string['date_jury'] = 'Date jury';
 
 $string['upload_competence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
 $string['desc_manual_competence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
@@ -189,9 +192,9 @@ $string['name_subcompetence'] = 'Nom de la sous-compétence';
 $string['competence_associated'] = 'Compétence associée';
 
 $string['keyword_title'] = 'Mot-clefs:';
-$string['add_keyword'] = 'Ajouter un mot-clef';
-$string['info_keyword'] = 'Information sur le mot-clef';
-$string['name_keyword'] = 'Nom du mot-cle';
+$string['add_keyword'] = 'Ajouter un mot-clé';
+$string['info_keyword'] = 'Information sur le mot-clé';
+$string['name_keyword'] = 'Nom du mot-clé';
 $string['subcompetence_associated'] = 'Sous-compétence associée';
 $string['export'] = 'Exporter les compétences';
 
@@ -232,6 +235,7 @@ $string['add_malus'] = 'Ajouter un malus';
 
 $string['add_tiers_temps_phase'] = 'Voulez vous prendre en compte les tiers-temps ?';
 
+$string['nb_reviewer'] = 'Nombre de relecteurs';
 
 
 // INTERFACE PROF
@@ -258,13 +262,13 @@ $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent'
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
 $string['student_list'] = 'Liste des étudiants';
-$string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
 $string['teacher_id'] = 'ID de l\'enseignant';
 $string['firstname'] = 'Nom';
 $string['lastname'] = 'Prénom';
 $string['email'] = 'Adresse email';
-$string['completed_question'] = 'Questions complétées';
+$string['completed_question'] = 'Questions corrigées';
+$string['completed_revision'] = 'Révisions corrigées';
 $string['actions'] = 'Actions';
 $string['connect'] = 'Se connecter';
 $string['correctors'] = 'ID des étudiants à évaluer';
@@ -276,6 +280,10 @@ $string['reviewed_question'] = 'Questions révisées';
 $string['tier_temps'] = 'Tiers temps';
 $string['add_student'] = 'Ajouter un étudiant';
 
+$string['session_list'] = 'Liste des sessions';
+$string['session_id'] = 'ID de la session';
+$string['session_name'] = 'Nom de la session';
+$string['session_deleted'] = 'Session Suprimée';
 
 $string['teacher_list'] = 'Liste des enseignants';
 $string['add_teacher'] = 'Ajouter un enseignant';
@@ -325,7 +333,13 @@ $string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
 $string['sessionsaved'] = 'Session sauvegardée !';
 $string['set_current_session'] = 'Rendre cette session courante';
+$string['confirm_delete_session'] = 'Êtes-vous sûr de vouloir supprimer cette session ?';
+$string['activate'] = 'Activer';
+$string['confirm_activate_session'] = 'Êtes-vous sûr de vouloir activer cette session ?';
+$string['message_activate'] = 'Confirmer l\'activation';
+$string['information_session'] = 'Il faut qu\'au plus une session soit active à la fois. Si vous activez une session, les autres sessions seront automatiquement archivées, et donc désactivées.';
 
+$string['export_session'] = "Exporter";
 
 // Capabilities
 $string['studentqcm:manage'] = 'Gérer une instance de session';
@@ -333,5 +347,16 @@ $string['studentqcm:addinstance'] = 'Ajouter une instance de session';
 $string['studentqcm:view'] = 'Voir une instance de session';
 
 $string['edit_session'] = 'Édition de la session';
+$string['info_section_general'] = 'Informations générales de la session';
 $string['info_section_date'] = 'Informations liées aux dates';
 $string['info_section_question'] = 'Informations liées aux questions';
+$string['info_section_competency'] = 'Informations liées aux compétences';
+
+$string['competency_not_found'] = 'Aucune compétence trouvée';
+$string['add_competency'] = 'Ajouter une compétence';
+
+$string['NA'] = 'Non renseigné';
+
+$string['grid_qcu'] = 'Grille d\'évaluation des QCMs';
+$string['grid_qcm'] = 'Grille d\'évaluation des QCUs';
+$string['grid_tcs'] = 'Grille d\'évaluation des TCSs';

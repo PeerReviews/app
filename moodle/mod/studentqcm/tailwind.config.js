@@ -7,7 +7,11 @@ module.exports = {
     './**/*.mustache'
   ],
   theme: {
-    extend: {},
+    extend: {
+      boxShadow: {
+        'md-lg': '0 6px 10px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05)',  // Ombre personnalisée
+      },
+    },
   },
   plugins: [],
 }

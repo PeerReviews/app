@@ -166,8 +166,8 @@ if ($qcms) {
 
                 // Définir les couleurs en fonction du type de question
                 if ($qcm->ispop == 1) {
-                    $bgColor = 'bg-yellow-200';
-                    $textColor = 'text-yellow-400';
+                    $bgColor = 'bg-amber-200';
+                    $textColor = 'text-amber-400';
                 } else {
                     switch ($qcm->type) {
                         case 'QCM':

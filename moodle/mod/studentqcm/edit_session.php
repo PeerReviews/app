@@ -34,6 +34,11 @@ echo '<div class="mt-8 p-4 bg-white rounded-3xl shadow-lg">';
 echo '<form action="save_session.php?id=' . $id . '&session_id=' . $session->id . '" method="post" class="space-y-6">';
 echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
 
+echo "<div class='border-b p-2' style='margin-bottom: 1rem !important'>";
+    echo "<div class='flex text-center text-gray-600 items-end'>";
+        echo "<p class='text-3xl font-semibold'> " . get_string('info_section_general', 'mod_studentqcm') . "</p>";
+    echo "</div>";
+echo "</div>";
 
 $fields = [
     'name' => 'Nom de la session',
@@ -132,8 +137,6 @@ foreach ($date_fields as $index => $field_group) {
 }
 echo '</div>';
 
-
-
 // Récupération des données de compétences
 $competencies = $DB->get_records('competency', ['referentiel' => $session->referentiel, 'sessionid' => $session->id]);
 
@@ -168,18 +171,17 @@ echo "<script>let competencies = $competency_json;</script>";
 <form action="save_session.php?id=<?= $id ?>&session_id=<?= $session->id ?>" method="post" class="session-form">
     <input type="hidden" name="session_id" value="<?= $session->id ?>">
 
-    <div id="add_competences-container"></div>
+    <div class="border-b p-2" style="margin-top: 4rem !important;">
+        <div class="flex text-center text-gray-600 items-end">
+            <p class="text-3xl font-semibold"><?php echo get_string('info_section_competency', 'mod_studentqcm'); ?></p>
+        </div>    
+    </div>
 
-    <button type="submit" class="btn-save">Sauvegarder</button>
-</form>
+    <div id="add_competences-container" class="p-4 rounded-3xl bg-gray-50"></div>
 
-<form id="competence-form" class="session-form">
-    <input type="hidden" name="session_id" value="<?= $session->id ?>">
-
-    <div id="add_competences-container"></div>
-
-    <button type="button" onclick="addCompetenceField()" class="btn-add">Ajouter une compétence</button>
-    <button type="button" onclick="saveCompetence()" class="btn-save">Sauvegarder</button>
+    <div class="flex justify-end mt-4">
+        <button type="submit" class="inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-400 hover:bg-lime-500 cursor-pointer text-white text-lg"><?php echo get_string('save', 'mod_studentqcm'); ?></button>
+    </div>
 </form>
 
 <?= $OUTPUT->footer(); ?>
@@ -191,51 +193,76 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function editCompetenceField() {
     let container = document.getElementById("add_competences-container");
+    container.innerHTML = "";
 
+    // Vérifier si les compétences existent et si elles sont non vides
     if (!competencies || competencies.length === 0) {
-        console.warn("Aucune compétence enregistrée.");
-        return;
+        let noCompetenceMessage = `
+            <div class="p-4 text-center text-gray-600 bg-gray-100 border border-gray-300 rounded-lg mt-4">
+                <p class="text-xl font-semibold"><?php echo get_string('competency_not_found', 'mod_studentqcm'); ?></p>
+            </div>
+        `;
+        container.insertAdjacentHTML("beforeend", noCompetenceMessage);
+    } else {
+        // Si des compétences existent, on les affiche comme avant
+        competencies.forEach((competence, index_competence) => {
+            let fieldHTML = `
+            <div id="competence-container${index_competence}" class="mt-4">
+                <div class="flex justify-between items-center border-b pb-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-book text-lime-400 text-xl mr-2"></i>
+                        <p class="text-2xl font-bold text-gray-600 capitalize">${competence.name}</p>
+                    </div>
+                    <button type="button" class="px-4 py-2 bg-red-500 text-white text-md font-semibold rounded-xl hover:bg-red-600" onclick="deleteCompetence(${index_competence})">
+                        <i class="fas fa-trash-alt mr-2"></i> <?php echo get_string('delete', 'mod_studentqcm'); ?>
+                    </button>
+                </div>
+                <div id="add_subcompetences-container${index_competence}" class="mt-2">
+                    ${competence.subCompetences.map((sub, subIndex) => 
+                        `
+                        <div id="subcompetence-container${index_competence}${subIndex}" class="mb-2 pl-6">
+                            <div class="flex justify-between items-center border-b pb-1">
+                                <div class="flex items-center">
+                                    <i class="fas fa-award text-sky-400 mr-2 text-xl"></i>
+                                    <p class="text-xl font-semibold text-gray-600 capitalize">${sub.name}</p>
+                                </div>
+                                <button type="button" class="px-4 py-2 bg-red-500 text-white text-md font-semibold rounded-xl hover:bg-red-600" onclick="deleteSubCompetence(${index_competence}, ${subIndex})">
+                                    <i class="fas fa-trash-alt mr-2"></i> <?php echo get_string('delete', 'mod_studentqcm'); ?>
+                                </button>
+                            </div>
+                            <div id="keyword-container${index_competence}${subIndex}" class="mt-2 pl-6">
+                                ${sub.keywords.map((keyword) => 
+                                    `
+                                    <div class="flex items-center text-gray-600 mt-2">
+                                        <i class="fas fa-tag text-gray-400 mr-2 text-md"></i>
+                                        <p class="text-md capitalize">${keyword}</p>
+                                    </div>
+                                    `
+                                ).join('')}
+                            </div>
+                        </div>
+                        `
+                    ).join('')}
+                </div>
+            </div>
+            `;
+            container.insertAdjacentHTML("beforeend", fieldHTML);
+        });
     }
 
-    competencies.forEach((competence, index_competence) => {
-    let fieldHTML = `
-        <div id="competence-container${index_competence}" class="competence-block p-4 border border-gray-300 rounded-lg bg-white mt-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-2xl font-bold">${competence.name}</h3>
-                <button type="button" class="bg-red-500 text-white px-3 py-1 rounded" onclick="deleteCompetence(${index_competence})">
-                    Supprimer
-                </button>
-            </div>
-            
-            <div id="add_subcompetences-container${index_competence}" class="mt-4">
-            ${competence.subCompetences.map((sub, subIndex) => `
-                <div id="subcompetence-container${index_competence}${subIndex}" class="mb-2" style="margin-left: 25px;">
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-xl font-semibold">${sub.name}</h4>
-                        <button type="button" class="bg-red-500 text-white px-2 py-1 rounded" onclick="deleteSubCompetence(${index_competence}, ${subIndex})">
-                            Supprimer
-                        </button>
-                    </div>
-
-                    <div id="keyword-container${index_competence}${subIndex}" style="margin-left: 25px;">
-                    ${sub.keywords.map((keyword, keyIndex) => `
-                        <p class="text-gray-700">${keyword}</p>
-                    `).join('')}
-                    </div>
-                </div>
-            `).join('')}
-            </div>
+    let addButtonHTML = `
+        <div class="flex justify-end mt-4">
+            <button type="button" class="px-4 py-2 bg-indigo-400 text-white text-md font-semibold rounded-xl hover:bg-indigo-500" onclick="addCompetenceField()"><i class="fas fa-plus mr-2"></i> <?php echo get_string('add_competency', 'mod_studentqcm'); ?></button>
         </div>
     `;
-
-    container.insertAdjacentHTML("beforeend", fieldHTML);
-});
+    container.insertAdjacentHTML("beforeend", addButtonHTML);
 }
+
 
 function deleteCompetence(index_competence) {
     let competenceId = competencies[index_competence].id;
 
-    fetch('delete_competence.php', {
+    fetch('delete_competence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -260,7 +287,7 @@ function deleteCompetence(index_competence) {
 function deleteSubCompetence(index_competence, subIndex) {
     let subCompetenceId = competencies[index_competence].subCompetences[subIndex].id;
 
-    fetch('delete_subcompetence.php', {
+    fetch('delete_subcompetence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -287,24 +314,25 @@ function addCompetenceField() {
     let container = document.getElementById("add_competences-container");
 
     let fieldHTML = `
-        <div id="competence-container${index_competence}" class="competence-block p-4 border border-gray-300 rounded-lg bg-white mt-4">
-            <h3 class="text-2xl font-bold">Nouvelle compétence</h3>
+        <div id="competence-container${index_competence}" class="p-4 rounded-2xl bg-white mt-4">
+            <p class="text-2xl text-gray-600 font-bold capitalize"> <?php echo get_string('newcompetency', 'mod_studentqcm'); ?></p>
             
-            <label>Nom de la compétence</label>
-            <input type="text" id="competence-name${index_competence}" class="form-control p-2 border rounded w-full" required>
+            <div class="flex items-center space-x-4 mt-4">
+                <input type="text" id="competence-name${index_competence}" placeholder="<?php echo get_string('name_competence', 'mod_studentqcm'); ?>" class="p-2 border rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-indigo-200" required>
 
-            <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-gray-500" onclick="addSubCompetenceField(${index_competence})">
-                Ajouter une sous-compétence
-            </button>
-
-            <div id="add_subcompetences-container${index_competence}" class="mt-4"></div>
-
-            <div class="flex mt-4">
-                <button type="button" class="bg-green-500 text-white font-bold py-2 px-4 rounded " onclick="saveCompetence(${index_competence})">
-                    Enregistrer
+                <button type="button" class="px-4 py-2 bg-indigo-400 text-white text-md font-semibold rounded-xl hover:bg-indigo-500 whitespace-nowrap capitalize" onclick="addSubCompetenceField(${index_competence})">
+                    <?php echo get_string('add_subcompetences', 'mod_studentqcm'); ?>
                 </button>
-                <button type="button" class="bg-gray-500 text-white font-bold py-2 px-4 rounded mx-4" onclick="deleteAddCompetence(${index_competence})">
-                    Annuler
+            </div>
+
+            <div id="add_subcompetences-container${index_competence}" class="mt-2"></div>
+
+            <div class="flex mt-4 justify-end space-x-2">
+                <button type="button" class="px-4 py-2 bg-lime-400 text-white text-md font-semibold rounded-xl hover:bg-lime-500 whitespace-nowrap capitalize" onclick="saveCompetence(${index_competence})">
+                    <?php echo get_string('save', 'mod_studentqcm'); ?>
+                </button>
+                <button type="button" class="px-4 py-2 bg-gray-400 text-white text-md font-semibold rounded-xl hover:bg-gray-500 whitespace-nowrap capitalize" onclick="deleteAddCompetence(${index_competence})">
+                    <?php echo get_string('cancel', 'mod_studentqcm'); ?>
                 </button>
             </div>
         </div>
@@ -328,11 +356,14 @@ function addSubCompetenceField(index_competence) {
     let container = document.getElementById(`add_subcompetences-container${index_competence}`);
 
     let fieldHTML = `
-        <div id="subcompetence-container${index_competence}${index_sub}" class="ml-6 mb-2">
-            <input type="text" id="subcompetence-name${index_competence}${index_sub}" class="form-control p-2 border rounded w-full" placeholder="Nom de la sous-compétence" required>
-            <button type="button" class="bg-purple-300 p-2 m-2 rounded font-bold hover:bg-purple-500" onclick="addKeywordField(${index_competence}, ${index_sub})">
-                Ajouter un mot-clé
-            </button>
+        <div id="subcompetence-container${index_competence}${index_sub}" class="ml-6">
+            <div class="flex items-center space-x-4">
+                <input type="text" id="subcompetence-name${index_competence}${index_sub}" placeholder="<?php echo get_string('name_subcompetence', 'mod_studentqcm'); ?>" class="p-2 border rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-indigo-200" required>
+
+                <button type="button" class="px-4 py-2 bg-indigo-400 text-white text-md font-semibold rounded-xl hover:bg-indigo-500 whitespace-nowrap" onclick="addKeywordField(${index_competence}, ${index_sub})">
+                    <?php echo get_string('add_keyword', 'mod_studentqcm'); ?>
+                </button>
+            </div>
             <div id="keyword-container${index_competence}${index_sub}" class="ml-6"></div>
         </div>
     `;
@@ -346,7 +377,7 @@ function addKeywordField(index_competence, index_sub) {
     let container = document.getElementById(`keyword-container${index_competence}${index_sub}`);
 
     let fieldHTML = `
-        <input type="text" id="keyword${index_competence}${index_sub}${index_keyword}" class="form-control p-2 border rounded w-full mt-2" placeholder="Mot-clé" required>
+        <input type="text" id="keyword${index_competence}${index_sub}${index_keyword}" class="mt-2 p-2 border rounded-xl w-full focus:outline-none focus:ring-2 focus:ring-indigo-200" placeholder="<?php echo get_string('name_keyword', 'mod_studentqcm'); ?>" required>
     `;
 
     container.insertAdjacentHTML("beforeend", fieldHTML);
@@ -390,7 +421,7 @@ function saveCompetence(index_competence) {
         return; 
     }
 
-    fetch('add_competence.php?', {
+    fetch('add_competence.php?session_id=<?php echo $session_id; ?>', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

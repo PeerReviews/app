@@ -11,8 +11,10 @@ if (!$subCompetenceId) {
     exit;
 }
 
+$session_id = required_param('session_id', PARAM_INT);
+
 // Supprimer les mots-clés liés à cette sous-compétence
-$DB->delete_records('keyword', ['subcompetency' => $subCompetenceId]);
+$DB->delete_records('keyword', ['sessionid' => $session_id, 'subcompetency' => $subCompetenceId]);
 
 // Supprimer la sous-compétence
 $DB->delete_records('subcompetency', ['id' => $subCompetenceId]);

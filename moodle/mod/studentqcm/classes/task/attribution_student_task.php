@@ -26,8 +26,8 @@ class attribution_student_task extends scheduled_task {
         }
 
 
-        $current_timestamp = time(); 
-        $start_timestamp = $studentqcm->start_date_2;
+        $current_timestamp = strtotime(time()); 
+        $start_timestamp = strtotime($studentqcm->start_date_2);
 
         if ($current_timestamp < $start_timestamp) {
             mtrace("La date d'ouverture de la phase 2 n'est pas encore atteinte.");
