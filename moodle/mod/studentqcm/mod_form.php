@@ -59,46 +59,47 @@ class mod_studentqcm_mod_form extends moodleform_mod
             <div id="choice_add_competence"></div>
 
             <div id="info-json" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
-                <div class="bg-white rounded-3xl py-4 px-16 max-w-xl w-full">
+                <div class="bg-white rounded-3xl py-4 px-16 max-w-[80%] w-full max-h-[80vh] overflow-auto mt-16">
                     <div class="flex flex-row-reverse">
                         <button type="button" id="close-info-json" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
                     </div>
                     <p class="font-semibold text-lg mb-2">Format attendu :</p>
                     <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-[
-    {
-        "id": 0,
-        "name": "Compétence 1",
-        "subCompetences": [
-            {
-                "name": "Sous-compétence 1.1",
-                "keywords": [
-                    "Mot-cle 1.1.1"
-                ]
-            },
-            {
-                "name": "Sous-compétence 1.2",
-                "keywords": []
-            }
-        ]
-    },
-    {
-        "id": 1,
-        "name": "Compétence 2",
-        "subCompetences": [
-            {
-                "name": "Sous-compétence 2.1",
-                "keywords": [
-                    "Mot-cle 2.1.1",
-                    "Mot-cle 2.1.2"
-                ]
-            }
-        ]
-    }
-]
+            [
+                {
+                    "id": 0,
+                    "name": "Compétence 1",
+                    "subCompetences": [
+                        {
+                            "name": "Sous-compétence 1.1",
+                            "keywords": [
+                                "Mot-cle 1.1.1"
+                            ]
+                        },
+                        {
+                            "name": "Sous-compétence 1.2",
+                            "keywords": []
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "Compétence 2",
+                    "subCompetences": [
+                        {
+                            "name": "Sous-compétence 2.1",
+                            "keywords": [
+                                "Mot-cle 2.1.1",
+                                "Mot-cle 2.1.2"
+                            ]
+                        }
+                    ]
+                }
+            ]
                     </pre>
                 </div>
             </div>
+
 
 
             <script>
@@ -158,13 +159,14 @@ class mod_studentqcm_mod_form extends moodleform_mod
                                     <i class="fa-solid fa-circle-info ml-2 text-indigo-600"></i>
                                 </a>
                         </div>
-                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border-2 border-dashed border-white flex flex-col justify-center items-center text-center cursor-pointer">
+                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border-4 border-dashed border-indigo-200 flex flex-col justify-center items-center text-center cursor-pointer rounded-3xl">
                             <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
                             <p>Glissez et déposer pour uploader le fichier</p>
                             <p>Ou</p>
                             <p>Charger un fichier</p>
                             <input type="file" id="fileInputCompetences" multiple hidden>
                         </div>
+
                         <div id="file-list-competences"></div>
                     `;
                     
@@ -599,7 +601,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $mform->setType('courses_files_data', PARAM_RAW);
 
         $mform->addElement('html', '
-        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border-2 border-dashed border-white flex flex-col justify-center items-center text-center cursor-pointer"
+        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border-4 border-dashed border-indigo-200 flex flex-col justify-center items-center text-center cursor-pointer rounded-3xl"
             ondrop="dropHandlerCourses(event);"
             ondragleave="dragLeaveHandlerCourses(event);"
             ondragover="dragOverHandlerCourses(event);">
@@ -817,7 +819,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                     function toggleTiersTemps() {
                         tiersElements.forEach(elt => {
-                            elt.style.display = checkbox.checked ? "flex" : "none";
+                            elt.style.display = checkbox.checked ? "grid" : "none";
                         });
                         let checkbox_tt = document.querySelector(`[name="checkbox_tt_data"]`);
                         checkbox_tt.value = checkbox.checked;
@@ -845,309 +847,41 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $mform->addElement('hidden', 'hours_minutes_data');
         $mform->setType('hours_minutes_data', PARAM_RAW);
 
-        $mform->addElement('html', '<div class="bg-sky-200 py-2 rounded text-sky-700 my-4">');
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'start_date_1', get_string('start_date_1', 'mod_studentqcm'));
-            $mform->addRule('start_date_1', null, 'required', null, 'client');  
+        $date_fields = [
+            ['start_date_1', 'end_date_1', 'end_date_tt_1'],
+            ['start_date_2', 'end_date_2', 'end_date_tt_2'],
+            ['start_date_3', 'end_date_3', 'end_date_tt_3']
+        ];
+        
+        $bg_colors = ['bg-lime-200', 'bg-indigo-200', 'bg-sky-200'];
+        $text_colors = ['text-lime-600', 'text-indigo-600', 'text-sky-600'];
+        $focus_colors = ['focus:ring-lime-400', 'focus:ring-indigo-400', 'focus:ring-sky-400'];
 
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
-                <select id="start_hour_1" name="start_hour_1[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
+        foreach ($date_fields as $index => $dates) {
 
-                <select id="start_minute_1" name="start_minute_1[]" class="form-control p-2 rounded w-fullmax-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
+            $bg_color = $bg_colors[$index];
+            $text_color = $text_colors[$index];
+            $focus_color = $focus_colors[$index];
 
+            $mform->addElement('html', '<div class="'. $bg_color .' py-2 rounded-2xl text-sky-700 my-4 p-4 space-y-2">');
+                $mform->addElement('html', '
+                    <div class="items-center space-x-2 grid grid-cols-3">
+                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('start_date_1', 'mod_studentqcm') . ' : </label>
+                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
+                    </div>
 
-            <script>
+                    <div class="items-center space-x-2 grid grid-cols-3">
+                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('end_date_1', 'mod_studentqcm') . ' : </label>
+                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
+                    </div>
 
-                let arrayHourMinute = {};
-                let hoursMinutesData = document.querySelector(`input[name="hours_minutes_data"]`);
-
-                // Générer les options pour les heures et minutes
-                const optionsHours = Array.from({ length: 24 }, (_, i) => i);
-                const optionsMinutes = Array.from({ length: 12 }, (_, i) => i * 5);
-
-                function generateOptions(selectId, options, defaultValue) {
-                    const select = document.getElementById(selectId);
-                    if (!select) return; 
-
-                    select.innerHTML = ""; 
-                    options.forEach(value => {
-                        const option = document.createElement("option");
-                        option.value = value;
-                        option.textContent = value.toString().padStart(2, "0"); // Format "00", "01", ...
-                        
-                        // Appliquer la valeur par défaut
-                        if (value === defaultValue) {
-                            option.selected = true;
-                        }
-
-                        select.appendChild(option);
-                    });
-                }
-                function saveHourMinute(type) {
-                    if (type === "start") {
-                        arrayHourMinute["start"] = [];
-                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_start"); // Sélectionne tous les blocs d\'heure et minute
-
-                        hourMinute.forEach((hmBlock, index) => {
-                        // Récupérer les valeurs sélectionnées pour hour et minute
-                           let hourValue = hmBlock.querySelector(`select[name="start_hour_${index+1}[]"]`).value;
-                            let minuteValue = hmBlock.querySelector(`select[name="start_minute_${index+1}[]"]`).value;
-
-                            // Stocker dans un objet
-                            let hmData = {
-                                hour: hourValue,
-                                minute: minuteValue
-                            };
-
-                            arrayHourMinute["start"].push(hmData);
-                        });
-                    } else if (type === "end") {
-                        arrayHourMinute["end"] = [];
-                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_end"); // Sélectionne tous les blocs d\'heure et minute
-
-                        hourMinute.forEach((hmBlock, index) => {
-                            // Récupérer les valeurs sélectionnées pour hour et minute
-                            let hourValue = hmBlock.querySelector(`select[name="end_hour_${index+1}[]"]`).value;
-                            let minuteValue = hmBlock.querySelector(`select[name="end_minute_${index+1}[]"]`).value;
-
-                            // Stocker dans un objet
-                            let hmData = {
-                                hour: hourValue,
-                                minute: minuteValue
-                            };
-
-                            arrayHourMinute["end"].push(hmData);
-                        });
-                    } else {
-                        arrayHourMinute["tt"]= [];
-                        let hourMinute = document.querySelectorAll("#timeSelectorContainer_tt"); // Sélectionne tous les blocs d\'heure et minute
-
-                        hourMinute.forEach((hmBlock, index) => {
-                            // Récupérer les valeurs sélectionnées pour hour et minute
-                            let hourValue = hmBlock.querySelector(`select[name="end_hour_tt_${index+1}[]"]`).value;
-                            let minuteValue = hmBlock.querySelector(`select[name="end_minute_tt_${index+1}[]"]`).value;
-
-                            // Stocker dans un objet
-                            let hmData = {
-                                hour: hourValue,
-                                minute: minuteValue
-                            };
-
-                            arrayHourMinute["tt"].push(hmData);
-                        });
-                    }
-                        
-                    console.log("arrayHourMinute: ", arrayHourMinute);
-
-                    hoursMinutesData.value = JSON.stringify(arrayHourMinute);
-                }
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_1", optionsHours, 8); // 8h par défaut
-                    generateOptions("start_minute_1", optionsMinutes, 0); // 00 min par défaut
-                });
-            </script>
-
-            ');
+                    <div id="timeSelectorContainer_tt" class="items-center space-x-2 grid grid-cols-3">
+                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('end_date_tt_1', 'mod_studentqcm') . ' : </label>
+                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
+                    </div>
+                ');
             $mform->addElement('html', '</div>');
-
-
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'end_date_1', get_string('end_date_1', 'mod_studentqcm'));
-            $mform->addRule('end_date_1', null, 'required', null, 'client');
-
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
-                <select id="end_hour_1" name="end_hour_1[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_1" name="end_minute_1[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_1", optionsHours, 8);
-                    generateOptions("end_minute_1", optionsMinutes, 0);
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'end_date_tt_1', get_string('end_date_tt_1', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-            $mform->addRule('end_date_tt_1', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_tt" class="flex gap-2 m-1">
-                <select id="end_hour_tt_1" name="end_hour_tt_1[]" class="form-control p-2 rounded max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_tt_1" name="end_minute_tt_1[]" class="form-control p-2 rounded max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_1", optionsHours, 8);
-                    generateOptions("end_minute_tt_1", optionsMinutes, 0);
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-        $mform->addElement('html', '</div>');
-
-        $mform->addElement('html', '<div class="bg-lime-200 py-2 rounded text-lime-700 my-4">');
-            $mform->addElement('html', '<div class="m-3">');
-            $mform->addElement('date_selector', 'start_date_2', get_string('start_date_2', 'mod_studentqcm'));
-            $mform->addRule('start_date_2', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
-                <select id="start_hour_2" name="start_hour_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="start_minute_2" name="start_minute_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_2", optionsHours, 8);
-                    generateOptions("start_minute_2", optionsMinutes, 0);
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-
-            $mform->addElement('html', '<div class="m-3">');
-            $mform->addElement('date_selector', 'end_date_2', get_string('end_date_2', 'mod_studentqcm'));
-            $mform->addRule('end_date_2', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
-                <select id="end_hour_2" name="end_hour_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_2" name="end_minute_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_2", optionsHours, 8);
-                    generateOptions("end_minute_2", optionsMinutes, 0);
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'end_date_tt_2', get_string('end_date_tt_2', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-            $mform->addRule('end_date_tt_2', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_tt" class="flex gap-2 m-1">
-                <select id="end_hour_tt_2" name="end_hour_tt_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_tt_2" name="end_minute_tt_2[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_2", optionsHours, 8);
-                    generateOptions("end_minute_tt_2", optionsMinutes, 0);
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-        $mform->addElement('html', '</div>');
-
-        $mform->addElement('html', '<div class="bg-indigo-200 py-2 rounded text-indigo-700 my-4">');
-            $mform->addElement('html', '<div class="m-3">');
-            $mform->addElement('date_selector', 'start_date_3', get_string('start_date_3', 'mod_studentqcm'));
-            $mform->addRule('start_date_3', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_start" class="flex gap-2 m-1">
-                <select id="start_hour_3" name="start_hour_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="start_minute_3" name="start_minute_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("start_hour_3", optionsHours, 8);
-                    generateOptions("start_minute_3", optionsMinutes, 0);
-                    saveHourMinute("start");
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'end_date_3', get_string('end_date_3', 'mod_studentqcm'));
-            $mform->addRule('end_date_3', null, 'required', null, 'client');
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_end" class="flex gap-2 m-1">
-                <select id="end_hour_3" name="end_hour_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_3" name="end_minute_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_3", optionsHours, 8);
-                    generateOptions("end_minute_3", optionsMinutes, 0);
-                    saveHourMinute("end");
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
-
-            $mform->addElement('html', '<div class=" m-3">');
-            $mform->addElement('date_selector', 'end_date_tt_3', get_string('end_date_tt_3', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-
-            $mform->addElement('html', '
-            <div id="timeSelectorContainer_tt" class="flex gap-2 m-1">
-                <select id="end_hour_tt_3" name="end_hour_tt_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">h</p>
-
-                <select id="end_minute_tt_3" name="end_minute_tt_3[]" class="form-control p-2 rounded w-full max-w-[30]" required></select>
-                <p class="mt-2">min</p>
-            </div>
-
-            <script>
-
-                // Exécuter la génération après chargement du DOM
-                document.addEventListener("DOMContentLoaded", () => {
-                    generateOptions("end_hour_tt_3", optionsHours, 8);
-                    generateOptions("end_minute_tt_3", optionsMinutes, 0);
-                    saveHourMinute("tt");
-                });
-            </script>
-            ');
-            $mform->addElement('html', '</div>');
+        };
 
         $mform->addElement('html', '<script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -1177,11 +911,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
         </script>
         ');
-        $mform->addElement('html', '</div>');
-
 
         $mform->addElement('html', '</div>');
-
 
         // Choix types éval
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
