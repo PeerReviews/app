@@ -9,6 +9,8 @@ $id = required_param('id', PARAM_INT);
 
 // Récupération de l'ID de la session (champ caché dans le formulaire)
 $session_id = required_param('session_id', PARAM_INT);
+print_r($id);
+print_r($session_id);
 
 // Récupération de l'enregistrement de la session dans la base de données
 $session = $DB->get_record('studentqcm', ['id' => $session_id], '*', MUST_EXIST);
@@ -33,16 +35,18 @@ foreach ($_POST as $key => $value) {
     if ($key === 'referentiel') {
         $referentiel_record = $DB->get_record_sql(
             'SELECT * FROM {referentiel} WHERE ' . $DB->sql_compare_text('name') . ' = :name',
-            ['name' => $value]
+            ['name' => $value, 'sessionid' => $session->id]
         );
 
         if (!$referentiel_record) {
             $referentiel_id = $DB->insert_record('referentiel', ['name' => $value, 'sessionid' => $session->id]);
-        } else {
+        } 
+        else {
             $referentiel_id = $referentiel_record->id;
         }
 
         $session->referentiel = intval($referentiel_id);
+        print_r($session->referentiel);
         continue; // Passe au champ suivant
     }
 
@@ -74,8 +78,8 @@ if (isset($_POST['nbpop'])) {
 
 // Mise à jour dans la base de données
 $session->timemodified = time();
-$DB->update_record('studentqcm', $session);
+// $DB->update_record('studentqcm', $session);
 
 // Redirection avec message de succès
-redirect(new moodle_url('/mod/studentqcm/admin_sessions.php', ['id' => $id]), get_string('sessionsaved', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);
+// redirect(new moodle_url('/mod/studentqcm/admin_sessions.php', ['id' => $id]), get_string('sessionsaved', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);
 ?>

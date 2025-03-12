@@ -17,7 +17,7 @@ $PAGE->set_url('/mod/studentqcm/teacher_dashboard.php', array('id' => $id));
 $PAGE->set_title(format_string($studentqcm->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-$PAGE->requires->css(new moodle_url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css'));
+$PAGE->requires->css(new moodle_url('/mod/studentqcm/style.css', array('v' => time())));
 
 echo $OUTPUT->header();
 
@@ -44,7 +44,8 @@ echo '<tr class="bg-gray-100 text-left">';
 // Colonnes du tableau avec arrondis
 $columns = [
     'full_name' => get_string('full_name', 'mod_studentqcm'),
-    'completed_evaluations' => get_string('completed_question', 'mod_studentqcm'),
+    'completed_question' => get_string('completed_question', 'mod_studentqcm'),
+    'completed_revision' => get_string('completed_revision', 'mod_studentqcm'),
     'last_connected' => get_string('last_connected', 'mod_studentqcm')
 ];
 
@@ -71,19 +72,46 @@ foreach ($teachers as $teacher) {
     $teacher_fullname = ucwords(strtolower($teacher_entity->firstname)) . ' ' . ucwords(strtolower($teacher_entity->lastname));
 
     $productions = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $teacher->userid, 'sessionid' => $session->id));
+    
     $completed_questions_count = 0;
     $nbTotal_question = 0;
 
+    $completed_revisions_count = 0;
+    $nbTotal_revision = 0;
+
     foreach ($productions as $production) {
         $to_grade = $DB->get_records('studentqcm_question', array('userid' => $production->userid, 'sessionid' => $session->id, 'status' => 1));
+
+        // Je dois récupérer le nombre de révisions fait par chaque élève $production->userid 
+        $sql = "SELECT q.*, e.*
+                FROM {studentqcm_question} q
+                JOIN {studentqcm_evaluation} e ON q.id = e.question_id
+                WHERE q.sessionid = :sessionid
+                AND q.status = 1
+                AND e.status = 1
+                AND e.userid = :userid";
+
+        $params = [
+            'sessionid' => $session->id,
+            'userid' => $production->userid
+        ];
+
+        $to_grade_revision = $DB->get_records_sql($sql, $params);
+ 
         $graded = array_filter($to_grade, function($record) {
+            return $record->grade !== null;
+        });
+
+        $graded_revision = array_filter($to_grade_revision, function($record) {
             return $record->grade !== null;
         });
 
         $nbTotal_question += count($to_grade);
         $completed_questions_count += count($graded);
+
+        $nbTotal_revision += count($to_grade_revision);
+        $completed_revisions_count += count($graded_revision);
     }
-    // Nombre total de questions de toutes les productions à évaluer (tous les élèves)
 
     echo '<tr class="border-t hover:bg-gray-50">';
 
@@ -92,9 +120,14 @@ foreach ($teachers as $teacher) {
     echo '</td>';
 
     $colorClass = ($completed_questions_count == 0) ? 'text-red-400' : 
-                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-500' : 'text-gray-600');
+                  (($completed_questions_count == $nbTotal_question) ? 'text-lime-600' : 'text-gray-600');
 
     echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_questions_count . " / " . $nbTotal_question .  '</td>';
+
+    $colorClass = ($completed_revisions_count == 0) ? 'text-red-400' : 
+                  (($completed_revisions_count == $nbTotal_revision) ? 'text-lime-600' : 'text-gray-600');
+
+    echo '<td class="px-3 py-4 text-md ' . $colorClass . '">' . $completed_revisions_count . " / " . $nbTotal_revision .  '</td>';
 
     echo '<td class="px-3 py-4 text-md text-gray-600">' . 
          ($teacher_entity->lastaccess > 0 
