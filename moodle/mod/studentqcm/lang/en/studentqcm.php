@@ -252,6 +252,8 @@ $string['session_gestion'] = 'Gestion des sessions';
 $string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
 $string['grade_gestion'] = 'Gestion des notes';
 
+$string['add_student_csv'] = 'Ajouter plusieurs étudiants à partir d\'un ficher CSV';
+
 $string['info_user_gestion'] = 'Cette section permet d\'accéder à la gestion des utilisateurs : ajouter des étudiants ou enseignants à la session courante';
 $string['info_attribution_gestion'] = 'Cette section permet de gérer les attributions automatiques ou manuelles des productions et/ou révisions à évaluer par les étudiants ou enseignants';
 $string['info_teacher_dashboard'] = 'Cette section permet de visualiser l\'avancée de chaque enseignant sur la correction des productions et révisions';

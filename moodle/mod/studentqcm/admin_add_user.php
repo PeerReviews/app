@@ -45,11 +45,11 @@ echo "</a>";
 echo "</div>";
 
 echo "<div class='flex mt-8 text-lg justify-between gap-4'>";
-    echo '<a href="?id=' . $id . '&gestion=student" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
+    echo '<a href="?id=' . $id . '&gestion=student" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition text-center">';
     echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('student_gestion', 'mod_studentqcm');
     echo '</a>';
 
-    echo '<a href="?id=' . $id . '&gestion=teacher" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition">';
+    echo '<a href="?id=' . $id . '&gestion=teacher" class="w-full p-4 bg-sky-300 text-white font-semibold rounded-2xl shadow-md hover:bg-sky-400 transition text-center">';
     echo '<i class="fas fa-user-plus mr-2"></i>' . get_string('teacher_gestion', 'mod_studentqcm');
     echo '</a>';
 echo "</div>";
@@ -57,6 +57,15 @@ echo "</div>";
 // Si le gestion_type est 'student', afficher la gestion des étudiants
 if ($gestion_type === 'student') {
     $students = $DB->get_records('students', ['sessionid' => $session->id]);
+
+    echo '<div class="mt-8 w-full text-center">';
+        $mass_enroll_url = new moodle_url('/local/mass_enroll/massenrol.php', array('id' => $studentqcm->courseid));
+        echo "<a href='$mass_enroll_url' class='w-full p-4 bg-lime-400 text-white font-semibold rounded-2xl shadow-md hover:bg-lime-500 transition text-lg block'>"; // Assure-toi que le lien se comporte comme un bloc (block)
+        echo "<i class='fas fa-users mr-2'></i>";
+        echo get_string('add_student_csv', 'mod_studentqcm');
+        echo "</a>";
+    echo '</div>';
+
     
     echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
         echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
