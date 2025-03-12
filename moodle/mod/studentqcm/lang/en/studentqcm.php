@@ -30,10 +30,10 @@ $string['start_date_session'] = 'Date début session';
 $string['end_date_session'] = 'Date fin session';
 $string['date_jury'] = 'Date du jury';
 
-$string['newreferentiel'] = 'Référentiel';
-$string['newcompetency'] = 'Compétence';
-$string['newsubcompetency'] = 'Sous-compétence';
-$string['newkeyword'] = 'Mot-clé';
+$string['newreferentiel'] = 'Nouveau Référentiel';
+$string['newcompetency'] = 'Nouvelle compétence';
+$string['newsubcompetency'] = 'Nouvelle sous-compétence';
+$string['newkeyword'] = 'Nouveau mot-clé';
 
 $string['phase1'] = 'PHASE 1';
 $string['phase2'] = 'PHASE 2';
@@ -189,9 +189,9 @@ $string['name_subcompetence'] = 'Nom de la sous-compétence';
 $string['competence_associated'] = 'Compétence associée';
 
 $string['keyword_title'] = 'Mot-clefs:';
-$string['add_keyword'] = 'Ajouter un mot-clef';
-$string['info_keyword'] = 'Information sur le mot-clef';
-$string['name_keyword'] = 'Nom du mot-cle';
+$string['add_keyword'] = 'Ajouter un mot-clé';
+$string['info_keyword'] = 'Information sur le mot-clé';
+$string['name_keyword'] = 'Nom du mot-clé';
 $string['subcompetence_associated'] = 'Sous-compétence associée';
 $string['export'] = 'Exporter les compétences';
 
@@ -333,8 +333,10 @@ $string['studentqcm:addinstance'] = 'Ajouter une instance de session';
 $string['studentqcm:view'] = 'Voir une instance de session';
 
 $string['edit_session'] = 'Édition de la session';
+$string['info_section_general'] = 'Informations générales de la session';
 $string['info_section_date'] = 'Informations liées aux dates';
 $string['info_section_question'] = 'Informations liées aux questions';
 $string['info_section_competency'] = 'Informations liées aux compétences';
 
 $string['competency_not_found'] = 'Aucune compétence trouvée';
+$string['add_competency'] = 'Ajouter une compétence';
