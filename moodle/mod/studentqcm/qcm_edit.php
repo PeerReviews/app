@@ -136,38 +136,6 @@ echo "<div class='mt-8'>";
     $filearea = 'contextfiles';            // La zone des fichiers associée au contexte
     $itemid = $qcm_id;            // L'ID de la question
 
-    $file_storage = get_file_storage();
-
-    // Récupérer tous les fichiers associés au contexte de la question
-    $file_records = $file_storage->get_area_files(
-        $context->id,      // ID du contexte
-        'mod_studentqcm',  // Nom du module
-        $filearea,         // Zone de fichiers
-        $itemid,           // ID de l'élément
-        'sortorder',       // Tri des fichiers
-        false              // Inclure ou non les fichiers supprimés
-    );
-
-    // Parcourir les fichiers et générer les balises <img> pour les afficher
-    $img_text = '';
-    foreach ($file_records as $file) {
-        // Générer l'URL du fichier
-        $img_url = moodle_url::make_pluginfile_url(
-            $context->id,
-            'mod_studentqcm',    // Nom du module
-            $filearea,           // Zone de fichiers
-            $itemid,             // Item ID (ID de la question)
-            $file->get_filepath(), // Chemin du fichier
-            $file->get_filename()   // Nom du fichier
-        )->out();  // Génère l'URL complète du fichier
-
-        // Ajouter l'élément <img> avec l'URL
-        $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
-        if (!strpos($question->context, $file->get_filename()) !== false) {
-            $question->context = $question->context . $img_text;
-        }        
-    }
-
     // Afficher l'éditeur avec le contenu préchargé
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<textarea id='context_1' name='questions[1][context]' data-filearea='{$filearea}' data-itemid='{$itemid}' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required rows='5'>{$question->context}</textarea>";
@@ -191,38 +159,6 @@ echo "<div class='mt-8'>";
 
             $filearea = 'answerfiles';            // La zone des fichiers associée à la réponse
             $itemid = $answer->id;            // L'ID de la réponse
-
-            $file_storage = get_file_storage();
-
-            // Récupérer tous les fichiers associés à la réponse de la question
-            $file_records = $file_storage->get_area_files(
-                $context->id,      // ID du contexte
-                'mod_studentqcm',  // Nom du module
-                $filearea,         // Zone de fichiers
-                $itemid,           // ID de l'élément
-                'sortorder',       // Tri des fichiers
-                false              // Inclure ou non les fichiers supprimés
-            );
-
-            // Parcourir les fichiers et générer les balises <img> pour les afficher
-            $img_text = '';
-            foreach ($file_records as $file) {
-                // Générer l'URL du fichier
-                $img_url = moodle_url::make_pluginfile_url(
-                    $context->id,
-                    'mod_studentqcm',    // Nom du module
-                    $filearea,           // Zone de fichiers
-                    $itemid,             // Item ID (ID de la réponse)
-                    $file->get_filepath(), // Chemin du fichier
-                    $file->get_filename()   // Nom du fichier
-                )->out();  
-
-                // Ajouter l'élément <img> avec l'URL
-                $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
-                if (!strpos($answer->answer, $file->get_filename()) !== false) {
-                    $answer->answer = $answer->answer . $img_text;
-                }  
-            }
         
             // Réponse
             echo "<div class='py-2 grid grid-cols-12 w-full'>";
@@ -237,39 +173,6 @@ echo "<div class='mt-8'>";
                 $filearea = 'explanationfiles';   // La zone des fichiers associée à l'explication de la réponse
                 $itemid = $answer->id;            // L'ID de la réponse
 
-                $file_storage = get_file_storage();
-
-                // Récupérer tous les fichiers associés à l'explication de la réponse à la question
-                $file_records = $file_storage->get_area_files(
-                    $context->id,      // ID du contexte
-                    'mod_studentqcm',  // Nom du module
-                    $filearea,         // Zone de fichiers
-                    $itemid,           // ID de l'élément
-                    'sortorder',       // Tri des fichiers
-                    false              // Inclure ou non les fichiers supprimés
-                );
-
-                // Parcourir les fichiers et générer les balises <img> pour les afficher
-                $img_text = '';
-                foreach ($file_records as $file) {
-                    // Générer l'URL du fichier
-                    $img_url = moodle_url::make_pluginfile_url(
-                        $context->id,
-                        'mod_studentqcm',    // Nom du module
-                        $filearea,           // Zone de fichiers
-                        $itemid,             // Item ID (ID de l'explication)
-                        $file->get_filepath(), // Chemin du fichier
-                        $file->get_filename()   // Nom du fichier
-                    )->out();  
-
-                    // Ajouter l'élément <img> avec l'URL
-                    $img_text .= "<img src='{$img_url}' alt='{$file->get_filename()}' />";
-                    if (!strpos($answer->explanation, $file->get_filename()) !== false) {
-                        print_r($img_text);
-                        $answer->explanation = $answer->explanation . $img_text;
-                    }  
-                }
-                
                 // Explication
                 echo "<div class='py-2 grid grid-cols-12 w-full'>";
                 echo "<label for='explanation_1_{$index}' class='col-span-2 block font-semibold text-gray-700 text-lg'>" . get_string('explanation', 'mod_studentqcm') . " $index :</label>";
@@ -379,6 +282,26 @@ tinymce.init({
           form.setAttribute('novalidate', true);
         }
       });
+
+      // Nettoyer les images dupliquées avant la sauvegarde
+      editor.on('BeforeSetContent', function(e) {
+        let content = e.content;
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(content, 'text/html');
+
+        // Supprimer les images en double
+        let images = doc.querySelectorAll('img');
+        let urls = new Set();
+        images.forEach(img => {
+          if (urls.has(img.src)) {
+            img.remove();
+          } else {
+            urls.add(img.src);
+          }
+        });
+
+        e.content = doc.body.innerHTML;
+      });
     },
     file_picker_callback: function(callback, value, meta) {
         var input = document.createElement('input');
@@ -424,7 +347,9 @@ tinymce.init({
         input.click();
     }
 });
-</script>";
+</script>
+
+";
 
 
 ?>

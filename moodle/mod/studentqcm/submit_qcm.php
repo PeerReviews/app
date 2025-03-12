@@ -129,9 +129,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $mdl_file->itemid = $question_id;
                     $mdl_file->referencefileid = null;
                     $DB->update_record('files', $mdl_file);
+
+                    // Générer l'URL de fichier
+                    $filename = $mdl_file->filename;
+                    $real_url = moodle_url::make_pluginfile_url($context->id, 'mod_studentqcm', 'contextfiles', $mdl_file->itemid, '/', $filename)->out();
+
+                    // Mettre à jour le champ context de la question
+                    $question_record->context = preg_replace_callback('/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*>/i', function($matches) use ($filename, $real_url) {
+                        if (strpos($matches[1], $filename) !== false) {
+                            return "<img src='{$real_url}' alt='{$filename}' />";
+                        }
+                        return $matches[0];  // Sinon, garder la balise telle quelle
+                    }, $question_record->context);
                 }
             }
             
+            $question_record->id = $question_id; // Assurez-vous de définir l'ID pour que la mise à jour affecte l'enregistrement existant
+            $updated = $DB->update_record('studentqcm_question', $question_record);
+            if (!$updated) {
+                throw new moodle_exception('Error updating question: ' . print_r($question_record, true));
+            }
 
             $indexation = 1;
             if (!empty($question['answers'])) {
@@ -192,8 +209,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 if (intval($mdl_file->itemid) === $indexation) {
                                     $mdl_file->itemid = $inserted_answer_id;
                                     $mdl_file->referencefileid = null;
-                                    $id = $DB->update_record('files', $mdl_file);
-                                    if (!$id) {
+                                    $existingid = $DB->update_record('files', $mdl_file);
+                                    if (!$existingid) {
                                         throw new moodle_exception('Error updating files: ' . print_r($mdl_file, true));
                                     }
 
