@@ -31,9 +31,9 @@ echo get_string('back', 'mod_studentqcm');
 echo "</a>";
 echo "</div>"; 
 
-echo "<div class='bg-gray-100 border-l-4 border-blue-500 p-4 mt-4 rounded-2xl'>";
+echo "<div class='bg-gray-100 border-l-8 border-r-8 border-lime-400 p-4 mt-4 rounded-2xl'>";
 echo "<div class='flex items-center'>";
-echo "<i class='fas fa-info-circle mr-3'></i>";
+echo "<i class='fas fa-info-circle mr-3 text-gray-400'></i>";
 echo "<p class='text-sm text-gray-600'>" . get_string('information_session', 'mod_studentqcm') . "</p>"; 
 echo "</div>";
 echo "</div>";
@@ -50,9 +50,9 @@ echo '<tr class="bg-gray-100 text-left">';
 
 $columns = [
     'session_name' => get_string('session_name', 'mod_studentqcm'),
-    // 'session_start' => get_string('session_start', 'mod_studentqcm'),
-    // 'session_end' => get_string('session_end', 'mod_studentqcm'),
     'time_created' => get_string('time_created', 'mod_studentqcm'),
+    'session_start' => get_string('session_start', 'mod_studentqcm'),
+    'session_end' => get_string('session_end', 'mod_studentqcm'),
     'archived' => get_string('archived', 'mod_studentqcm'),
     'actions' => get_string('actions', 'mod_studentqcm')
 ];
@@ -83,16 +83,26 @@ foreach ($sessions as $session) {
     echo '<tr id="row-' . $session->id . '" class="border-t ' . $row_class . '">';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . $session->name . '</td>';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . date('d/m/Y', $session->timecreated) . '</td>';
+    echo '<td class="px-3 py-4 text-md text-gray-600">' . 
+        ($session->start_date_session > 0 
+            ? date('d/m/Y', $session->start_date_session) 
+            : mb_strtoupper(get_string('NA', 'mod_studentqcm'), 'UTF-8')) . 
+        '</td>';
+    echo '<td class="px-3 py-4 text-md text-gray-600">' . 
+        ($session->end_date_session > 0 
+            ? date('d/m/Y', $session->end_date_session) 
+            : mb_strtoupper(get_string('NA', 'mod_studentqcm'), 'UTF-8')) . 
+        '</td>';
     echo '<td class="px-3 py-4 text-md text-gray-600">' . ($session->archived == 1 ? 'Oui' : 'Non') . '</td>';
 
     echo '<td class="p-4 text-md text-gray-600 flex items-center space-x-2">';
-        echo '<a href="edit_session.php?id=' . $id . '&session_id=' . $session->id . '" class="px-4 py-2 min-w-40 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center" title="Modifier cette session">';
+        echo '<a href="edit_session.php?id=' . $id . '&session_id=' . $session->id . '" class="px-4 py-2 bg-indigo-400 hover:bg-indigo-500 text-white text-md font-semibold rounded-2xl text-center" title="Modifier cette session">';
         echo '<i class="fa-solid fa-pen-to-square"></i>';
         echo '</a>';
 
         echo '<form action="duplicate_session.php?id=' . $id . '" method="post" style="display:inline;">';
             echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-            echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl" title="Dupliquer cette session">';
+            echo '<button type="submit" class="px-4 py-2 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl" title="Dupliquer cette session">';
             echo '<i class="fa-solid fa-clone"></i>';
             echo '</button>';
         echo '</form>';
@@ -101,7 +111,7 @@ foreach ($sessions as $session) {
             // Formulaire pour rendre cette session courante
             echo '<form action="set_current_session.php?id=' . $id . '&session_id=' . $session->id . '" method="post" style="display:inline;">';
                 echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-                echo '<button type="submit" onclick="showActivateModal(' . $session->id . '); event.preventDefault();" class="px-4 py-2 min-w-40 bg-lime-400 hover:bg-lime-500 text-white text-md font-semibold rounded-2xl" title="Rendre cette session active">';
+                echo '<button type="submit" onclick="showActivateModal(' . $session->id . '); event.preventDefault();" class="px-4 py-2 bg-lime-400 hover:bg-lime-500 text-white text-md font-semibold rounded-2xl" title="Rendre cette session active">';
                 echo '<i class="fa-solid fa-check"></i>';
                 echo '</button>';
             echo '</form>';
@@ -109,7 +119,7 @@ foreach ($sessions as $session) {
         else {
             echo '<form action="archive_session.php?id=' . $id . '" method="post" style="display:inline;">';
                 echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-                echo '<button type="submit" class="px-4 py-2 min-w-40 bg-gray-300 hover:bg-gray-400 text-white text-md font-semibold rounded-2xl" title="Archiver cette session">';
+                echo '<button type="submit" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-white text-md font-semibold rounded-2xl" title="Archiver cette session">';
                 echo '<i class="fa-solid fa-box-archive"></i>';
                 echo '</button>';
             echo '</form>';
@@ -117,14 +127,14 @@ foreach ($sessions as $session) {
 
         echo '<form action="export_session.php?id=' . $id . '" method="post" style="display:inline;">';
                 echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-                echo '<button type="submit" class="px-4 py-2 min-w-40 bg-sky-400 hover:bg-sky-500 text-white text-md font-semibold rounded-2xl" title="Exporter l\'ensemble des questions produites lors de cette session">';
+                echo '<button type="submit" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 text-white text-md font-semibold rounded-2xl" title="Exporter l\'ensemble des questions produites lors de cette session">';
                 echo '<i class="fa-solid fa-file-zipper"></i>';
                 echo '</button>';
         echo '</form>';
         
         echo '<form action="delete_session.php?id=' . $id . '&session_id=' . $session->id .'" method="post" style="display:inline;">';
             echo '<input type="hidden" name="session_id" value="' . $session->id . '">';
-            echo '<button type="submit" onclick="showDeleteModal(' . $session->id . '); event.preventDefault();" class="px-4 py-2 min-w-40 bg-red-500 hover:bg-red-600 text-white text-md font-semibold rounded-2xl" title="Supprimer cette session">';
+            echo '<button type="submit" onclick="showDeleteModal(' . $session->id . '); event.preventDefault();" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-md font-semibold rounded-2xl" title="Supprimer cette session">';
             echo '<i class="fa-solid fa-trash"></i>';
             echo '</button>';
         echo '</form>';

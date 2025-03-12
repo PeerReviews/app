@@ -354,3 +354,5 @@ $string['info_section_competency'] = 'Informations liées aux compétences';
 
 $string['competency_not_found'] = 'Aucune compétence trouvée';
 $string['add_competency'] = 'Ajouter une compétence';
+
+$string['NA'] = 'Non renseigné';
