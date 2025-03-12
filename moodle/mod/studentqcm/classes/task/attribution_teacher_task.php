@@ -36,18 +36,17 @@ class attribution_teacher_task extends scheduled_task {
         // Exécution de l'attribution automatique
 
         // Supprimer les anciennes attributions
-        $DB->delete_records('pr_assigned_student_teacher');
-        $DB->execute("ALTER TABLE {pr_assigned_student_teacher} AUTO_INCREMENT = 1");
+        $DB->execute("TRUNCATE TABLE {pr_assigned_student_teacher}");
 
         // Récupération des enseignants
-        $teachers = $DB->get_records('teachers', ['sessionid' => $studentqcm->id], '', 'userId');
+        $teachers = $DB->get_records('teachers', ['sessionid' => $studentqcm->id]);
         if (empty($teachers)) {
             mtrace("Erreur : aucun enseignant trouvé.");
             die();
         }
 
         // Récupération des étudiants
-        $students = $DB->get_records('students', ['sessionid' => $studentqcm->id], '', 'userId');
+        $students = $DB->get_records('students', ['sessionid' => $studentqcm->id]);
         if (empty($students)) {
             mtrace("Erreur : aucun étudiant trouvé.");
             die();
@@ -75,6 +74,9 @@ class attribution_teacher_task extends scheduled_task {
         // Insérer les attributions dans la table `pr_assigned_student_teacher`
         foreach ($assignments as $assignment) {
             $record = new \stdClass();
+            if ($assignment['studentid'] == 0) {
+                mtrace("Erreur : id étudiant invalide : ", print_r($assignment,true));
+            }
             $record->userid = $assignment['studentid'];
             $record->teacherid = $assignment['teacherid'];
             $record->sessionid = $studentqcm->id;
