@@ -68,6 +68,8 @@ $string['create_pop'] = 'Je crée mon POP';
 $string['create_question'] = 'Je crée mon';
 $string['edit_question'] = 'Je modifie mon';
 
+$string['add_individual'] = 'Ajout individuel';
+
 // QCM 
 $string['question'] = 'Question';
 $string['context'] = 'Contexte';
@@ -164,9 +166,10 @@ $string['no_evaluation_found'] = "Aucune évaluation trouvée";
 
 // Creation réferentiel de compétences
 
-$string['info_referentiel_title'] = 'Informations principales du référentiel';
+$string['info_referentiel_title'] = 'Informations principales de la session';
 $string['date_start_referentiel'] = 'Date début session';
 $string['date_end_referentiel'] = 'Date fin session';
+$string['date_jury'] = 'Date jury';
 
 $string['upload_competence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
 $string['desc_manual_competence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
@@ -232,6 +235,7 @@ $string['add_malus'] = 'Ajouter un malus';
 
 $string['add_tiers_temps_phase'] = 'Voulez vous prendre en compte les tiers-temps ?';
 
+$string['nb_reviewer'] = 'Nombre de relecteurs';
 
 
 // INTERFACE PROF
@@ -258,7 +262,6 @@ $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent'
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
 
 $string['student_list'] = 'Liste des étudiants';
-$string['student_list'] = 'Liste des étudiants';
 $string['student_id'] = 'ID de l\'étudiant';
 $string['teacher_id'] = 'ID de l\'enseignant';
 $string['firstname'] = 'Nom';
@@ -276,6 +279,10 @@ $string['reviewed_question'] = 'Questions révisées';
 $string['tier_temps'] = 'Tiers temps';
 $string['add_student'] = 'Ajouter un étudiant';
 
+$string['session_list'] = 'Liste des sessions';
+$string['session_id'] = 'ID de la session';
+$string['session_name'] = 'Nom de la session';
+$string['session_deleted'] = 'Session Suprimée';
 
 $string['teacher_list'] = 'Liste des enseignants';
 $string['add_teacher'] = 'Ajouter un enseignant';

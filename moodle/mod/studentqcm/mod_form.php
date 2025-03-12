@@ -16,7 +16,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         // Informations principales du référentiel.
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="mb-8 text-3xl font-bold">' . get_string('info_referentiel_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('text', 'name_plugin', get_string('name_plugin', 'mod_studentqcm'), array('size' => '64'));
         $mform->setType('name_plugin', PARAM_TEXT);
@@ -35,6 +35,9 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $mform->addElement('date_selector', 'date_end_referentiel', get_string('date_end_referentiel', 'mod_studentqcm'));
         $mform->addRule('date_end_referentiel', null, 'required', null, 'client');
 
+        $mform->addElement('date_selector', 'date_jury', get_string('date_jury', 'mod_studentqcm'));
+        $mform->addRule('date_jury', null, 'required', null, 'client');
+
         // Ajout compétences
         $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('competences_title', 'mod_studentqcm') . '</h2>');
 
@@ -45,39 +48,99 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 <p>' . get_string('upload_competence', 'mod_studentqcm') . '</p>
             </div>
             <div class="flex justify-center items-center">
-                <button type="button" id="choice_add_competence_manual" onclick="manualAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
+                <button type="button" id="choice_add_competence_manual" onclick="manualAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
             . get_string('add_manual_competence', 'mod_studentqcm') .
             '</button>
-                <button type="button" id="choice_add_competence_files" onclick="filesAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
+                <button type="button" id="choice_add_competence_files" onclick="filesAddCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
             . get_string('add_files_competence', 'mod_studentqcm') .
             '</button>
             </div>
 
             <div id="choice_add_competence"></div>
 
+            <div id="info-json" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-900 bg-opacity-50">
+                <div class="bg-white rounded-3xl py-4 px-16 max-w-[80%] w-full max-h-[80vh] overflow-auto mt-16">
+                    <div class="flex flex-row-reverse">
+                        <button type="button" id="close-info-json" class="text-gray-600 hover:text-gray-800 font-bold text-xl">&times;</button>
+                    </div>
+                    <p class="font-semibold text-lg mb-2">Format attendu :</p>
+                    <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
+            [
+                {
+                    "id": 0,
+                    "name": "Compétence 1",
+                    "subCompetences": [
+                        {
+                            "name": "Sous-compétence 1.1",
+                            "keywords": [
+                                "Mot-cle 1.1.1"
+                            ]
+                        },
+                        {
+                            "name": "Sous-compétence 1.2",
+                            "keywords": []
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "Compétence 2",
+                    "subCompetences": [
+                        {
+                            "name": "Sous-compétence 2.1",
+                            "keywords": [
+                                "Mot-cle 2.1.1",
+                                "Mot-cle 2.1.2"
+                            ]
+                        }
+                    ]
+                }
+            ]
+                    </pre>
+                </div>
+            </div>
+
+
+
             <script>
+
+                function showInfoJSON() {
+                    document.getElementById("info-json").classList.remove("hidden");
+                }
+                
+                document.getElementById("close-info-json").addEventListener("click", function () {
+                    document.getElementById("info-json").classList.add("hidden");
+                });
+
                 document.addEventListener("DOMContentLoaded", function () {
                     const manual = document.getElementById("choice_add_competence_manual");
                     const files  = document.getElementById("choice_add_competence_files");
 
                     function resetButtons() {
-                        manual.classList.remove("bg-gray-500");
+                        manual.classList.remove("bg-gray-200");
+                        manual.classList.remove("text-gray-700");
                         manual.classList.add("bg-white");
-                        files.classList.remove("bg-gray-500");
+                        manual.classList.add("text-black");
+                        files.classList.remove("bg-gray-200");
+                        files.classList.remove("text-gray-700");
                         files.classList.add("bg-white");
+                        files.classList.add("text-black");
                     }
 
                     manual.addEventListener("click", function () {
                         resetButtons();
-                        // Puis on change le bouton "files" en gris.
                         files.classList.remove("bg-white");
-                        files.classList.add("bg-gray-500");
+                        files.classList.remove("text-black");
+                        files.classList.add("bg-gray-200");
+                        files.classList.add("text-gray-700");
                     });
 
                     files.addEventListener("click", function () {
                         resetButtons();
                         manual.classList.remove("bg-white");
-                        manual.classList.add("bg-gray-500");
+                        manual.classList.remove("text-black");
+                        manual.classList.add("bg-gray-200");
+                        manual.classList.add("text-gray-700");
                     });
                 });
 
@@ -90,14 +153,20 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     displayCoursesCompetence(arrayFilesCourses);
 
                     let html = `
-                        <p>' . get_string('desc_files_competence', 'mod_studentqcm') . '</p>
-                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer">
+                        <div class="flex items-center">
+                                <p>' . get_string('desc_files_competence', 'mod_studentqcm') . '</p>
+                                <a href="#" onclick="showInfoJSON()">
+                                    <i class="fa-solid fa-circle-info ml-2 text-indigo-600"></i>
+                                </a>
+                        </div>
+                        <div id="drop-area-competences" class="drop-area bg-sky-50 p-6 m-4 border-4 border-dashed border-indigo-200 flex flex-col justify-center items-center text-center cursor-pointer rounded-3xl">
                             <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
                             <p>Glissez et déposer pour uploader le fichier</p>
                             <p>Ou</p>
                             <p>Charger un fichier</p>
                             <input type="file" id="fileInputCompetences" multiple hidden>
                         </div>
+
                         <div id="file-list-competences"></div>
                     `;
                     
@@ -286,10 +355,10 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         <p>' . get_string('desc_manual_competence', 'mod_studentqcm') . '</p>
                         <div class="flex justify-center items-center">
                             <button id="add_competences" onclick="addCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
-            . get_string('add_competences', 'mod_studentqcm') .
-            '</button>
-                             <button type="button" id="expor    t_competences" onclick="exportCompetencesData()" 
-                                class="bg-indigo-500 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
+                            . get_string('add_competences', 'mod_studentqcm') .
+                            '</button>
+                             <button type="button" id="export_competences" onclick="exportCompetencesData()" 
+                                class="bg-sky-200 p-2 m-4 rounded font-bold hover:bg-sky-400 text-sky-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
                                 ' . get_string('export', 'mod_studentqcm') . '
                             </button>
                         </div>
@@ -334,13 +403,12 @@ class mod_studentqcm_mod_form extends moodleform_mod
             let compteur_competence = 0;
             let compteur_subcompetence = 0;
             let compteur_keyword = 0;
-            let competencesData = [];   
+            let competencesData = [];
 
             function addCompetenceField() {
                 let container = document.getElementById("add_competences-container");
 
                 let index_competence = compteur_competence;
-                compteur_competence += 1;
 
                 let fieldHTML = `
                     <div id="competence-container${index_competence}" class="competence-block p-4 border border-gray-300 rounded-lg bg-white mt-4">
@@ -348,16 +416,16 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         <label>' . get_string('name_competence', 'mod_studentqcm') . '</label>
                         <input type="text" id="competence-name${index_competence}" name="name_competence[]" class="form-control p-2 border rounded w-full" required>
 
-                        <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addSubCompetenceField(${index_competence})">
+                        <button type="button" class="bg-sky-100 p-2 m-4 rounded font-bold hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addSubCompetenceField(${index_competence})">
                             ' . get_string('add_subcompetences', 'mod_studentqcm') . '
                         </button>
 
                         <div id="add_subcompetences-container${index_competence}" class="mt-4"></div>
                         <div class="flex mt-4">
-                            <button type="button" class="bg-green-500 text-white font-bold py-2 px-4 rounded " onclick="validateCompetence(${index_competence})">
+                            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded " onclick="validateCompetence(${index_competence})">
                                 ' . get_string('validate', 'mod_studentqcm') . '
                             </button>
-                            <button type="button" class="bg-gray font-bold py-2 px-4 rounded mx-4" onclick="deleteAddCompetence(${index_competence})">
+                            <button type="button" class="bg-gray-200 hover:bg-gray-400 font-bold py-2 px-4 rounded mx-4" onclick="deleteAddCompetence(${index_competence})">
                                 ' . get_string('cancel', 'mod_studentqcm') . '
                             </button>
                         </div>
@@ -365,6 +433,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     </div>
                 `;
 
+                compteur_competence += 1;
                 container.insertAdjacentHTML("beforeend", fieldHTML);
             }
 
@@ -378,7 +447,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         <label>' . get_string('name_subcompetence', 'mod_studentqcm') . '</label>
                         <input type="text" id="subcompetence-name${index_competence}${compteur_subcompetence}" name="name_subcompetence[]" class="form-control p-2 border rounded w-full" required>
                         <div class="flex mt-4">
-                            <button type="button" class="bg-sky-100 p-2 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addKeyword(${index_competence}, ${compteur_subcompetence})">
+                            <button type="button" class="bg-sky-100 p-2 rounded font-bold hover:bg-sky-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="addKeyword(${index_competence}, ${compteur_subcompetence})">
                                 ' . get_string('add_keyword', 'mod_studentqcm') . '
                             </button>
                             <button type="button" class="bg-gray font-bold py-2 px-4 rounded mx-4" onclick="deleteAddSubCompetence(${index_competence}, ${compteur_subcompetence})">
@@ -419,6 +488,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     return;
                 }
 
+
                 let subCompetences = [];
                 document.querySelectorAll(`[id^=subcompetences-container${index_competence}]`).forEach(subCompetenceDiv => {
                     let subCompetenceId = subCompetenceDiv.id.match(/subcompetences-container(\d+)(\d+)/);
@@ -458,9 +528,15 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                 displayCoursesCompetence(arrayFilesCourses);
 
+                if (competencesData.length === 1) {
+                    for (let file of arrayFilesCourses) {
+                        updateCompetencyName(file.id, competenceName);
+                    }
+                }
                 // Supprimer la section et afficher les données sous forme de texte
                 document.getElementById(`competence-container${index_competence}`).remove();
                 displayValidatedCompetences(index_competence);
+
             }
 
             function displayValidatedCompetences(index_competence) {
@@ -481,7 +557,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                                     </li>
                                 `).join("")}
                             </ul>
-                            <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${index})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
+                            <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCompetence(${competence.id})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
 
                         </div>
                     `;
@@ -493,10 +569,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 let competencesContainer = document.getElementById(`competencesContainer${indexComp}`);
                 competencesContainer.remove();
 
-                console.log("indexComp: ",indexComp);
 
                 competencesData = competencesData.filter(comp => comp.id !== indexComp);
-                console.log("competencesData: ",competencesData);
 
                 document.querySelector(`input[name="competences_data"]`).value = JSON.stringify(competencesData);
                 displayCoursesCompetence(arrayFilesCourses);
@@ -527,7 +601,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $mform->setType('courses_files_data', PARAM_RAW);
 
         $mform->addElement('html', '
-        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer"
+        <div id="drop-area-courses" class="drop-area bg-sky-50 p-6 m-4 border-4 border-dashed border-indigo-200 flex flex-col justify-center items-center text-center cursor-pointer rounded-3xl"
             ondrop="dropHandlerCourses(event);"
             ondragleave="dragLeaveHandlerCourses(event);"
             ondragover="dragOverHandlerCourses(event);">
@@ -574,14 +648,6 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     handleFilesCourses(e.target.files);
                 });
 
-                async function handleFilesCourses(files) {
-                    for (let file of files) {
-                        arrayFilesCourses.push(file);
-                        await uploadFile(file);  // Envoi du fichier immédiatement après sélection
-                    }
-
-                    displayCoursesCompetence(arrayFilesCourses);
-                }
 
                 async function uploadFile(file) {
                     let formData = new FormData();
@@ -595,7 +661,6 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
                         if (response.ok) {
                             let result = await response.json();
-                            console.log("Upload réussi :", result);
                         } else {
                             console.error("Erreur lors de l\'upload, statut : " + response.status);
                         }
@@ -604,35 +669,78 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     }
                 }
 
-            function displayCoursesCompetence(files) {
-                fileListCourses.innerHTML = "";
-                for (let file of files) {
-                    let html = `
-                        <div id="container-course-file-${file.id}">
-                            <p class="font-bold">${file.name}</p>
-                            <div class="ml-4 flex items-center">
-                                <p>' . get_string('choice_comp', 'mod_studentqcm') . '</p>
-                                <select name="fileCourses${file.name}[]" class="ml-4 bg-white p-2 border w-full max-w-[10px] rounded" required>
-                                    ${generateOptionCourses()}
-                                </select>
-                                <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCourse(${file.id})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
-                            </div>
-                        </div>
-                    `;
-                    fileListCourses.insertAdjacentHTML("beforeend", html);
-                };
-            }
+            
 
-            function deleteCourse(id_course) {
-                arrayFilesCourses = arrayFilesCourses.filter(course => course.id !== id_course);
-                document.getElementById(`container-course-file-${id_course}`).remove();
-                indexCourses--;
-            }
+                async function handleFilesCourses(files) {
+                    let competences = document.querySelector(`input[name="competences_data"]`);
+                    for (let file of files) {
+                        let fileData = {
+                            id: indexCourses, 
+                            file_name: file.name,
+                            competency_name: ""
+                        };
+                        arrayFilesCourses.push(fileData);
+
+                        await uploadFile(file); 
+        
+                        if (competences.value.length>0 && competences.value!= "[]") {
+                            let compData = JSON.parse(competences.value);
+                            updateCompetencyName(fileData.id, compData[0].name);
+                        }
+                            
+                        indexCourses++;
+                    }
+                    
+                    document.querySelector(`input[name="courses_files_data"]`).value = JSON.stringify(arrayFilesCourses);
+                    displayCoursesCompetence(arrayFilesCourses);  
+                }
+
+                function displayCoursesCompetence(files) {
+                    
+                    fileListCourses.innerHTML = "";
+
+                    for (let file of files) {
+                        let html = `
+                            <div id="container-course-file-${file.id}">
+                                <p class="font-bold">${file.file_name}</p>
+                                <div class="ml-4 flex items-center">
+                                    <p>' . get_string('choice_comp', 'mod_studentqcm') . '</p>
+                                    <select name="fileCourses${file.file_name}[]" class="ml-4 bg-white p-2 border w-full max-w-[100px] rounded" required>
+                                        ${generateOptionCourses()}
+                                    </select>
+                                    <button type="button" class="bg-red-500 text-white p-2 m-2 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md" onclick="deleteCourse(${file.id})"> ' . get_string('delete', 'mod_studentqcm') . ' </button>
+                                </div>
+                            </div>
+                        `;
+                        fileListCourses.insertAdjacentHTML("beforeend", html);
+
+                        let selectElement = document.querySelector(`#container-course-file-${file.id} select`);
+                        selectElement.addEventListener("change", function() {
+                            updateCompetencyName(file.id, this.value);
+                        });
+                    }
+                }
+
+                function updateCompetencyName(fileId, selectElement) {
+                    let file = arrayFilesCourses.find(f => f.id === fileId);
+                    if(file) {
+                        file.competency_name = selectElement;     
+                    } 
+                    document.querySelector(`input[name="courses_files_data"]`).value = JSON.stringify(arrayFilesCourses);
+                }
+
+       
+                function deleteCourse(fileId) {
+                    arrayFilesCourses = arrayFilesCourses.filter(file => file.id !== fileId);
+                    document.getElementById(`container-course-file-${fileId}`).remove();
+                    document.querySelector(`input[name="courses_files_data"]`).value = JSON.stringify(arrayFilesCourses);
+                }
+
+
 
             function generateOptionCourses() {
                 let arrayComp = [];
                 let competences = document.querySelector(`input[name="competences_data"]`);
-                console.log("competences.value: ", competences.value);
                 let optionsPop = "";
                 if (competences.value.length>0 && competences.value!= "[]") {
                     let compData = JSON.parse(competences.value);
@@ -645,7 +753,8 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     return optionsPop;
 
                 } else {
-                    return `<option value="0">Aucune compétence n\'a été créé</option>`;
+                    let html = `<option value="0">Aucune compétence n\'a été créé</option>`;
+                    return html;
                 }
                 
             }
@@ -658,7 +767,10 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('hidden', 'checkbox_tt_data');
+        $mform->setType('checkbox_tt_data', PARAM_RAW);
+
+        $mform->addElement('html', '<h2 class="mb-4 text-3xl font-bold">' . get_string('phases_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('html', '
             <style>
@@ -690,7 +802,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
             </style>
 
             <label class="relative inline-flex items-center cursor-pointer">
-                <p class="m-4">' . get_string('add_tiers_temps_phase', 'mod_studentqcm') . '</p>
+                <p class="m-2">' . get_string('add_tiers_temps_phase', 'mod_studentqcm') . '</p>
                 <input type="checkbox" name="add_tiers_temps_phase" id="id_add_tiers_temps_phase" class="sr-only peer">
                 <div></div>
             </label>
@@ -702,12 +814,15 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 var checkbox = document.getElementById("id_add_tiers_temps_phase");
                 var tiersElements = [];
 
-                    tiersElements = document.querySelectorAll(`[id^="fitem_id_end_date_tt_"]`);
+                    tiersElements = document.querySelectorAll(`[id^="fitem_id_end_date_tt_"], [id="timeSelectorContainer_tt"]`);
+
 
                     function toggleTiersTemps() {
                         tiersElements.forEach(elt => {
-                            elt.style.display = checkbox.checked ? "flex" : "none";
+                            elt.style.display = checkbox.checked ? "grid" : "none";
                         });
+                        let checkbox_tt = document.querySelector(`[name="checkbox_tt_data"]`);
+                        checkbox_tt.value = checkbox.checked;
                     }
 
                     checkbox.addEventListener("change", toggleTiersTemps);
@@ -718,43 +833,66 @@ class mod_studentqcm_mod_form extends moodleform_mod
         ');
 
 
-        $mform->addElement('date_selector', 'start_date_1', get_string('start_date_1', 'mod_studentqcm'));
-        $mform->addRule('start_date_1', null, 'required', null, 'client');
 
-        $mform->addElement('date_selector', 'end_date_1', get_string('end_date_1', 'mod_studentqcm'));
-        $mform->addRule('end_date_1', null, 'required', null, 'client');
+        $mform->addElement('html', '
+        <style>
+            #fitem_id_start_date_1, #fitem_id_start_date_2, #fitem_id_start_date_3,
+            #fitem_id_end_date_1, #fitem_id_end_date_2, #fitem_id_end_date_3,
+            #fitem_id_end_date_tt_1, #fitem_id_end_date_tt_2, #fitem_id_end_date_tt_3 {
+                margin: 0;
+            }
+        </style>
+        ');
 
-        $mform->addElement('date_selector', 'end_date_tt_1', get_string('end_date_tt_1', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-        $mform->addRule('end_date_tt_1', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'start_date_2', get_string('start_date_2', 'mod_studentqcm'));
-        $mform->addRule('start_date_2', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'end_date_2', get_string('end_date_2', 'mod_studentqcm'));
-        $mform->addRule('end_date_2', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'end_date_tt_2', get_string('end_date_tt_2', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-        $mform->addRule('end_date_tt_2', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'start_date_3', get_string('start_date_3', 'mod_studentqcm'));
-        $mform->addRule('start_date_3', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'end_date_3', get_string('end_date_3', 'mod_studentqcm'));
-        $mform->addRule('end_date_3', null, 'required', null, 'client');
-
-        $mform->addElement('date_selector', 'end_date_tt_3', get_string('end_date_tt_3', 'mod_studentqcm'), array('class' => 'tiers-temps'));
-        $mform->addRule('end_date_tt_3', null, 'required', null, 'client');
-
+        $date_fields = [
+            ['start_date_1', 'end_date_1', 'end_date_tt_1'],
+            ['start_date_2', 'end_date_2', 'end_date_tt_2'],
+            ['start_date_3', 'end_date_3', 'end_date_tt_3']
+        ];
+        
+        $bg_colors = ['bg-lime-200', 'bg-indigo-200', 'bg-sky-200'];
+        $text_colors = ['text-lime-600', 'text-indigo-600', 'text-sky-600'];
+        $focus_colors = ['focus:ring-lime-400', 'focus:ring-indigo-400', 'focus:ring-sky-400'];
+        
+        foreach ($date_fields as $index => $dates) {
+            $bg_color = $bg_colors[$index];
+            $text_color = $text_colors[$index];
+            $focus_color = $focus_colors[$index];
+            
+            $mform->addElement('html', '<div class="'. $bg_color .' py-2 rounded-2xl text-sky-700 my-4 p-4 space-y-2">');
+            
+            foreach ($dates as $date_field) {
+                // On ajoute un champ caché qui sera pris en compte par Moodle
+                $mform->addElement('hidden', $date_field, '');
+                $mform->setType($date_field, PARAM_RAW);
+        
+                // Maintenant, on affiche notre champ personnalisé visuellement
+                $mform->addElement('html', '
+                    <div class="items-center space-x-2 grid grid-cols-3">
+                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string($date_field, 'mod_studentqcm') . ' : </label>
+                        <input 
+                            class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" 
+                            type="datetime-local" 
+                            id="' . $date_field . '" 
+                            name="' . $date_field . '" 
+                            onchange="document.getElementById(\'hidden_' . $date_field . '\').value = this.value;" 
+                        />
+                    </div>
+                ');
+            }
+            
+            $mform->addElement('html', '</div>');
+        }
+        
 
         $mform->addElement('html', '</div>');
-
 
         // Choix types éval
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
 
         $options = ['0' => '0', '1' => '1', '2' => '2', '3' => '3', '4' => '4', '5' => '5', '6' => '6', '7' => '7', '8' => '8', '9' => '9', '10' => '10', '11' => '11', '12' => '12', '13' => '13', '14' => '14', '15' => '15', '16' => '16', '17' => '17', '18' => '18'];
 
-        $mform->addElement('html', '<h2 class="text-3xl font-bold">' . get_string('type_eval_title', 'mod_studentqcm') . '</h2>');
+        $mform->addElement('html', '<h2 class="mb-5 text-3xl font-bold">' . get_string('type_eval_title', 'mod_studentqcm') . '</h2>');
 
         $mform->addElement('select', 'choix_qcu', get_string('nb_qcu', 'mod_studentqcm'), $options);
         $mform->addElement('select', 'choix_qcm', get_string('nb_qcm', 'mod_studentqcm'), $options);
@@ -963,6 +1101,16 @@ class mod_studentqcm_mod_form extends moodleform_mod
             });
         </script>');
 
+        $mform->addElement('html', '
+        <style>
+            #fitem_id_nb_reviewer {
+                font-weight: bold !important;
+                margin-top: 30px !important;
+            }
+        </style>
+        ');
+        $mform->addElement('select', 'nb_reviewer', get_string('nb_reviewer', 'mod_studentqcm'), ['1'=>'1', '2'=>'2', '3'=>'3']);
+
         $mform->addElement('html', '</div>');
 
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');
@@ -976,6 +1124,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                 let form = document.querySelector(".mform"); // Sélection du formulaire Moodle
 
                 form.addEventListener("submit", function(event) {
+                    // recherche si au moins une compétence a été rempli
                     let errors = [];
 
                     let comp_data = document.querySelector(`input[name="competences_data"]`);
@@ -989,6 +1138,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                         event.preventDefault();
                         alert(errors.join("\n"));
                     }
+                    
                 });
             });
             </script>
@@ -1000,6 +1150,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
 
     // Fonction pour gérer la création d'un nouveau référentiel, compétence, sous-compétence et mot-clé
     public function validation($data, $files) {
+        global $DB;
         $errors = parent::validation($data, $files);
 
         // Création d'un référentiel si nécessaire

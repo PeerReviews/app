@@ -38,8 +38,6 @@ $id = optional_param('id', 0, PARAM_INT);
 if($id <= 0) {
     echo $OUTPUT->header();
     
-    
-
     echo html_writer::tag('h1', get_string('choosecourse', 'local_mass_enroll'));
     //echo html_writer::tag('p', get_string('choosecoursedescription', 'local_mass_enroll'));
 

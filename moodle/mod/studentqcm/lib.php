@@ -16,9 +16,18 @@ function studentqcm_add_instance($data, $mform = null) {
 
     require_once("$CFG->libdir/resourcelib.php");
 
+    // echo '<pre>';
+    // print_r($data);
+    // echo '</pre>';
+    // exit;
+
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
+
+    $record_studentqcm_instance = new stdClass();
+    $record_studentqcm_instance->name = trim($data->name_plugin);
+    $id_instance = $DB->insert_record('studentqcm_instance', $record_studentqcm_instance);
 
     $session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
@@ -31,27 +40,92 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->introformat = isset($data->intro['format']) ? $data->intro['format'] : 0;
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
-    $record->date_start_referentiel = $data->date_start_referentiel;
-    $record->date_end_referentiel = $data->date_end_referentiel;
+    $record->date_start_session = $data->date_start_referentiel;
+    $record->date_end_session = $data->date_end_referentiel;
+    $record->date_jury = $data->date_jury;
+    $record_referentiel->sessionid = $session->id;
+    $record->studentqcm_instance_id = $id_instance;
+
+
+    // Initialiser les champs de dates
+    $date_fields = [
+        'start_date_1', 'end_date_1', 'end_date_tt_1',
+        'start_date_2', 'end_date_2', 'end_date_tt_2',
+        'start_date_3', 'end_date_3', 'end_date_tt_3'
+    ];
+
+    $type = 0;
+    $index = 0;
+
+    // Validation et récupération des dates
+    foreach ($date_fields as $date_field) {
+        if (isset($data->$date_field)) {
+            $date_value = $data->$date_field;
+
+            // Si la date est une chaîne de texte, la convertir en timestamp
+            if (is_string($date_value) && !empty($date_value)) {
+                $timestamp = strtotime($date_value); // Convertit la chaîne datetime-local en timestamp
+            } else if (empty($date_value)) {
+                $timestamp = null; // Autoriser une valeur nulle
+            } else {
+                $timestamp = $date_value;
+            }
+
+            // Vérifier que la conversion a réussi
+            if ($timestamp === false) {
+                throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
+            }
+
+            // Assigner la date au record si elle est valide
+            if ($type != 2 || $data->checkbox_tt_data != "false") {
+                $record->$date_field = $timestamp;
+            }
+
+            $type++;
+            if ($type == 3) {
+                $type = 0;
+                $index++;
+            }
+        } else {
+            // Si le champ est manquant et que ce n'est pas un champ end_date_tt_X, lever une erreur
+            if ($type != 2) { 
+                throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
+            }
+        }
+    }
+
+
+
+    // Data questions
+    $record->nbQcm = $data->choix_qcm;
+    $record->nbQcu = $data->choix_qcu;
+    $record->nbTcs = $data->choix_tcs;
+    $record->nbPop = $data->choix_pop;
+    
+
+    $record->nbreviewers = $data->nb_reviewer;
+
+    if (empty($record->name)) {
+        throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+    }
+    // echo '<pre>';
+    // print_r($record);
+    // echo '</pre>';
+    // exit;   
+    
+    // var_dump($record);
+    // die();
+
+    // Insérer l'instance principale dans la table 'studentqcm'
+    $id = $DB->insert_record('studentqcm', $record);
+    if (!$id) {
+        throw new moodle_exception('insertfailed', 'studentqcm');
+    }
 
     $record_referentiel = new stdClass();
     $record_referentiel->name = trim($data->name_referentiel);
-    $record_referentiel->sessionid = $session->id;
+    $record_referentiel->studentqcm_id = $id;
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
-    $record->referentiel = $referentiel_id;
-
-    // Validation des dates
-    foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
-        if (isset($data->$date_field)) {
-            if (is_int($data->$date_field) && $data->$date_field > 0) {
-                $record->$date_field = $data->$date_field;
-            } else {
-                throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
-            }
-        } else {
-            throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
-        }
-    }
 
     //Data compétences, sous-compétences, mot-clefs
     if (!empty($data->competences_data) || $data->competences_data == "[]") {
@@ -86,12 +160,6 @@ function studentqcm_add_instance($data, $mform = null) {
     } else {
         throw new moodle_exception('invaliddate', 'studentqcm', '', $competences_data);
     }
-        
-    // Data questions
-    $record->nbQcm = $data->choix_qcm;
-    $record->nbQcu = $data->choix_qcu;
-    $record->nbTcs = $data->choix_tcs;
-    $record->nbPop = $data->choix_pop;
 
     $popsArray = json_decode($data->pops_data, true);
     if (!empty($popsArray)) {
@@ -104,11 +172,11 @@ function studentqcm_add_instance($data, $mform = null) {
             $pop_id = $DB->insert_record('question_pop', $pop_record);
         }
     }
-
+        
     // Course files
 
-    if (!empty($data->selectedCourse)) {
-        $selectedCourses = json_decode($data->selectedCourse, true);
+    if (!empty($data->courses_files_data)) {
+        $selectedCourses = json_decode($data->courses_files_data, true);
         
         foreach($selectedCourses as $fileId => $file){
             $file_record = $DB->get_record('studentqcm_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
@@ -124,11 +192,17 @@ function studentqcm_add_instance($data, $mform = null) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
 
-    // Insérer l'instance principale dans la table 'studentqcm'
-    $id = $DB->insert_record('studentqcm', $record);
-    if (!$id) {
-        throw new moodle_exception('insertfailed', 'studentqcm');
-    }
+    $record_course = new stdClass();
+    $record_course->fullname = trim($data->name_plugin);
+    $record_course->shortname = trim($data->name_plugin);
+    $record_course->category = 1;
+    $record_course_id = $DB->insert_record('course', $record_course);
+
+    $record_studentqcm= $DB->get_record('studentqcm', array('id' => $id), '*', MUST_EXIST);
+    $record_studentqcm->courseid = $record_course_id; 
+    $record_studentqcm->referentiel = $referentiel_id;
+
+    $DB->update_record('studentqcm', $record_studentqcm);
 
     return $id;
 }
