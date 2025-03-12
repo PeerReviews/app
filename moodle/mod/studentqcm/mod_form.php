@@ -288,7 +288,7 @@ class mod_studentqcm_mod_form extends moodleform_mod
                             <button id="add_competences" onclick="addCompetenceField()" class="bg-white p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">'
             . get_string('add_competences', 'mod_studentqcm') .
             '</button>
-                             <button type="button" id="expor    t_competences" onclick="exportCompetencesData()" 
+                             <button type="button" id="export_competences" onclick="exportCompetencesData()" 
                                 class="bg-indigo-500 p-2 m-4 rounded font-bold hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md">
                                 ' . get_string('export', 'mod_studentqcm') . '
                             </button>

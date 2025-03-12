@@ -329,6 +329,9 @@ $string['sessionsaved'] = 'Session sauvegardée !';
 $string['set_current_session'] = 'Rendre cette session courante';
 
 $string['grid_eval_title'] = 'Grille d\'évaluation';
+$string['export_grid'] = 'Exporter';
+$string['import_grid'] = 'Importer';
+$string['import_texte'] = 'Si vous importez un fichier, toutes les données existantes seront écrasées.';
 
 
 // Capabilities
