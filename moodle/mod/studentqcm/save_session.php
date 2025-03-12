@@ -37,7 +37,7 @@ foreach ($_POST as $key => $value) {
         );
 
         if (!$referentiel_record) {
-            $referentiel_id = $DB->insert_record('referentiel', ['name' => $value]);
+            $referentiel_id = $DB->insert_record('referentiel', ['name' => $value, 'sessionid' => $session->id]);
         } else {
             $referentiel_id = $referentiel_record->id;
         }

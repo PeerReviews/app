@@ -9,6 +9,8 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 require_login($course, true, $cm);
 
 $PAGE->set_url('/mod/studentqcm/teacher_dashboard.php', array('id' => $id));
@@ -32,7 +34,7 @@ echo "</a>";
 echo "</div>";
 
 // Récupération des enseignants
-$teachers = $DB->get_records('teachers');
+$teachers = $DB->get_records('teachers', ['sessionid' => $session->id]);
 
 echo '<div class="mt-8">';
 echo '<table class="min-w-full bg-white rounded-3xl shadow-md" id="studentTable">';
@@ -68,12 +70,12 @@ foreach ($teachers as $teacher) {
     $teacher_entity = $DB->get_record('user', array('id' => $teacher->userid));
     $teacher_fullname = ucwords(strtolower($teacher_entity->firstname)) . ' ' . ucwords(strtolower($teacher_entity->lastname));
 
-    $productions = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $teacher->userid));
+    $productions = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $teacher->userid, 'sessionid' => $session->id));
     $completed_questions_count = 0;
     $nbTotal_question = 0;
 
     foreach ($productions as $production) {
-        $to_grade = $DB->get_records('studentqcm_question', array('userid' => $production->userid, 'status' => 1));
+        $to_grade = $DB->get_records('studentqcm_question', array('userid' => $production->userid, 'sessionid' => $session->id, 'status' => 1));
         $graded = array_filter($to_grade, function($record) {
             return $record->grade !== null;
         });

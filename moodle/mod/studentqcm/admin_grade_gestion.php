@@ -3,6 +3,7 @@
 require_once(__DIR__ . '/../../config.php');
 
 $id = required_param('id', PARAM_INT);
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 // Récupération du module, cours et QCM
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -40,7 +41,7 @@ echo "</a>";
 echo "</div>";
 
 // Récupération des étudiants
-$students = $DB->get_records('students');
+$students = $DB->get_records('students', ['sessionid' => $session->id]);
 
 echo '<div class="mt-8">';
 echo '<form id="grade-form" action="edit_grade.php?id=' . $id . '" method="POST" class="grade-form">';
@@ -107,16 +108,16 @@ foreach ($students as $student) {
     }
     else {
         // Production_grade
-        $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
+        $record = $DB->get_record('pr_grade', ['userid' => $student->userid, 'sessionid' => $session->id], '*');
         $total_grade_questions = $record ? intval($record->production_grade) : 0;
 
         // Revision_grade
-        $record = $DB->get_record('pr_grade', ['userid' => $student->userid], '*');
+        $record = $DB->get_record('pr_grade', ['userid' => $student->userid, 'sessionid' => $session->id], '*');
         $total_grade_revisions = $record ? intval($record->revision_grade) : 0;
     }
 
     // Calcul du total général
-    $total_general = $total_grade_questions + $total_grade_revisions;
+    $total_general = 0.75 * $total_grade_questions + 0.25 * $total_grade_revisions;
 
     $productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $student->userid], 'prod1_id, prod2_id, prod3_id');
     $nbTotal_revision = 0;

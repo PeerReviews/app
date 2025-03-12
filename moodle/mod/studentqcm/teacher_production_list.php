@@ -11,12 +11,14 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Vérifier que l'utilisateur est connecté
 require_login($course, true, $cm);
 $user_id = $USER->id;
 
 // Récupérer les productions assignées à l'étudiant
-$assigned_students = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $user_id), 'userid');
+$assigned_students = $DB->get_records('pr_assigned_student_teacher', array('teacherid' => $user_id, 'sessionid' => $session->id), 'userid');
 
 
 // Définir l'URL de la page et les informations de la page
@@ -55,7 +57,7 @@ if ($assigned_students) {
 
         // Vérifier si l'ID de la production assignée est valide
         if (!empty($prod_id)) {
-            $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id));
+            $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'sessionid' => $session->id));
 
             foreach ($questions as $question) {
                 $qcms[] = $question;

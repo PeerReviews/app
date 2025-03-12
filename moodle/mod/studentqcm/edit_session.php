@@ -135,15 +135,15 @@ echo '</div>';
 
 
 // Récupération des données de compétences
-$competencies = $DB->get_records('competency', ['referentiel' => $session->referentiel]);
+$competencies = $DB->get_records('competency', ['referentiel' => $session->referentiel, 'sessionid' => $session->id]);
 
 $competency_data = [];
 foreach ($competencies as $competency) {
-    $subcompetencies = $DB->get_records('subcompetency', ['competency' => $competency->id]);
+    $subcompetencies = $DB->get_records('subcompetency', ['competency' => $competency->id, 'sessionid' => $session->id]);
 
     $subcompetency_data = [];
     foreach ($subcompetencies as $subcompetency) {
-        $keywords = $DB->get_records('keyword', ['subcompetency' => $subcompetency->id]);
+        $keywords = $DB->get_records('keyword', ['subcompetency' => $subcompetency->id, 'sessionid' => $session->id]);
 
         $subcompetency_data[] = [
             'id' => $subcompetency->id,

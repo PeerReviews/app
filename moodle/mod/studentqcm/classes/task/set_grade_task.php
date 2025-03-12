@@ -27,10 +27,10 @@ class set_grade_task extends scheduled_task {
             die();
         }
 
-        $students = $DB->get_records('students');
+        $students = $DB->get_records('students', ['sessionid' => $studentqcm->id]);
 
         $nbTotalQuestionPop = 0;
-        $popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
+        $popTypes = $DB->get_records('question_pop', array('sessionid' => $studentqcm->id));
         foreach($popTypes as $popType){
             $nbTotalQuestionPop += $popType->nbqcm + $popType->nbqcu;
         }
@@ -39,16 +39,16 @@ class set_grade_task extends scheduled_task {
         
 
         foreach($students as $student){
-            $questions = $DB->get_records('studentqcm_question', ['userid' => $student->userid]);
+            $questions = $DB->get_records('studentqcm_question', ['userid' => $student->userid, 'sessionid' => $studentqcm->id]);
             $evaluations = $DB->get_records('studentqcm_evaluation', ['userid' => $student->userid]);
 
-            $productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $student->userid], 'prod1_id, prod2_id, prod3_id');
+            $productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $student->userid, 'sessionid' => $studentqcm->id], 'prod1_id, prod2_id, prod3_id');
             $nb_revisions = 0;
 
             if ($productions) {
                 foreach ((array) $productions as $production_id) {
                     if (!empty($production_id)) {
-                        $to_evaluate = $DB->get_records('studentqcm_question', array('userid' => $production_id, 'status' => 1));
+                        $to_evaluate = $DB->get_records('studentqcm_question', array('userid' => $production_id, 'sessionid' => $studentqcm->id, 'status' => 1));
                         $nb_revisions += count($to_evaluate);
                     }
                 }
@@ -69,9 +69,10 @@ class set_grade_task extends scheduled_task {
 
             $student_grade = new \stdClass();
             $student_grade->userid = $student->userid;
+            $student_grade->sessionid = $studentqcm->id;
             $student_grade->production_grade = ($total_questions/$nb_questions)*20;
             $student_grade->revision_grade = ($total_revisions/$nb_revisions)*20;
-            $student_grade->global_grade = ($total_questions + $total_revisions)/2;
+            $student_grade->global_grade = (0.75 * $total_questions + 0.25 * $total_revisions)/2;
             $DB->update_record('pr_grade', $student);
         }
     }

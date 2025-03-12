@@ -68,6 +68,7 @@ class attribution_student_task extends scheduled_task {
             // Stocker les attributions
             $record = new \stdClass();
             $record->user_id = $student_id;
+            $record->sessionid = $studentqcm->id;
             $record->prod1_id = $assigned_students[0] ?? null;
             $record->prod2_id = $assigned_students[1] ?? null;
             $record->prod3_id = $assigned_students[2] ?? null;

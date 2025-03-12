@@ -8,6 +8,8 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 require_login($course, true, $cm);
 
 $PAGE->set_url('/mod/studentqcm/admin_add_user.php', array('id' => $id));
@@ -43,7 +45,7 @@ echo "</div>";
 
 // Si le gestion_type est 'student', afficher la gestion des étudiants
 if ($gestion_type === 'student') {
-    $students = $DB->get_records('students');
+    $students = $DB->get_records('students', ['sessionid' => $session->id]);
     
     echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
         echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_student', 'mod_studentqcm') . '</p>';
@@ -161,7 +163,7 @@ if ($gestion_type === 'student') {
 
 
 else if ($gestion_type === 'teacher') {
-    $teachers = $DB->get_records('teachers');
+    $teachers = $DB->get_records('teachers', ['sessionid' => $session->id]);
     
     echo '<div class="mt-8 p-4 bg-indigo-50 rounded-3xl">';
         echo '<p class="font-bold text-center text-2xl text-indigo-400">' . get_string('add_teacher', 'mod_studentqcm') . '</p>';

@@ -11,12 +11,14 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Vérifier que l'utilisateur est connecté
 require_login($course, true, $cm);
 $user_id = $USER->id;
 
 // Récupérer les productions assignées à l'étudiant
-$assigned_qcms = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $user_id));
+$assigned_qcms = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $user_id, 'session_id' => $session->id));
 
 // Définir l'URL de la page et les informations de la page
 $PAGE->set_url('/mod/studentqcm/eval_prod_list.php', array('id' => $id));

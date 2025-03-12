@@ -40,14 +40,14 @@ class attribution_teacher_task extends scheduled_task {
         $DB->execute("ALTER TABLE {pr_assigned_student_teacher} AUTO_INCREMENT = 1");
 
         // Récupération des enseignants
-        $teachers = $DB->get_records('teachers', null, '', 'userId');
+        $teachers = $DB->get_records('teachers', ['sessionid' => $studentqcm->id], '', 'userId');
         if (empty($teachers)) {
             mtrace("Erreur : aucun enseignant trouvé.");
             die();
         }
 
         // Récupération des étudiants
-        $students = $DB->get_records('students', null, '', 'id');
+        $students = $DB->get_records('students', ['sessionid' => $studentqcm->id], '', 'userId');
         if (empty($students)) {
             mtrace("Erreur : aucun étudiant trouvé.");
             die();
@@ -77,6 +77,7 @@ class attribution_teacher_task extends scheduled_task {
             $record = new \stdClass();
             $record->userid = $assignment['studentid'];
             $record->teacherid = $assignment['teacherid'];
+            $record->sessionid = $studentqcm->id;
 
             $DB->insert_record('pr_assigned_student_teacher', $record);
         }

@@ -20,6 +20,8 @@ function studentqcm_add_instance($data, $mform = null) {
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
 
+    $session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
     // Préparer les données du QCM
     $record = new stdClass();
 
@@ -34,6 +36,7 @@ function studentqcm_add_instance($data, $mform = null) {
 
     $record_referentiel = new stdClass();
     $record_referentiel->name = trim($data->name_referentiel);
+    $record_referentiel->sessionid = $session->id;
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
     $record->referentiel = $referentiel_id;
 
@@ -59,6 +62,7 @@ function studentqcm_add_instance($data, $mform = null) {
             $comp_record = new stdClass();
             $comp_record->referentiel = $referentiel_id;
             $comp_record->name = trim($competence['name']);
+            $comp_record->sessionid = $session->id;
             $competence_id = $DB->insert_record('competency', $comp_record);
     
             // Insérer les sous-compétences
@@ -66,6 +70,7 @@ function studentqcm_add_instance($data, $mform = null) {
                 $subcomp_record = new stdClass();
                 $subcomp_record->competency = $competence_id;
                 $subcomp_record->name = trim($sub['name']);
+                $subcomp_record->sessionid = $session->id;
                 $subcompetence_id = $DB->insert_record('subcompetency', $subcomp_record);
     
                 // Insérer les mots-clés
@@ -73,6 +78,7 @@ function studentqcm_add_instance($data, $mform = null) {
                     $key_record = new stdClass();
                     $key_record->word = trim($keyword);
                     $key_record->subcompetency = $subcompetence_id;
+                    $key_record->sessionid = $session->id;
                     $DB->insert_record('keyword', $key_record);
                 }
             }
@@ -94,7 +100,7 @@ function studentqcm_add_instance($data, $mform = null) {
             $pop_record = new stdClass();
             $pop_record->nbqcm = $pop['qcm'];
             $pop_record->nbqcu = $pop['qcu'];
-            $pop_record->refId = $referentiel_id;
+            $pop_record->sessionid = $session->id;
             $pop_id = $DB->insert_record('question_pop', $pop_record);
         }
     }
@@ -106,7 +112,7 @@ function studentqcm_add_instance($data, $mform = null) {
         
         foreach($selectedCourses as $fileId => $file){
             $file_record = $DB->get_record('studentqcm_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
-            $competency = $DB->get_record('competency', ['name' => $file['competency_name']]);
+            $competency = $DB->get_record('competency', ['name' => $file['competency_name'], 'sessionid' => $session->id]);
             
             $file_record->id_referentiel = $referentiel_id;
             $file_record->id_competency = $competency->id;

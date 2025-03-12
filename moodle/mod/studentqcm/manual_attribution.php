@@ -5,6 +5,7 @@ require_once(__DIR__ . '/../../config.php');
 $id = required_param('id', PARAM_INT);
 $gestion_type = optional_param('gestion', 'student', PARAM_ALPHA); // Par défaut, gestion des étudiants
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 // Récupération du module, cours 
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -58,7 +59,7 @@ if ($gestion_type === 'student') {
     echo "</div>";
 
     // Récupération des étudiants
-    $students = $DB->get_records('studentqcm_assignedqcm');
+    $students = $DB->get_records('studentqcm_assignedqcm', ['sessionid' => $session->id]);
 
     echo '<div class="mt-8">';
 
@@ -107,7 +108,7 @@ if ($gestion_type === 'student') {
     foreach ($students as $student) {
         $student_name = $DB->get_record('user', array('id' => $student->user_id));
         $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
-        $assignedqcm = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $student->user_id));
+        $assignedqcm = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $student->user_id, 'sessionid' => $session->id));
 
         echo '<tr id="row-' . $student->user_id . '" class="border-t hover:bg-gray-50">';
 
@@ -143,7 +144,7 @@ if ($gestion_type === 'student') {
 }
 else {
     // Récupération des enseignants
-    $teachers = $DB->get_records('pr_assigned_student_teacher');
+    $teachers = $DB->get_records('pr_assigned_student_teacher', ['sessionid' => $session->id]);
 
     echo "<div class='flex mt-8 text-lg justify-center gap-4'>";
         // Bouton pour déclencher manuellement l'attribution automatique

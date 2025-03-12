@@ -9,6 +9,8 @@ $context = context_system::instance(); // Contexte de Moodle
 $id = required_param('id', PARAM_INT);
 $qcm_id = required_param('qcm_id', PARAM_INT);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -17,7 +19,7 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 // Vérifier que l'utilisateur est connecté et qu'il a les droits nécessaires
 require_login($course, true, $cm);
 
-$question = $DB->get_record('studentqcm_question', array('id' => $qcm_id), '*', MUST_EXIST);
+$question = $DB->get_record('studentqcm_question', array('id' => $qcm_id, 'sessionid' => $session->id), '*', MUST_EXIST);
 $type = $question->type;
 $answers = $DB->get_records('studentqcm_answer', array('question_id' => $qcm_id));
 
@@ -57,7 +59,7 @@ echo "<div class='mt-8'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
         echo "<option value=''>" . get_string('select_referentiel', 'mod_studentqcm') . "</option>";
-        $referentiels = $DB->get_records('referentiel');
+        $referentiels = $DB->get_records('referentiel', ['sessionid' => $session->id]);
         foreach ($referentiels as $referentiel) {
             $selected = ($question->referentiel == $referentiel->id) ? 'selected' : '';
             echo "<option value='{$referentiel->id}' {$selected}>{$referentiel->name}</option>";
@@ -70,7 +72,7 @@ echo "<div class='mt-8'>";
         echo "<label for='competency_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('competency', 'mod_studentqcm') . " :</label>";
         echo "<select id='competency_1' name='questions[1][competency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
         echo "<option value=''>" . get_string('select_competency', 'mod_studentqcm') . "</option>";
-        $competencies = $DB->get_records('competency');
+        $competencies = $DB->get_records('competency', ['sessionid' => $session->id]);
         foreach ($competencies as $competency) {
             $selected = ($question->competency == $competency->id) ? 'selected' : '';
             echo "<option value='{$competency->id}' {$selected}>{$competency->name}</option>";
@@ -84,7 +86,7 @@ echo "<div class='mt-8'>";
         echo "<div class='flex items-center space-x-2'>";
         echo "<select id='subcompetency_1' name='questions[1][subcompetency]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' disabled>";
         echo "<option value=''>" . get_string('select_subcompetency', 'mod_studentqcm') . "</option>";
-        $subcompetencies = $DB->get_records('subcompetency');
+        $subcompetencies = $DB->get_records('subcompetency', ['sessionid' => $session->id]);
         foreach ($subcompetencies as $subcompetency) {
             $selected = ($question->subcompetency == $subcompetency->id) ? 'selected' : '';
             echo "<option value='{$subcompetency->id}' {$selected}>{$subcompetency->name}</option>";

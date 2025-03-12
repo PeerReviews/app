@@ -13,6 +13,8 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 require_login($course, true, $cm);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 $context = context_system::instance();
 
 // Vérifier que la requête est bien un POST
@@ -44,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Préparer l'enregistrement de la question
             $question_record = new stdClass();
             $question_record->userid = $USER->id;
+            $question_record->sessionid = $session->id;
             
             $question_record->question = (!empty($question['question'])) 
             ? clean_param($question['question'], PARAM_TEXT) 
@@ -78,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $pop_record = new stdClass();
                 $pop_record->userId = $USER->id;
                 $pop_record->popTypeId = $pop_type_id;
-
+                $pop_record->sessionid = $session->id;
  
                 $pop_id = $DB->insert_record('studentqcm_pop', $pop_record);
                 if (!$pop_id) {
