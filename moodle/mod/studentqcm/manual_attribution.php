@@ -732,19 +732,21 @@ function triggerStudentAttribution() {
         },
         credentials: 'same-origin'
     })
-    .then(response => response.text()) // Récupérer la réponse sous forme de texte
+    .then(response => response.text())
     .then(text => {
         try {
-            // Tenter de parser en JSON
             let data = JSON.parse(text);
             require(['core/notification'], function(notification) {
                 notification.addNotification({
                     message: data.message,
                     type: data.success ? 'success' : 'error'
                 });
+
+                if (data.success) {
+                    setTimeout(() => location.reload(), 500);
+                }
             });
         } catch (error) {
-            // Si la réponse n'est pas un JSON valide, on affiche son contenu brut comme erreur
             require(['core/notification'], function(notification) {
                 notification.addNotification({
                     message: text,
@@ -764,6 +766,7 @@ function triggerStudentAttribution() {
     });
 }
 
+
 function triggerTeacherAttribution() {
     if (!confirm("Voulez-vous vraiment déclencher l'attribution des productions aux enseignants ? Celle-ci écrasera les attributions existantes.")) {
         return;
@@ -777,19 +780,21 @@ function triggerTeacherAttribution() {
         },
         credentials: 'same-origin'
     })
-    .then(response => response.text()) // Récupérer la réponse sous forme de texte
+    .then(response => response.text())
     .then(text => {
         try {
-            // Tenter de parser en JSON
             let data = JSON.parse(text);
             require(['core/notification'], function(notification) {
                 notification.addNotification({
                     message: data.message,
                     type: data.success ? 'success' : 'error'
                 });
+
+                if (data.success) {
+                    setTimeout(() => location.reload(), 500);
+                }
             });
         } catch (error) {
-            // Si la réponse n'est pas un JSON valide, on affiche son contenu brut comme erreur
             require(['core/notification'], function(notification) {
                 notification.addNotification({
                     message: text,
