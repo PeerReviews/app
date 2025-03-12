@@ -356,3 +356,7 @@ $string['competency_not_found'] = 'Aucune compétence trouvée';
 $string['add_competency'] = 'Ajouter une compétence';
 
 $string['NA'] = 'Non renseigné';
+
+$string['grid_qcu'] = 'Grille d\'évaluation des QCMs';
+$string['grid_qcm'] = 'Grille d\'évaluation des QCUs';
+$string['grid_tcs'] = 'Grille d\'évaluation des TCSs';

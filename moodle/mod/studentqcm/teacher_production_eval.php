@@ -155,6 +155,72 @@ echo "<div class='flex justify-between items-center gap-4 mt-4 text-xl text-gray
     }    
 echo "</div>";
 
+$grid_eval_qcu = $studentqcm->grid_eval_qcu;
+$grid_eval_qcm = $studentqcm->grid_eval_qcm;
+$grid_eval_tcs = $studentqcm->grid_eval_tcs;
+
+function get_bonus_malus($grid_eval_id) {
+    global $DB;
+    return $DB->get_record('grid_eval', array('id' => $grid_eval_id), '*');
+}
+
+$evaluation_types = ['grid_eval_qcu', 'grid_eval_qcm', 'grid_eval_tcs'];
+
+echo "<div class='grid grid-cols-3 justify-between items-center gap-4 mt-4 text-gray-700'>";
+
+foreach ($evaluation_types as $eval_type) {
+    $grid_eval_id = $studentqcm->$eval_type;
+    $grid_eval_record = get_bonus_malus($grid_eval_id);
+
+    // Définir les couleurs en fonction du type d'évaluation
+    if ($eval_type == 'grid_eval_qcu') {
+        $border_color = 'border-sky-400';
+        $title_color = 'text-sky-400';
+    } elseif ($eval_type == 'grid_eval_qcm') {
+        $border_color = 'border-lime-400';
+        $title_color = 'text-lime-400';
+    } elseif ($eval_type == 'grid_eval_tcs') {
+        $border_color = 'border-indigo-400';
+        $title_color = 'text-indigo-400';
+    }
+
+    if ($grid_eval_record) {
+        $bonus_fields = ['bonus1', 'bonus2', 'bonus3', 'bonus4', 'bonus5'];
+        $malus_fields = ['malus1', 'malus2', 'malus3', 'malus4', 'malus5'];
+
+        echo "<div class='rounded-3xl shadow-md-lg bg-white p-4'>";
+        echo "<p class='text-center $title_color text-xl font-semibold'>" . get_string($eval_type, 'mod_studentqcm') . "</p>";
+
+        echo "<div class='mt-4 text-md'>";
+            foreach ($bonus_fields as $bonus) {
+                echo "<div class='flex items-center'>";
+                    echo "<p class='mr-2 text-lime-400 font-bold text-lg text-nowrap'>+ 1</p>";
+                    echo "<p class='text-md leading-tight'>" . $grid_eval_record->$bonus . "</p>";
+                echo "</div>";
+            }
+        echo "</div>";
+
+        echo "<div class='mt-2 text-md'>";
+            foreach ($malus_fields as $malus) {
+                echo "<div class='flex items-center'>";
+                    echo "<p class='mr-2 text-red-500 font-bold text-lg text-nowrap'>- 1</p>";
+                    echo "<p class='text-md'>" . $grid_eval_record->$malus . "</p>";
+                echo "</div>";
+            }
+        echo "</div>";
+
+        echo "</div>";
+    } else {
+        // Si aucun enregistrement trouvé
+        echo "<div class='text-center rounded-3xl shadow-md p-4 bg-white border-2 border-red-400'>";
+        echo "<p>" . get_string('no_data', 'mod_studentqcm') . "</p>";
+        echo "</div>";
+    }
+}
+
+echo "</div>";
+
+
 if ($qcms) {
     echo "<div class='mt-4 space-y-4'>";
 
