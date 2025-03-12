@@ -1,11 +1,17 @@
 <?php
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->libdir . '/filelib.php'); 
 
 $id = required_param('id', PARAM_INT);
 $session_id = required_param('session_id', PARAM_INT);
 
 function convert_html_entities_to_unicode($text) {
-    return mb_convert_encoding($text, 'UTF-8', 'HTML-ENTITIES');
+    $context = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
+    $context = mb_convert_encoding($context, 'UTF-8', 'UTF-8');
+
+    $decoded_context = preg_replace('/\s+$/u', '', html_entity_decode($context, ENT_QUOTES, 'UTF-8'));
+
+    return strip_tags($decoded_context);
 }
 
 require_login();
@@ -23,6 +29,10 @@ mkdir($tmp_dir, 0777, true);
 $zip = new ZipArchive();
 $zip_file = $tmp_dir . '/students_productions.zip';
 $zip->open($zip_file, ZipArchive::CREATE);
+
+$images_dir = $tmp_dir . '/images';
+mkdir($images_dir, 0777, true);
+
 
 foreach ($students as $student) {
     $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8" ?><student_production/>');
@@ -42,55 +52,60 @@ foreach ($students as $student) {
         $prod_xml = $productions_xml->addChild('production');
         $prod_xml->addChild('question', htmlspecialchars($prod->question, ENT_QUOTES, 'UTF-8'));
         $prod_xml->addChild('global_comment', htmlspecialchars($prod->global_comment, ENT_QUOTES, 'UTF-8'));
-
-        $context = html_entity_decode($prod->context, ENT_QUOTES, 'UTF-8');
-        $context = mb_convert_encoding($context, 'UTF-8', 'UTF-8');
-        
-        $prod_xml->addChild('context', $context);
+        $prod_xml->addChild('context', convert_html_entities_to_unicode($prod->context));
         $prod_xml->addChild('competency', htmlspecialchars($prod->competency, ENT_QUOTES, 'UTF-8'));
         $prod_xml->addChild('subcompetency', htmlspecialchars($prod->subcompetency, ENT_QUOTES, 'UTF-8'));
         $prod_xml->addChild('type', htmlspecialchars($prod->type, ENT_QUOTES, 'UTF-8'));
 
-        // Ajouter les fichiers des context
-        $files = $DB->get_records_sql(
-            'SELECT * FROM {studentqcm_file} WHERE itemid = :itemid AND LOWER(filearea) = LOWER(:filearea)',
-            ['itemid' => $prod->id, 'filearea' => 'contextfiles']
-        );
-
-
-        if (is_array($files) && count($files) > 0) {
-            $files_xml = $answer_xml->addChild('files');
-            foreach ($files as $file) {
-                $file_xml = $files_xml->addChild('file');
-                $file_xml->addChild('filename', htmlspecialchars($file->filename, ENT_QUOTES, 'UTF-8'));
-                $file_xml->addChild('mimetype', htmlspecialchars($file->mimetype, ENT_QUOTES, 'UTF-8'));
+        $context = html_entity_decode($prod->context, ENT_QUOTES, 'UTF-8');
+        $pattern = '/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*alt=["\']([^"\']*)["\'](?:\s+width=["\']([^"\']+)["\'])?(?:\s+height=["\']([^"\']+)["\'])?[^>]*>/i';
+        
+        preg_match_all($pattern, $context, $matches, PREG_SET_ORDER);
+        
+        $images = [];
+        
+        foreach ($matches as $match) {
+            $images[] = [
+                'src' => $match[1],
+                'alt' => $match[2],
+                'width' => $match[3] ?? null,
+                'height' => $match[4] ?? null
+            ];
+        }
+        
+        if (!empty($images)) {
+            $files_xml = $prod_xml->addChild('files');
+            foreach ($images as $image) {
                 
-                // Construire l'URL complète pour chaque fichier
-                $file_info = $DB->get_record('files', [
-                    'filearea' => $file->filearea,
-                    'filename' => $file->filename
-                ]);
+                    $image_url = $image['src'];
 
-                if ($file_info) {
-                    $file_url = moodle_url::make_weburl($CFG->wwwroot . '/pluginfile.php', [
-                        'contextid' => $file_info->contextid,
-                        'component' => $file_info->component,
-                        'filearea' => $file_info->filearea,
-                        'itemid' => $file_info->itemid,
-                        'filepath' => $file_info->filepath,
-                        'filename' => $file_info->filename
-                    ]);
-                } else {
-                    $file_url = ''; 
-                }
+                    $image_name = basename($image_url);
+                    if (strpos($image_url, '../../') === 0) {
+                        $image_url = substr($image_url, 6);
+                    }
 
-                $file_xml->addChild('filepath', htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'));
-                if(!empty($file_url)){
-                    $file_content = file_get_contents($file_url);
-                    $zip_files->addFromString($file->filename, $file_content);
-                }
+                    $file_record = $DB->get_record('files', ['filepath' => '/' . $image_url]);
+                
+                    $fs = get_file_storage(); 
+                    $file = $fs->get_file_by_id($file_record);
+ 
+                    if ($file) {
+     
+                            // Ajouter l'image au zip
+                            $zip->addFile($images_dir . '/' . $image_name, 'images/' . $image_name);
+                    
+                            // Ajouter les informations sur le fichier dans le XML
+                            $file_xml = $files_xml->addChild('file');
+                            $file_xml->addChild('filepath', htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'));
+                            $file_xml->addChild('filename', htmlspecialchars($image_name, ENT_QUOTES, 'UTF-8'));
+
+                    } else {
+                        // Log si le fichier n'a pas été trouvé dans la table mdl_files
+                        error_log("Aucun fichier trouvé pour " . $image_url);
+                    }
             }
         }
+        
 
 
         // Récupérer les réponses pour la question actuelle
@@ -110,84 +125,122 @@ foreach ($students as $student) {
             $answer_xml->addChild('istrue', $answer->istrue ? 'true' : 'false');
             $answer_xml->addChild('indexation', $answer->indexation);
 
-            // Ajouter les fichiers associés à la réponse
-            $filesanswers = $DB->get_records_sql(
-                'SELECT * FROM {studentqcm_file} WHERE itemid = :itemid AND LOWER(filearea) = LOWER(:filearea)',
-                ['itemid' => $answer->id, 'filearea' => 'answerfiles']
-            );
+            // Ajout les fichiers de answers
+            $context = html_entity_decode($answer->answer, ENT_QUOTES, 'UTF-8');
+            $pattern = '/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*alt=["\']([^"\']*)["\'](?:\s+width=["\']([^"\']+)["\'])?(?:\s+height=["\']([^"\']+)["\'])?[^>]*>/i';
 
-            if (is_array($filesanswers) && count($filesanswers) > 0) {
+            preg_match_all($pattern, $context, $matches, PREG_SET_ORDER);
+            
+            $images = [];
+            
+            foreach ($matches as $match) {
+                $images[] = [
+                    'src' => $match[1],
+                    'alt' => $match[2],
+                    'width' => $match[3] ?? null,
+                    'height' => $match[4] ?? null
+                ];
+            }
+
+            if(!empty($images)) {
                 $answer_files_xml = $answer_xml->addChild('answer_files');
-                foreach ($filesanswers as $file) {
-                    $file_xml = $answer_files_xml->addChild('file');
-                    $file_xml->addChild('filename', htmlspecialchars($file->filename, ENT_QUOTES, 'UTF-8'));
-                    $file_xml->addChild('mimetype', htmlspecialchars($file->mimetype, ENT_QUOTES, 'UTF-8'));
-                    
-                    // Construire l'URL complète pour chaque fichier
-                    $file_info = $DB->get_record('files', [
-                        'filearea' => $file->filearea,
-                        'filename' => $file->filename
-                    ]);
-
-                    if ($file_info) {
-                        $file_url = moodle_url::make_weburl($CFG->wwwroot . '/pluginfile.php', [
-                            'contextid' => $file_info->contextid,
-                            'component' => $file_info->component,
-                            'filearea' => $file_info->filearea,
-                            'itemid' => $file_info->itemid,
-                            'filepath' => $file_info->filepath,
-                            'filename' => $file_info->filename
-                        ]);
-                    } else {
-                        $file_url = ''; 
+                foreach ($images as $image) {
+                    $image_url = $image['src'];
+                    if (strpos($image_url, '../../') === 0) {
+                        $image_url = substr($image_url, 6);
                     }
+                    $image_url = $CFG->wwwroot . '/' . ltrim($image_url, '/');
+                    
+                    $parsed_url = parse_url($image_url);
+                    $image_name = basename($parsed_url['path']);
 
-                    $file_xml->addChild('filepath', htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'));
-                    if(!empty($file_url)){
-                        $file_content = file_get_contents($file_url);
-                        $zip_files->addFromString($file->filename, $file_content);
+                    // Extraire les informations sur le fichier à partir de la table mdl_files
+                    $relative_path = substr($parsed_url['path'], 1); // Enlever le premier '/'
+                    $file_record = $DB->get_record('files', ['filepath' => '/' . $relative_path]);
+                    if ($file_record) {
+                        // Récupérer le chemin physique du fichier dans le système de fichiers Moodle
+                        $file_path = $CFG->dataroot . '/filedir/' . substr($file_record->contenthash, 0, 2) . '/' . substr($file_record->contenthash, 2, 2) . '/' . $file_record->contenthash;
+                    
+                        // Vérifier si le fichier existe et est accessible
+                        if (file_exists($file_path)) {
+                            // Copier le fichier dans le répertoire des images
+                            copy($file_path, $images_dir . '/' . $image_name);
+                            
+                            // Ajouter l'image au zip
+                            $zip->addFile($images_dir . '/' . $image_name, 'images/' . $image_name);
+                    
+                            // Ajouter les informations sur le fichier dans le XML
+                            $file_xml = $files_xml->addChild('file');
+                            $file_xml->addChild('filepath', htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'));
+                            $file_xml->addChild('filename', htmlspecialchars($image_name, ENT_QUOTES, 'UTF-8'));
+                        } else {
+                            // Log si le fichier n'a pas été trouvé
+                            error_log("Le fichier " . $image_name . " n'a pas pu être trouvé sur le serveur.");
+                        }
+                    } else {
+                        // Log si le fichier n'a pas été trouvé dans la table mdl_files
+                        error_log("Aucun fichier trouvé pour " . $image_url);
                     }
                 }
             }
 
-            // Ajouter les fichiers des explications
-            $filesexplanation = $DB->get_records_sql(
-                'SELECT * FROM {studentqcm_file} WHERE itemid = :itemid AND LOWER(filearea) = LOWER(:filearea)',
-                ['itemid' => $answer->id, 'filearea' => 'explanationfiles']
-            );
+            // Ajout les fichiers des explications
+            $context = html_entity_decode($answer->explanation, ENT_QUOTES, 'UTF-8');
+            $pattern = '/<img\s+[^>]*src=["\']([^"\']+)["\'][^>]*alt=["\']([^"\']*)["\'](?:\s+width=["\']([^"\']+)["\'])?(?:\s+height=["\']([^"\']+)["\'])?[^>]*>/i';
 
+            preg_match_all($pattern, $context, $matches, PREG_SET_ORDER);
+            
+            $images = [];
+            
+            foreach ($matches as $match) {
+                $images[] = [
+                    'src' => $match[1],
+                    'alt' => $match[2],
+                    'width' => $match[3] ?? null,
+                    'height' => $match[4] ?? null
+                ];
+            }
 
-            if (is_array($filesexplanation) && count($filesexplanation) > 0) {
+            if(!empty($images)) {
                 $explanation_files_xml = $answer_xml->addChild('explanation_files');
-                foreach ($filesexplanation as $file) {
-                    $file_xml = $explanation_files_xml->addChild('file');
-                    $file_xml->addChild('filename', htmlspecialchars($file->filename, ENT_QUOTES, 'UTF-8'));
-                    $file_xml->addChild('mimetype', htmlspecialchars($file->mimetype, ENT_QUOTES, 'UTF-8'));
+                foreach ($images as $image) {
+                    $image_url = $image['src'];
+                    if (strpos($image_url, '../../') === 0) {
+                        $image_url = substr($image_url, 6);
+                    }
+                    $image_url = $CFG->wwwroot . '/' . ltrim($image_url, '/');
                     
-                    // Construire l'URL complète pour chaque fichier
-                    $file_info = $DB->get_record('files', [
-                        'filearea' => $file->filearea,
-                        'filename' => $file->filename
-                    ]);
+                    $parsed_url = parse_url($image_url);
+                    $image_name = basename($parsed_url['path']);
 
-                    if ($file_info) {
-                        $file_url = moodle_url::make_weburl($CFG->wwwroot . '/pluginfile.php', [
-                            'contextid' => $file_info->contextid,
-                            'component' => $file_info->component,
-                            'filearea' => $file_info->filearea,
-                            'itemid' => $file_info->itemid,
-                            'filepath' => $file_info->filepath,
-                            'filename' => $file_info->filename
-                        ]);
+                    // Extraire les informations sur le fichier à partir de la table mdl_files
+                    $relative_path = substr($parsed_url['path'], 1); // Enlever le premier '/'
+                    $file_record = $DB->get_record('files', ['filepath' => '/' . $relative_path]);
+                    if ($file_record) {
+                        // Récupérer le chemin physique du fichier dans le système de fichiers Moodle
+                        $file_path = $CFG->dataroot . '/filedir/' . substr($file_record->contenthash, 0, 2) . '/' . substr($file_record->contenthash, 2, 2) . '/' . $file_record->contenthash;
+                    
+                        // Vérifier si le fichier existe et est accessible
+                        if (file_exists($file_path)) {
+                            // Copier le fichier dans le répertoire des images
+                            copy($file_path, $images_dir . '/' . $image_name);
+                            
+                            // Ajouter l'image au zip
+                            $zip->addFile($images_dir . '/' . $image_name, 'images/' . $image_name);
+                    
+                            // Ajouter les informations sur le fichier dans le XML
+                            $file_xml = $files_xml->addChild('file');
+                            $file_xml->addChild('filepath', htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8'));
+                            $file_xml->addChild('filename', htmlspecialchars($image_name, ENT_QUOTES, 'UTF-8'));
+                        } else {
+                            // Log si le fichier n'a pas été trouvé
+                            error_log("Le fichier " . $image_name . " n'a pas pu être trouvé sur le serveur.");
+                        }
                     } else {
-                        $file_url = ''; 
+                        // Log si le fichier n'a pas été trouvé dans la table mdl_files
+                        error_log("Aucun fichier trouvé pour " . $image_url);
                     }
 
-                    $file_xml->addChild('filepath', htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8'));
-                    if(!empty($file_url)){
-                        $file_content = file_get_contents($file_url);
-                        $zip_files->addFromString($file->filename, $file_content);
-                    }
                 }
             }
         }
@@ -217,7 +270,11 @@ foreach ($students as $student) {
 
    $formatted_xml = $dom->saveXML();
 
- 
+   $images_files = glob($images_dir . '/*'); // Liste des fichiers images
+   foreach ($images_files as $file) {
+       $zip->addFile($file, 'images/' . basename($file));
+   }
+   
    $xml_file = $tmp_dir . '/student_' . $student_fullname. '.xml';
    file_put_contents($xml_file, $formatted_xml);
    $zip->addFile($xml_file, 'student_' . $student_fullname . '.xml');
@@ -235,4 +292,6 @@ readfile($zip_file);
 // Nettoyage
 array_map('unlink', glob($tmp_dir . '/*.xml'));
 rmdir($tmp_dir);
+array_map('unlink', glob($images_dir . '/*'));
+rmdir($images_dir);
 exit;
