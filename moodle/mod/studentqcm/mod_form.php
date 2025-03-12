@@ -844,9 +844,6 @@ class mod_studentqcm_mod_form extends moodleform_mod
         </style>
         ');
 
-        $mform->addElement('hidden', 'hours_minutes_data');
-        $mform->setType('hours_minutes_data', PARAM_RAW);
-
         $date_fields = [
             ['start_date_1', 'end_date_1', 'end_date_tt_1'],
             ['start_date_2', 'end_date_2', 'end_date_tt_2'],
@@ -856,61 +853,37 @@ class mod_studentqcm_mod_form extends moodleform_mod
         $bg_colors = ['bg-lime-200', 'bg-indigo-200', 'bg-sky-200'];
         $text_colors = ['text-lime-600', 'text-indigo-600', 'text-sky-600'];
         $focus_colors = ['focus:ring-lime-400', 'focus:ring-indigo-400', 'focus:ring-sky-400'];
-
+        
         foreach ($date_fields as $index => $dates) {
-
             $bg_color = $bg_colors[$index];
             $text_color = $text_colors[$index];
             $focus_color = $focus_colors[$index];
-
+            
             $mform->addElement('html', '<div class="'. $bg_color .' py-2 rounded-2xl text-sky-700 my-4 p-4 space-y-2">');
+            
+            foreach ($dates as $date_field) {
+                // On ajoute un champ caché qui sera pris en compte par Moodle
+                $mform->addElement('hidden', $date_field, '');
+                $mform->setType($date_field, PARAM_RAW);
+        
+                // Maintenant, on affiche notre champ personnalisé visuellement
                 $mform->addElement('html', '
                     <div class="items-center space-x-2 grid grid-cols-3">
-                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('start_date_1', 'mod_studentqcm') . ' : </label>
-                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
-                    </div>
-
-                    <div class="items-center space-x-2 grid grid-cols-3">
-                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('end_date_1', 'mod_studentqcm') . ' : </label>
-                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
-                    </div>
-
-                    <div id="timeSelectorContainer_tt" class="items-center space-x-2 grid grid-cols-3">
-                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string('end_date_tt_1', 'mod_studentqcm') . ' : </label>
-                        <input class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" type="datetime-local" id="start_date_1" name="start_date_1" required/>
+                        <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string($date_field, 'mod_studentqcm') . ' : </label>
+                        <input 
+                            class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" 
+                            type="datetime-local" 
+                            id="' . $date_field . '" 
+                            name="' . $date_field . '" 
+                            onchange="document.getElementById(\'hidden_' . $date_field . '\').value = this.value;" 
+                        />
                     </div>
                 ');
+            }
+            
             $mform->addElement('html', '</div>');
-        };
-
-        $mform->addElement('html', '<script>
-        document.addEventListener("DOMContentLoaded", () => {
-
-            let selectElementStart = document.querySelectorAll(`[id^="start_hour_"], [id^="start_minute_"]`);
-            selectElementStart.forEach(select => {
-                select.addEventListener("change", function() {
-                    saveHourMinute("start");
-                });
-            });
-            let selectElementEnd = document.querySelectorAll(`[id^="end_hour_"], [id^="end_minute_"]`);
-            selectElementEnd.forEach(select => {
-                select.addEventListener("change", function() {
-                    saveHourMinute("end");
-                });
-            });
-            let selectElementTT = document.querySelectorAll(`[id^="end_hour_tt_"], [id^="end_minute_tt_"]`);
-            selectElementTT.forEach(select => {
-                select.addEventListener("change", function() {
-                    saveHourMinute("tt");
-                });
-            });
-
-            let endDateSelect = document.querySelectorAll(`[id^="fitem_id_end_date_tt_"]`);
-            console.log("endDateSelect: ", endDateSelect);
-        });
-
-        </script>
-        ');
+        }
+        
 
         $mform->addElement('html', '</div>');
 

@@ -44,63 +44,54 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->studentqcm_instance_id = $id_instance;
 
 
-    // Validation des dates
+    // Initialiser les champs de dates
+    $date_fields = [
+        'start_date_1', 'end_date_1', 'end_date_tt_1',
+        'start_date_2', 'end_date_2', 'end_date_tt_2',
+        'start_date_3', 'end_date_3', 'end_date_tt_3'
+    ];
+
     $type = 0;
     $index = 0;
-    $hourMinute = $data->hours_minutes_data;
-    $hours_minutes_data = json_decode($hourMinute, true);
 
-    foreach (['start_date_1', 'end_date_1', 'end_date_tt_1', 'start_date_2', 'end_date_2', 'end_date_tt_2', 'start_date_3', 'end_date_3', 'end_date_tt_3'] as $date_field) {
+    // Validation et récupération des dates
+    foreach ($date_fields as $date_field) {
         if (isset($data->$date_field)) {
-            if (is_int($data->$date_field) && $data->$date_field > 0) {
-                // Vérification de l'existence des valeurs dans `$hourMinute`
-                if (!isset($hours_minutes_data["start"][$index]) || !isset($hours_minutes_data["end"][$index]) || !isset($hours_minutes_data["tt"][$index])) {
-                    throw new moodle_exception('missinghourminute', 'studentqcm', '', $date_field);
-                }
+            $date_value = $data->$date_field;
 
-                // Récupération des heures et minutes associées
-                
-                switch ($type) {
-                    case 0: // Start
-                        $hour = $hours_minutes_data["start"][$index]["hour"] ?? 0;
-                        $minute = $hours_minutes_data["start"][$index]["minute"] ?? 0;
-                        break;
-                    case 1: // End
-                        $hour = $hours_minutes_data["end"][$index]["hour"] ?? 0;
-                        $minute = $hours_minutes_data["end"][$index]["minute"] ?? 0;
-                        break;
-                    case 2: // Tiers-temps
-                        $hour = $hours_minutes_data["tt"][$index]["hour"] ?? 0;
-                        $minute = $hours_minutes_data["tt"][$index]["minute"] ?? 0;
-                        break;
-                }
-
-                
-
-                // Vérification des valeurs avant de générer le timestamp
-                if (!is_numeric($hour) || !is_numeric($minute)) {
-                    throw new moodle_exception('invalidhourminute', 'studentqcm', '', $date_field);
-                }
-
-                // Création du timestamp avec l'heure et les minutes
-                $timestamp = $data->$date_field + ($hour * 3600) + ($minute * 60);
-                if ($type != 2 || $data->checkbox_tt_data != "false") {
-                    $record->$date_field = $timestamp;
-                }
-
-                // Gestion de l'incrémentation de $type et $index
-                $type++;
-                if ($type == 3) {
-                    $type = 0;
-                    $index++;
-                }
+            // Si la date est une chaîne de texte, la convertir en timestamp
+            if (is_string($date_value) && !empty($date_value)) {
+                $timestamp = strtotime($date_value); // Convertit la chaîne datetime-local en timestamp
+            } else if (empty($date_value)) {
+                $timestamp = null; // Autoriser une valeur nulle
             } else {
+                $timestamp = $date_value;
+            }
+
+            // Vérifier que la conversion a réussi
+            if ($timestamp === false) {
                 throw new moodle_exception('invaliddate', 'studentqcm', '', $date_field);
             }
+
+            // Assigner la date au record si elle est valide
+            if ($type != 2 || $data->checkbox_tt_data != "false") {
+                $record->$date_field = $timestamp;
+            }
+
+            $type++;
+            if ($type == 3) {
+                $type = 0;
+                $index++;
+            }
         } else {
-            throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
+            // Si le champ est manquant et que ce n'est pas un champ end_date_tt_X, lever une erreur
+            if ($type != 2) { 
+                throw new moodle_exception('missingfield', 'studentqcm', '', $date_field);
+            }
         }
     }
+
+
 
     // Data questions
     $record->nbQcm = $data->choix_qcm;
