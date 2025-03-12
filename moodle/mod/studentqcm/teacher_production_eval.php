@@ -166,7 +166,7 @@ function get_bonus_malus($grid_eval_id) {
 
 $evaluation_types = ['grid_eval_qcu', 'grid_eval_qcm', 'grid_eval_tcs'];
 
-echo "<div class='grid grid-cols-3 justify-between items-center gap-4 mt-4 text-gray-700'>";
+echo "<div class='grid grid-cols-3 justify-between items-stretch gap-4 mt-4 text-gray-700'>";
 
 foreach ($evaluation_types as $eval_type) {
     $grid_eval_id = $studentqcm->$eval_type;
@@ -188,7 +188,7 @@ foreach ($evaluation_types as $eval_type) {
         $bonus_fields = ['bonus1', 'bonus2', 'bonus3', 'bonus4', 'bonus5'];
         $malus_fields = ['malus1', 'malus2', 'malus3', 'malus4', 'malus5'];
 
-        echo "<div class='rounded-3xl shadow-md-lg bg-white p-4'>";
+        echo "<div class='rounded-3xl shadow-md-lg bg-white p-4 flex flex-col'>";
         echo "<p class='text-center $title_color text-xl font-semibold'>" . get_string($eval_type, 'mod_studentqcm') . "</p>";
 
         echo "<div class='mt-4 text-md'>";
