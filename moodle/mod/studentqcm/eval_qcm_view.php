@@ -12,20 +12,22 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 $userid = $USER->id;
 
 // Récupérer la question avec ses métadonnées
-$question = $DB->get_record('studentqcm_question', array('id' => $qcm_id), '*', MUST_EXIST);
-$referentiel = $DB->get_record('referentiel', array('id' => $question->referentiel), '*');
-$competency = $DB->get_record('competency', array('id' => $question->competency), '*');
-$subcompetency = $DB->get_record('subcompetency', array('id' => $question->subcompetency), '*');
+$question = $DB->get_record('studentqcm_question', array('id' => $qcm_id, 'sessionid' => $session->id), '*', MUST_EXIST);
+$referentiel = $DB->get_record('referentiel', array('id' => $question->referentiel, 'sessionid' => $session->id), '*');
+$competency = $DB->get_record('competency', array('id' => $question->competency, 'sessionid' => $session->id), '*');
+$subcompetency = $DB->get_record('subcompetency', array('id' => $question->subcompetency, 'sessionid' => $session->id), '*');
 $keywords = $DB->get_record('question_keywords', array('question_id' => $qcm_id), 'keyword_id');
 $reponses = $DB->get_records('studentqcm_answer', array('question_id' => $qcm_id));
-$globalcomment = $DB->get_records('studentqcm_question', array('id' => $qcm_id));
+$globalcomment = $DB->get_records('studentqcm_question', array('id' => $qcm_id, 'sessionid' => $session->id));
 
 $keywords_list = [];
 foreach ($keywords as $keyword_id) {
-    $keyword = $DB->get_record('keyword', array('id' => $keyword_id), 'word');
+    $keyword = $DB->get_record('keyword', array('id' => $keyword_id, 'sessionid' => $session->id), 'word');
     if ($keyword) {
         $keywords_list[] = $keyword->word;
     }

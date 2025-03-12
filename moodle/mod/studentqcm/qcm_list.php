@@ -3,16 +3,17 @@
 require_once(__DIR__ . '/../../config.php');
 
 $id = required_param('id', PARAM_INT);
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
-$required_pops = $DB->get_records('question_pop', array('refId' => $cm->instance));
+$required_pops = $DB->get_records('question_pop', array('sessionid' => $session->id));
 
 $userid = $USER->id;
 
 // Récupérer toutes les questions créées par l'utilisateur
-$questions = $DB->get_records('studentqcm_question', array('userid' => $userid), 'id DESC');
+$questions = $DB->get_records('studentqcm_question', array('userid' => $userid, 'sessionid' => $session->id), 'id DESC');
 
 $qcms = array_filter($questions, fn($q) => $q->type === 'QCM' && !$q->ispop);
 $qcus = array_filter($questions, fn($q) => $q->type === 'QCU' && !$q->ispop);
@@ -22,9 +23,9 @@ $pops = array_filter($questions, fn($q) => $q->ispop);
 
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
-$referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
-$competencies = $DB->get_records_menu('competency', null, '', 'id, name');
-$subcompetencies = $DB->get_records_menu('subcompetency', null, '', 'id, name');
+$referentiels = $DB->get_records_menu('referentiel', ['sessionid' => $session->id], '', 'id, name');
+$competencies = $DB->get_records_menu('competency', ['sessionid' => $session->id], '', 'id, name');
+$subcompetencies = $DB->get_records_menu('subcompetency', ['sessionid' => $session->id], '', 'id, name');
 
 require_login($course, true, $cm);
 
@@ -278,7 +279,7 @@ if ($tcss) {
 }
 
 $completed_pops = 0;
-$poptypes = $DB->get_records('question_pop', array('refId' => $cm->instance));
+$poptypes = $DB->get_records('question_pop', array('sessionid' => $session->id));
 foreach ($poptypes as $poptype) {
     $nbquestions = count(array_filter($questions, fn($q) => $q->poptypeid == $poptype->id));
 

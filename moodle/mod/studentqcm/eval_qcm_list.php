@@ -9,6 +9,8 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 $userid = $USER->id;
 
 // Charger les questions de la production assignée
@@ -17,7 +19,7 @@ $questions = array();
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
     // Charger les questions associées à cette production spécifique
-    $qs = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
+    $qs = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'sessionid' => $session->id, 'status' => 1));
 
     // Ajouter chaque question au tableau $qcms
     foreach ($qs as $q) {
@@ -27,9 +29,9 @@ if (!empty($prod_id)) {
 
 
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
-$referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
-$competencies = $DB->get_records_menu('competency', null, '', 'id, name');
-$subcompetencies = $DB->get_records_menu('subcompetency', null, '', 'id, name');
+$referentiels = $DB->get_records_menu('referentiel', ['sessionid' => $session->id], '', 'id, name');
+$competencies = $DB->get_records_menu('competency', ['sessionid' => $session->id], '', 'id, name');
+$subcompetencies = $DB->get_records_menu('subcompetency', ['sessionid' => $session->id], '', 'id, name');
 
 require_login($course, true, $cm);
 
@@ -86,7 +88,7 @@ if ($questions) {
         }
 
         if ($question->poptypeid !== $previousPopTypeId) {
-            $popInfo = $DB->get_record('question_pop', array('id' => $question->poptypeid));
+            $popInfo = $DB->get_record('question_pop', array('id' => $question->poptypeid, 'sessionid' => $session->id));
     
             if ($popInfo) {
                 echo "<h2 class='text-xl font-semibold text-gray-700 text-center my-4 bg-gray-100 p-2 rounded-lg'>";

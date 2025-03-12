@@ -3,6 +3,7 @@ require_once('../../config.php'); // Inclure la config de Moodle
 global $DB;
 
 $id = required_param('id', PARAM_INT);
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
@@ -16,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $record = new stdClass();
             $record->user_id = $student_id;
+            $record->sessionid = $session->id;
             $record->prod1_id = $prod1;
             $record->prod2_id = $prod2;
             $record->prod3_id = $prod3 == "" ? null : $prod3;
@@ -39,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $prod3 = isset($updatedRow['prod3']) ? intval($updatedRow['prod3']) : null;
 
             // Vérifier si l'étudiant existe déjà dans la base de données
-            $existingRecord = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $studentId));
+            $existingRecord = $DB->get_record('studentqcm_assignedqcm', array('user_id' => $studentId, 'sessionid' => $session->id));
     
             if ($existingRecord) {
                 // Mise à jour des enregistrements existants

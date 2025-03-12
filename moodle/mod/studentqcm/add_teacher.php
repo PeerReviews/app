@@ -27,8 +27,10 @@ if (!$user) {
     exit;
 }
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Vérifier si l'utilisateur est déjà inscrit dans mdl_teachers
-$existing_teacher = $DB->get_record('teachers', ['userId' => $user->id]);
+$existing_teacher = $DB->get_record('teachers', ['userId' => $user->id, 'sessionid' => $session->id]);
 
 if ($existing_teacher) {
     echo json_encode(['success' => false, 'message' => 'L\'enseignant est déjà inscrit.']);
@@ -38,6 +40,7 @@ if ($existing_teacher) {
 // Insérer l'enseignant dans la table mdl_teachers
 $new_teacher = new stdClass();
 $new_teacher->userId = $user->id;
+$new_teacher->sessionid = $session->id;
 
 try {
     $DB->insert_record('teachers', $new_teacher);

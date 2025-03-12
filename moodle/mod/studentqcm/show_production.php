@@ -13,17 +13,19 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 
 $userid = $USER->id;
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
-$referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
-$competencies = $DB->get_records_menu('competency', null, '', 'id, name');
-$subcompetencies = $DB->get_records_menu('subcompetency', null, '', 'id, name');
+$referentiels = $DB->get_records_menu('referentiel', ['sessionid' => $session->id], '', 'id, name');
+$competencies = $DB->get_records_menu('competency', ['sessionid' => $session->id], '', 'id, name');
+$subcompetencies = $DB->get_records_menu('subcompetency', ['sessionid' => $session->id], '', 'id, name');
 
 // Charger les questions de la production assignée
 $qcms = array();
 
 // Vérifier si l'ID de la production assignée est valide
 if (!empty($prod_id)) {
-    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'status' => 1));
+    $questions = $DB->get_records('studentqcm_question', array('userid' => $prod_id, 'sessionid' => $session->id, 'status' => 1));
 
     foreach ($questions as $question) {
         $qcms[] = $question;
@@ -143,7 +145,7 @@ if ($qcms) {
 
         // Vérifier si le popTypeId a changé pour insérer une séparation
         if ($qcm->poptypeid !== $previousPopTypeId) {
-            $popInfo = $DB->get_record('question_pop', array('id' => $qcm->poptypeid));
+            $popInfo = $DB->get_record('question_pop', array('id' => $qcm->poptypeid, 'sessionid' => $session->id));
     
             if ($popInfo) {
                 echo "<h2 class='text-xl font-semibold text-gray-700 text-center my-4 bg-gray-100 p-2 rounded-lg'>";

@@ -9,9 +9,10 @@ $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 $nbTotalQuestionPop = 0;
-$popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
+$popTypes = $DB->get_records('question_pop', array('sessionid' => $session->id));
 foreach($popTypes as $popType){
     $nbTotalQuestionPop += $popType->nbqcm + $popType->nbqcu;
 }
@@ -52,7 +53,7 @@ echo "</a>";
 echo "</div>";
 
 // Récupération des étudiants
-$students = $DB->get_records('students');
+$students = $DB->get_records('students', ['sessionid' => $session->id]);
 
 echo '<div class="mt-8">';
 echo '<table class="min-w-full bg-white rounded-3xl shadow-md" id="studentTable">';
@@ -99,7 +100,7 @@ echo '<tbody>';
 // Affichage des étudiants
 foreach ($students as $student) {
     $completed_reviews_count = $DB->count_records('studentqcm_evaluation', array('userid' => $student->userid, 'status' => 1));
-    $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid));
+    $students_to_review = $DB->get_records('studentqcm_assignedqcm', array('user_id' => $student->userid, 'sessionid' => $session->id));
 
     $tmp = [];
     foreach ($students_to_review as $record) {

@@ -8,6 +8,8 @@ $type = required_param('type', PARAM_TEXT);
 $qcm_id = required_param('qcm_id', PARAM_INT);
 $is_improved = required_param('is_improved', PARAM_INT);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Récupérer les informations du module et vérifier l'accès
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -28,13 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $q_id = $qcm_id;
 
             // Vérifier si la question existe déjà dans la base de données
-            $existing_question = $DB->get_record('studentqcm_question', ['id' => $q_id]);
+            $existing_question = $DB->get_record('studentqcm_question', ['id' => $q_id, 'sessionid' => $session->id]);
             if (!$existing_question) {
                 throw new moodle_exception('invalidquestion', 'mod_studentqcm');
             }
 
             $question_record = new stdClass();
             $question_record->id = $q_id;
+            $question_record->sessionid = $session->id;
             $question_record->userid = $USER->id;
             $question_record->question = clean_param($question['question'], PARAM_TEXT);
             $question_record->global_comment = clean_param($question['global_comment'], PARAM_TEXT);
@@ -58,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             );
 
             // Récupérer les balises <img> dans le contexte
-            // echo 'CONTEXTE : ' . print_r($question_record->context, true);
-            // echo 'CONTEXTE PARAM : ' . print_r($question['context'], true);
 
             $images_in_text = [];
             if (!empty($question['context'])) {
@@ -71,8 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $images_in_text[] = $normalized_url;
                 }
             }
-
-            // echo 'IMAGES IN TEXT'. print_r($images_in_text,true);
           
             // Supprimer les fichiers qui n'apparaissent pas dans le contexte
             foreach ($file_records as $file) {
@@ -83,13 +82,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 preg_match("/pluginfile\.php.*$/", $file_url, $normalized_url);
 
-                // echo 'FILE URL : ' . print_r($file_url,true);
-
                 if (!in_array($normalized_url, $images_in_text)) {
                     $file->delete();
                 }
             }
-            // echo 'CONTEXTE : ' . print_r($question_record->context, true);
+
             $DB->update_record('studentqcm_question', $question_record);
 
 
@@ -186,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Ajouter les nouveaux mots-clés
                 foreach ($keywords_to_add as $keyword_id) {
                     if (!empty(trim($keyword_id))) {
-                        $existing_keyword = $DB->get_record('keyword', ['id' => $keyword_id]);
+                        $existing_keyword = $DB->get_record('keyword', ['id' => $keyword_id, 'sessionid' => $session->id]);
                         if ($existing_keyword) {
                             $relation_record = new stdClass();
                             $relation_record->question_id = $q_id;

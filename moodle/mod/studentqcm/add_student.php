@@ -27,8 +27,10 @@ if (!$user) {
     exit;
 }
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Vérifier si l'utilisateur est déjà inscrit dans mdl_students
-$existing_student = $DB->get_record('students', ['userId' => $user->id]);
+$existing_student = $DB->get_record('students', ['userId' => $user->id, 'sessionid' => $session->id]);
 
 if ($existing_student) {
     echo json_encode(['success' => false, 'message' => 'L\'étudiant est déjà inscrit.']);
@@ -39,6 +41,7 @@ if ($existing_student) {
 $new_student = new stdClass();
 $new_student->userId = $user->id;
 $new_student->isTierTemps = $student_data['istiertemps'];
+$new_student->sessionid = $session->id;
 
 try {
     $DB->insert_record('students', $new_student);

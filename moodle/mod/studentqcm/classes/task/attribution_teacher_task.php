@@ -12,8 +12,7 @@ class attribution_teacher_task extends scheduled_task {
     public function execute(bool $force = false) {
         global $DB;
 
-        $records = $DB->get_records('studentqcm', null, 'id DESC', '*', 0, 1);
-        $studentqcm = reset($records); // Prendre le premier élément
+        $studentqcm = $DB->get_record('studentqcm', ['archived' => 0]);
 
         if (!$studentqcm || empty($studentqcm->end_date_tt_3)) {
             mtrace("Erreur : date de lancement introuvable.");
@@ -26,11 +25,11 @@ class attribution_teacher_task extends scheduled_task {
             die();  // Si déjà effectuée, on arrête l'exécution
         }
 
+        $current_timestamp = time(); 
         $start_timestamp = $studentqcm->end_date_tt_3;
-        $current_timestamp = time();
 
         if ($current_timestamp < $start_timestamp) {
-            mtrace("La date de lancement n'est pas encore atteinte. Attente...");
+            mtrace("La date de lancement n'est pas encore atteinte.");
             die();
         }
 
@@ -41,14 +40,14 @@ class attribution_teacher_task extends scheduled_task {
         $DB->execute("ALTER TABLE {pr_assigned_student_teacher} AUTO_INCREMENT = 1");
 
         // Récupération des enseignants
-        $teachers = $DB->get_records('teachers', null, '', 'userId');
+        $teachers = $DB->get_records('teachers', ['sessionid' => $studentqcm->id], '', 'userId');
         if (empty($teachers)) {
             mtrace("Erreur : aucun enseignant trouvé.");
             die();
         }
 
         // Récupération des étudiants
-        $students = $DB->get_records('students', null, '', 'id');
+        $students = $DB->get_records('students', ['sessionid' => $studentqcm->id], '', 'userId');
         if (empty($students)) {
             mtrace("Erreur : aucun étudiant trouvé.");
             die();
@@ -78,6 +77,7 @@ class attribution_teacher_task extends scheduled_task {
             $record = new \stdClass();
             $record->userid = $assignment['studentid'];
             $record->teacherid = $assignment['teacherid'];
+            $record->sessionid = $studentqcm->id;
 
             $DB->insert_record('pr_assigned_student_teacher', $record);
         }

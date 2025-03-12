@@ -10,6 +10,8 @@ $id = required_param('id', PARAM_INT);
 $type = required_param('qcm_type', PARAM_TEXT);
 $popTypeId = optional_param('pop_type_id', null, PARAM_INT);
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Obtenir les informations du module de cours
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -63,7 +65,7 @@ echo "<div class='mt-8'>";
         echo "<label for='referentiel_1' class='block font-semibold text-gray-700 text-lg'>" . get_string('referentiel', 'mod_studentqcm') . " :</label>";
         echo "<select id='referentiel_1' name='questions[1][referentiel]' class='w-full p-2 mt-2 border border-gray-300 rounded-lg'>";
         echo "<option value=''>" . get_string('select_referentiel', 'mod_studentqcm') . "</option>";
-        $referentiels = $DB->get_records('referentiel');
+        $referentiels = $DB->get_records('referentiel', ['sessionid' => $studentqcm->id]);
         foreach ($referentiels as $referentiel) {
             echo "<option value='{$referentiel->id}'>{$referentiel->name}</option>";
         }

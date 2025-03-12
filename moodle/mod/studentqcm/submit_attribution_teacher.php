@@ -3,6 +3,7 @@ require_once('../../config.php'); // Inclure la config de Moodle
 global $DB;
 
 $id = required_param('id', PARAM_INT);
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
@@ -15,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $record = new stdClass();
             $record->teacherid = $teacherid;
             $record->userid = $userid;
+            $record->sessionid = $session->id;
 
             $attribution_id = $DB->insert_record('pr_assigned_student_teacher', $record);
             if (!$attribution_id) {
@@ -34,12 +36,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $userid = isset($updatedRow['studentId']) ? intval($updatedRow['studentId']) : null;
 
             // Vérifier si l'étudiant existe déjà dans la base de données
-            $existingRecord = $DB->get_record('pr_assigned_student_teacher', array('id' => $row_id, 'teacherid' => $teacherid));
+            $existingRecord = $DB->get_record('pr_assigned_student_teacher', array('id' => $row_id, 'teacherid' => $teacherid, 'sessionid' => $session->id));
     
             if ($existingRecord) {
                 // Mise à jour des enregistrements existants
                 $existingRecord->teacherid = $teacherid;
                 $existingRecord->userid = $userid;
+                $existingRecord->sessionid = $session->id;
     
                 // Effectuer la mise à jour
                 $updated = $DB->update_record('pr_assigned_student_teacher', $existingRecord);

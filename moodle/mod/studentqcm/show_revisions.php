@@ -13,10 +13,12 @@ $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', M
 
 $userid = $USER->id;
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 // Charger les noms des référentiels, compétences, sous-compétences et mots-clés
-$referentiels = $DB->get_records_menu('referentiel', null, '', 'id, name');
-$competencies = $DB->get_records_menu('competency', null, '', 'id, name');
-$subcompetencies = $DB->get_records_menu('subcompetency', null, '', 'id, name');
+$referentiels = $DB->get_records_menu('referentiel', ['sessionid' => $session->id], '', 'id, name');
+$competencies = $DB->get_records_menu('competency', ['sessionid' => $session->id], '', 'id, name');
+$subcompetencies = $DB->get_records_menu('subcompetency', ['sessionid' => $session->id], '', 'id, name');
 
 $revisions = array();
 
@@ -25,13 +27,13 @@ if (!empty($studentid)) {
 }
 
 
-$productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $studentid], 'prod1_id, prod2_id, prod3_id');
+$productions = $DB->get_record('studentqcm_assignedqcm', ['user_id' => $studentid, 'sessionid' => $session->id], 'prod1_id, prod2_id, prod3_id');
 $nbTotal_revision = 0;
 
 if ($productions) {
     foreach ((array) $productions as $production_id) {
         if (!empty($production_id)) {
-            $to_evaluate = $DB->get_records('studentqcm_question', array('userid' => $production_id, 'status' => 1));
+            $to_evaluate = $DB->get_records('studentqcm_question', array('userid' => $production_id, 'sessionid' => $session->id, 'status' => 1));
             $nbTotal_revision += count($to_evaluate);
         }
     }

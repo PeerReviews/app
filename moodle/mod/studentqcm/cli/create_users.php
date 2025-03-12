@@ -5,6 +5,8 @@ require_once($CFG->dirroot . '/user/lib.php');
 
 global $DB, $USER;
 
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
 $nb_users = 100; // Nombre d'utilisateurs à créer
 $context = context_system::instance(); // Contexte global du site
 
@@ -68,6 +70,7 @@ for ($i = 1; $i <= $nb_users; $i++) {
         $student = new stdClass();
         $student->userId = $newuser->id;
         $student->isTierTemps = 0;
+        $student->sessionid = $session->id;
         $roleid = 5;
 
         // Assignation du rôle à l'utilisateur

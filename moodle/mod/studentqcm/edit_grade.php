@@ -3,6 +3,7 @@ require_once(__DIR__ . '/../../config.php');
 global $DB;
 
 $id = required_param('id', PARAM_INT);
+$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
 
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -23,12 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Vérification que les données nécessaires sont présentes
             if ($studentid !== null) {
                 // Préparer la requête pour récupérer la ligne avec $studentid
-                $student_grade = $DB->get_record('pr_grade', array('userid' => $studentid));
+                $student_grade = $DB->get_record('pr_grade', array('userid' => $studentid, 'sessionid' => $session->id));
 
                 if ($student_grade) {
                     // Si l'étudiant existe, mettre à jour les valeurs
                     $student_grade->production_grade = $total_grade_questions;
                     $student_grade->revision_grade = $total_grade_revisions;
+                    $student_grade->sessionid = $session->id;
                     $DB->update_record('pr_grade', $student_grade);
                 }
             }

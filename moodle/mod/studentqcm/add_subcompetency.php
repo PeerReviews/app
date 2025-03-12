@@ -5,10 +5,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
     $competency_id = intval($_POST['competency_id']);
 
+    // Récupérer la session en cours
+    $session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+
     if (!empty($name) && $competency_id > 0) {
         $record = new stdClass();
         $record->name = $name;
         $record->competency = $competency_id;
+        $record->sessionid = $session->id;
         $record->isCustom = 1;
 
         // Insérer la sous-compétence dans la base de données
