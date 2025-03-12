@@ -11,7 +11,7 @@ $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST)
 $studentqcm = $DB->get_record('studentqcm', array('id' => $cm->instance), '*', MUST_EXIST);
 
 $nbTotalQuestionPop = 0;
-$popTypes = $DB->get_records('question_pop', array('refId' => $studentqcm->id));
+$popTypes = $DB->get_records('question_pop', array('sessionid' => $studentqcm->id));
 foreach($popTypes as $popType){
     $nbTotalQuestionPop += $popType->nbqcm + $popType->nbqcu;
 }
