@@ -325,7 +325,13 @@ $string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
 $string['sessionsaved'] = 'Session sauvegardée !';
 $string['set_current_session'] = 'Rendre cette session courante';
+$string['confirm_delete_session'] = 'Êtes-vous sûr de vouloir supprimer cette session ?';
+$string['activate'] = 'Activer';
+$string['confirm_activate_session'] = 'Êtes-vous sûr de vouloir activer cette session ?';
+$string['message_activate'] = 'Confirmer l\'activation';
+$string['information_session'] = 'Il faut qu\'au plus une session soit active à la fois. Si vous activez une session, les autres sessions seront automatiquement archivées, et donc désactivées.';
 
+$string['export_session'] = "Exporter";
 
 // Capabilities
 $string['studentqcm:manage'] = 'Gérer une instance de session';
