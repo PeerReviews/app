@@ -1,371 +1,365 @@
 <?php
-// Fichier lang/en/studentqcm.php
+// File lang/en/studentqcm.php
 
 $string['pluginname'] = 'Student QCM';
 $string['modulename'] = 'Student QCM';
 $string['modulenameplural'] = 'Student QCMs';
-$string['modulename_help'] = 'Cet outil permet aux étudiants de créer leurs propres questions et aux enseignants de les évaluer.';
-$string['name'] = 'Nom';
-$string['name_plugin'] = 'Nom de la session';
-$string['name_referentiel'] = 'Nom du référentiel';
-$string['surname'] = 'Prénom';
-$string['mail'] = 'Adresse mail';
+$string['modulename_help'] = 'This tool allows students to create their own questions and teachers to evaluate them.';
+$string['name'] = 'Name';
+$string['name_plugin'] = 'Session name';
+$string['name_referentiel'] = 'Reference name';
+$string['surname'] = 'First name';
+$string['mail'] = 'Email address';
 $string['description'] = 'Description';
 $string['intro'] = 'Introduction';
-$string['pluginadministration'] = 'Administration du module Student QCM';
-$string['choice_courses'] = 'Choix des cours à ajouter';
+$string['pluginadministration'] = 'Student QCM module administration';
+$string['choice_courses'] = 'Choice of courses to add';
 
-// Ajouter les chaînes pour les nouveaux champs de date
-$string['phases_title'] = 'Choix dates des phases';
-$string['start_date_1'] = 'Phase 1 - Date début';
-$string['end_date_1'] = 'Phase 1 - Date fin';
-$string['end_date_tt_1'] = 'Phase 1 - Date fin tiers-temps';
-$string['start_date_2'] = 'Phase 2 - Date début';
-$string['end_date_2'] = 'Phase 2 - Date fin';
-$string['end_date_tt_2'] = 'Phase 2 - Date fin tiers-temps';
-$string['start_date_3'] = 'Phase 3 - Date début';
-$string['end_date_3'] = 'Phase 3 - Date fin';
-$string['end_date_tt_3'] = 'Phase 3 - Date fin tiers-temps';
-$string['start_date_session'] = 'Date début session';
-$string['end_date_session'] = 'Date fin session';
-$string['date_jury'] = 'Date du jury';
+// Add strings for new date fields
+$string['phases_title'] = 'Phase date choices';
+$string['start_date_1'] = 'Phase 1 - Start date';
+$string['end_date_1'] = 'Phase 1 - End date';
+$string['end_date_tt_1'] = 'Phase 1 - End date for extra time';
+$string['start_date_2'] = 'Phase 2 - Start date';
+$string['end_date_2'] = 'Phase 2 - End date';
+$string['end_date_tt_2'] = 'Phase 2 - End date for extra time';
+$string['start_date_3'] = 'Phase 3 - Start date';
+$string['end_date_3'] = 'Phase 3 - End date';
+$string['end_date_tt_3'] = 'Phase 3 - End date for extra time';
+$string['start_date_session'] = 'Session start date';
+$string['end_date_session'] = 'Session end date';
+$string['date_jury'] = 'Jury date';
 
-$string['newreferentiel'] = 'Nouveau Référentiel';
-$string['newcompetency'] = 'Nouvelle compétence';
-$string['newsubcompetency'] = 'Nouvelle sous-compétence';
-$string['newkeyword'] = 'Nouveau mot-clé';
+$string['newreferentiel'] = 'New reference';
+$string['newcompetency'] = 'New competency';
+$string['newsubcompetency'] = 'New sub-competency';
+$string['newkeyword'] = 'New keyword';
 
 $string['phase1'] = 'PHASE 1';
 $string['phase2'] = 'PHASE 2';
 $string['phase3'] = 'PHASE 3';
-$string['phase_start'] = 'Début';
-$string['phase_available'] = 'Commencer';
-$string['phase_unavailable'] = 'Indisponible';
-$string['phase1_title'] = 'Création de questions';
-$string['phase2_title'] = 'Évaluation de questions';
-$string['phase3_title'] = 'Valorisation de questions';
+$string['phase_start'] = 'Start';
+$string['phase_available'] = 'Start';
+$string['phase_unavailable'] = 'Unavailable';
+$string['phase1_title'] = 'Question creation';
+$string['phase2_title'] = 'Question evaluation';
+$string['phase3_title'] = 'Question valorization';
 
-$string['back'] = 'Retour';
-$string['validate'] = 'Valider';
-$string['cancel'] = 'Annuler';
-$string['delete'] = 'Supprimer';
+$string['back'] = 'Back';
+$string['validate'] = 'Validate';
+$string['cancel'] = 'Cancel';
+$string['delete'] = 'Delete';
 
-$string['qcm_list'] = 'Ma liste de questions';
-$string['add_qcm'] = 'Ajouter un QCM';
-$string['add_qcu'] = 'Ajouter un QCU';
-$string['add_tcs'] = 'Ajouter un TCS';
-$string['add_pop'] = 'Créer un POP de ce type';
-$string['edit_qcm'] = 'Modifier un QCM';
-$string['edit_qcu'] = 'Modifier un QCU';
-$string['edit_tcs'] = 'Modifier un TCS';
-$string['edit_pop'] = 'Modifier un POP';
-$string['save_changes'] = 'Sauvegarder les modifications';
-$string['create_qcm'] = 'Je crée mon QCM';
-$string['create_qcu'] = 'Je crée mon QCU';
-$string['create_tcs'] = 'Je crée mon TCS';
-$string['create_pop'] = 'Je crée mon POP';
+$string['qcm_list'] = 'My question list';
+$string['add_qcm'] = 'Add a QCM';
+$string['add_qcu'] = 'Add a QCU';
+$string['add_tcs'] = 'Add a TCS';
+$string['add_pop'] = 'Create a POP of this type';
+$string['edit_qcm'] = 'Edit a QCM';
+$string['edit_qcu'] = 'Edit a QCU';
+$string['edit_tcs'] = 'Edit a TCS';
+$string['edit_pop'] = 'Edit a POP';
+$string['save_changes'] = 'Save changes';
+$string['create_qcm'] = 'I create my QCM';
+$string['create_qcu'] = 'I create my QCU';
+$string['create_tcs'] = 'I create my TCS';
+$string['create_pop'] = 'I create my POP';
 
-$string['create_question'] = 'Je crée mon';
-$string['edit_question'] = 'Je modifie mon';
+$string['create_question'] = 'I create my';
+$string['edit_question'] = 'I edit my';
 
-$string['add_individual'] = 'Ajout individuel';
+$string['add_individual'] = 'Add individually';
 
-// QCM 
+// QCM
 $string['question'] = 'Question';
-$string['context'] = 'Contexte';
-$string['global_comment'] = 'Explication globale';
-$string['answer'] = 'Réponse';
-$string['explanation'] = 'Explication';
-$string['correct_answer'] = 'Réponse vraie';
-$string['submit'] = 'Envoyer';
-$string['save'] = 'Sauvegarder';
-$string['referentiel'] = 'Référentiel';
-$string['competency'] = 'Compétence';
-$string['subcompetency'] = 'Sous-compétence';
-$string['keywords'] = 'Mots-clés';
-$string['addmore'] = 'Ajouter + ';
-$string['qcm_saved'] = 'Question enregistré !';
-$string['qcm_updated'] = 'Question modifiée !';
+$string['context'] = 'Context';
+$string['global_comment'] = 'Global explanation';
+$string['answer'] = 'Answer';
+$string['explanation'] = 'Explanation';
+$string['correct_answer'] = 'Correct answer';
+$string['submit'] = 'Submit';
+$string['save'] = 'Save';
+$string['referentiel'] = 'Reference';
+$string['competency'] = 'Competency';
+$string['subcompetency'] = 'Sub-competency';
+$string['keywords'] = 'Keywords';
+$string['addmore'] = 'Add more';
+$string['qcm_saved'] = 'Question saved!';
+$string['qcm_updated'] = 'Question updated!';
 
-$string['atleastonecompetency'] = 'Veuillez saisir au moins une compétence.';
-$string['atleastonesubcompetency'] = 'Veuillez saisir au moins une sous-compétence.';
-$string['atleastonekeyword'] = 'Veuillez saisir au moins un mot-clé.';
+$string['atleastonecompetency'] = 'Please enter at least one competency.';
+$string['atleastonesubcompetency'] = 'Please enter at least one sub-competency.';
+$string['atleastonekeyword'] = 'Please enter at least one keyword.';
 
-$string['qcu_not_valid'] = 'Il doit y avoir exactement une réponse correcte pour les questions de type QCU et TCS.';
-$string['context_required'] = 'Le contexte est requis.';
-$string['question_required'] = 'La question est requise.';
+$string['qcu_not_valid'] = 'There must be exactly one correct answer for QCU and TCS type questions.';
+$string['context_required'] = 'Context is required.';
+$string['question_required'] = 'Question is required.';
 
 $string['your_qcms'] = 'QCM';
-$string['edit'] = 'Modifier';
-$string['duplicate'] = 'Dupliquer';
+$string['edit'] = 'Edit';
+$string['duplicate'] = 'Duplicate';
 
-$string['not_found'] = 'Aucune question trouvée.';
-$string['qcm_not_found'] = 'Aucun QCM trouvé.';
-$string['qcu_not_found'] = 'Aucun QCU trouvé.';
-$string['tcs_not_found'] = 'Aucun TCS trouvé.';
-$string['pop_not_found'] = 'Aucun POP de ce type trouvé.';
-$string['revision_not_found'] = 'Aucune révision trouvée.';
+$string['not_found'] = 'No questions found.';
+$string['qcm_not_found'] = 'No QCM found.';
+$string['qcu_not_found'] = 'No QCU found.';
+$string['tcs_not_found'] = 'No TCS found.';
+$string['pop_not_found'] = 'No POP of this type found.';
+$string['revision_not_found'] = 'No revision found.';
 
-$string['completed_qcms'] = 'QCMs complétés';
-$string['completed_qcus'] = 'QCUs complétés';
-$string['completed_tcss'] = 'TCSs complétés';
-$string['completed_pops'] = 'POPs complétés';
+$string['completed_qcms'] = 'Completed QCMs';
+$string['completed_qcus'] = 'Completed QCUs';
+$string['completed_tcss'] = 'Completed TCSs';
+$string['completed_pops'] = 'Completed POPs';
 
-$string['new_subcompetency'] = 'Ajouter une nouvelle sous-compétence';
-$string['new_keyword'] = 'Ajouter un nouveau mot clé';
+$string['new_subcompetency'] = 'Add a new sub-competency';
+$string['new_keyword'] = 'Add a new keyword';
 
-$string['select_referentiel'] = 'Sélectionnez un référentiel';
-$string['select_competency'] = 'Sélectionnez une compétence';
-$string['select_subcompetency'] = 'Sélectionnez une sous-compétence';
-
+$string['select_referentiel'] = 'Select a reference';
+$string['select_competency'] = 'Select a competency';
+$string['select_subcompetency'] = 'Select a sub-competency';
 
 // Evaluations
+$string['evaluate'] = 'Evaluate';
+$string['no_assigned_prod'] = 'No production has been assigned to you at this time.';
+$string['assigned_prod_list'] = "Your assigned productions";
 
-$string['evaluate'] = 'Évaluer';
-$string['no_assigned_prod'] = 'Aucune production ne vous a été assigné pour l\'instant.';
-$string['assigned_prod_list'] = "Vos productions assignées";
+$string['message_delete'] = 'Confirm deletion';
+$string['confirm_delete'] = 'Are you sure you want to delete this question? This action is irreversible.';
+$string['delete'] = 'Delete';
 
-$string['message_delete'] = 'Confirmer la suppression';
-$string['confirm_delete'] = 'Êtes-vous sûr de vouloir supprimer cette question ? Cette action est irréversible';
-$string['delete'] = 'Supprimer';
-
-$string['qcm_deleted'] = 'Question Supprimée';
+$string['qcm_deleted'] = 'Question deleted!';
 
 // Productions
 
-$string['production1'] = 'Contenu de la production';
-$string['production2'] = 'Contenu de la production 2';
-$string['production3'] = 'Contenu de la production 3';
+$string['production1'] = 'Production content';
+$string['production2'] = 'Production content 2';
+$string['production3'] = 'Production content 3';
 
 // Error
-$string['unknown'] = 'Non renseigné';
+$string['unknown'] = 'Not provided';
 
-$string['to_be_evaluated'] = 'À évaluer';
-$string['evaluated'] = 'Évalué';
+$string['to_be_evaluated'] = 'To be evaluated';
+$string['evaluated'] = 'Evaluated';
 
-$string['show_answer'] = 'Afficher les réponses';
-$string['evaluate_comment'] = 'Mon commentaire sur cette question';
+$string['show_answer'] = 'Show answers';
+$string['evaluate_comment'] = 'My comment on this question';
 
-$string['submit_evaluation'] = 'Envoyer';
-$string['evaluation_saved'] = 'Évaluation enregistrée';
+$string['submit_evaluation'] = 'Submit';
+$string['evaluation_saved'] = 'Evaluation saved';
 
+$string['add'] = 'Add';
 
-
-$string['add'] = 'Ajouter';
-
-$string['media_context'] = 'Médias du contexte';
-$string['media_answer'] = 'Médias de la réponse';
-$string['media_explanation'] = 'Médias de l\'explication';
-
+$string['media_context'] = 'Context media';
+$string['media_answer'] = 'Answer media';
+$string['media_explanation'] = 'Explanation media';
 
 // PHASE 3
 
-$string['value_list'] = 'Je valorise mes questions';
-$string['student_evaluation'] = 'Évaluation';
-$string['no_evaluation_found'] = "Aucune évaluation trouvée";
+$string['value_list'] = 'I value my questions';
+$string['student_evaluation'] = 'Evaluation';
+$string['no_evaluation_found'] = "No evaluation found";
 
-// Creation réferentiel de compétences
+// Competency framework creation
 
-$string['info_referentiel_title'] = 'Informations principales de la session';
-$string['date_start_referentiel'] = 'Date début session';
-$string['date_end_referentiel'] = 'Date fin session';
-$string['date_jury'] = 'Date jury';
+$string['info_referentiel_title'] = 'Main session information';
+$string['date_start_referentiel'] = 'Session start date';
+$string['date_end_referentiel'] = 'Session end date';
+$string['date_jury'] = 'Jury date';
 
-$string['upload_competence'] = "Si vous avez déjà les compétences de votre référentiel, vous pouvez charger un fichier. Sinon vous pouvez les créer manuellement.";
-$string['desc_manual_competence'] = "Cliquer sur le bouton pour ajouter manuellement les compétences du référentiel";
-$string['add_manual_competence'] = "Ajouter manuellement les compétences";
-$string['desc_files_competence'] = "Déposer un fichier de compétences";
-$string['add_files_competence'] = "Ajouter un fichier de compétences";
-$string['competences_title'] = 'Compétences :';
-$string['add_competences'] = 'Ajouter une compétence';
-$string['info_competence'] = 'Nouvelle compétence';
-$string['name_competence'] = 'Nom de la compétence';
-$string['choice_comp'] = 'Veuillez choisir une compétence associée';
-$string['drag_drop'] = 'Glissez et déposer pour uploader le fichier';
-$string['or'] = 'Ou';
-$string['upload_file'] = 'Charger un fichier';
+$string['upload_competence'] = "If you already have the competencies for your framework, you can upload a file. Otherwise, you can create them manually.";
+$string['desc_manual_competence'] = "Click the button to manually add the framework's competencies";
+$string['add_manual_competence'] = "Add competencies manually";
+$string['desc_files_competence'] = "Upload a competency file";
+$string['add_files_competence'] = "Add a competency file";
+$string['competences_title'] = 'Competencies:';
+$string['add_competences'] = 'Add a competency';
+$string['info_competence'] = 'New competency';
+$string['name_competence'] = 'Competency name';
+$string['choice_comp'] = 'Please choose an associated competency';
+$string['drag_drop'] = 'Drag and drop to upload the file';
+$string['or'] = 'Or';
+$string['upload_file'] = 'Upload a file';
 
-$string['subcompetences_title'] = 'Sous-compétences:';
-$string['add_subcompetences'] = 'Ajouter une sous-compétence';
-$string['info_subcompetence'] = 'Nouvelle sous-compétence';
-$string['name_subcompetence'] = 'Nom de la sous-compétence';
-$string['competence_associated'] = 'Compétence associée';
+$string['subcompetences_title'] = 'Sub-competencies:';
+$string['add_subcompetences'] = 'Add a sub-competency';
+$string['info_subcompetence'] = 'New sub-competency';
+$string['name_subcompetence'] = 'Sub-competency name';
+$string['competence_associated'] = 'Associated competency';
 
-$string['keyword_title'] = 'Mot-clefs:';
-$string['add_keyword'] = 'Ajouter un mot-clé';
-$string['info_keyword'] = 'Information sur le mot-clé';
-$string['name_keyword'] = 'Nom du mot-clé';
-$string['subcompetence_associated'] = 'Sous-compétence associée';
-$string['export'] = 'Exporter les compétences';
+$string['keyword_title'] = 'Keywords:';
+$string['add_keyword'] = 'Add a keyword';
+$string['info_keyword'] = 'Keyword information';
+$string['name_keyword'] = 'Keyword name';
+$string['subcompetence_associated'] = 'Associated sub-competency';
+$string['export'] = 'Export competencies';
 
-$string['no_competence_error'] = 'Veuillez saisir au moins une compétence.';
+$string['no_competence_error'] = 'Please enter at least one competency.';
 
-$string['studentqcm:addinstance'] = 'AjouterInstance';
+$string['studentqcm:addinstance'] = 'Add Instance';
 $string['studentqcm:view'] = 'View';
 
-// Choix étudiants
+// Student selection
 
-$string['choice_etu_title'] = 'Choix étudiants';
-$string['choice_etu_tt_title'] = 'Choix étudiants avec tiers-temps';
-$string['import_etu'] = 'Importer liste étudiants';
-$string['selected_etu'] = 'Etudiants sélectionnés:';
-$string['add_etu'] = 'Ajouter un étudiant manuellement';
-$string['info_etu'] = 'Informations sur l’étudiant:';
+$string['choice_etu_title'] = 'Student selection';
+$string['choice_etu_tt_title'] = 'Student selection with extra time';
+$string['import_etu'] = 'Import student list';
+$string['selected_etu'] = 'Selected students:';
+$string['add_etu'] = 'Add a student manually';
+$string['info_etu'] = 'Student information:';
 
-$string['choice_prof_title'] = 'Choix professeurs';
-$string['import_prof'] = 'Importer liste professeurs';
-$string['selected_prof'] = 'Professeurs sélectionnés:';
-$string['add_prof'] = 'Ajouter un professeur manuellement';
-$string['info_prof'] = 'Informations sur le professeur:';
+$string['choice_prof_title'] = 'Professor selection';
+$string['import_prof'] = 'Import professor list';
+$string['selected_prof'] = 'Selected professors:';
+$string['add_prof'] = 'Add a professor manually';
+$string['info_prof'] = 'Professor information:';
 
-// Choix types eval
+// Evaluation type selection
 
-$string['type_eval_title'] = 'Choix types évaluation';
-$string['nb_qcm'] = 'Nombre de QCM';
-$string['nb_qcu'] = 'Nombre de QCU';
-$string['nb_tcs'] = 'Nombre de TCS';
-$string['nb_pop'] = 'Nombre de POP';
-$string['grid_eval'] = 'Grille évaluation';
-$string['grid_eval_qcm'] = 'Grille évaluation QCM';
-$string['grid_eval_qcu'] = 'Grille évaluation QCU';
-$string['grid_eval_tcs'] = 'Grille évaluation TCS';
+$string['type_eval_title'] = 'Evaluation type selection';
+$string['nb_qcm'] = 'Number of QCMs';
+$string['nb_qcu'] = 'Number of QCUs';
+$string['nb_tcs'] = 'Number of TCSs';
+$string['nb_pop'] = 'Number of POPs';
+$string['grid_eval'] = 'Evaluation grid';
+$string['grid_eval_qcm'] = 'QCM evaluation grid';
+$string['grid_eval_qcu'] = 'QCU evaluation grid';
+$string['grid_eval_tcs'] = 'TCS evaluation grid';
 $string['bonus'] = 'Bonus:';
 $string['malus'] = 'Malus:';
-$string['add_malus'] = 'Ajouter un malus';
+$string['add_malus'] = 'Add a malus';
 
-$string['add_tiers_temps_phase'] = 'Voulez vous prendre en compte les tiers-temps ?';
+$string['add_tiers_temps_phase'] = 'Do you want to consider extra time?';
 
-$string['nb_reviewer'] = 'Nombre de relecteurs';
+$string['nb_reviewer'] = 'Number of reviewers';
 
+// TEACHER INTERFACE
+$string['student_dashboard_phase1'] = 'Student tracking for phase 1';
+$string['student_dashboard_phase2'] = 'Student tracking for phase 2';
+$string['student_dashboard_phase3'] = 'Student tracking for phase 3';
+$string['teacher_dashboard'] = 'Teacher tracking';
+$string['production_evaluation'] = 'Production evaluation';
 
-// INTERFACE PROF
-$string['student_dashboard_phase1'] = 'Suivi des étudiants pour la phase 1';
-$string['student_dashboard_phase2'] = 'Suivi des étudiants pour la phase 2';
-$string['student_dashboard_phase3'] = 'Suivi des étudiants pour la phase 3';
-$string['teacher_dashboard'] = 'Suivi des enseignants';
-$string['production_evaluation'] = 'Évaluation des productions';
+$string['student_gestion'] = 'Student management';
+$string['teacher_gestion'] = 'Teacher management';
+$string['user_gestion'] = 'User management';
+$string['session_gestion'] = 'Session management';
+$string['attribution_gestion'] = 'Production attribution management';
+$string['grade_gestion'] = 'Grade management';
+$string['grid_eval_gestion'] = 'Evaluation grid management';
 
-$string['student_gestion'] = 'Gestion des étudiants';
-$string['teacher_gestion'] = 'Gestion des enseignants';
-$string['user_gestion'] = 'Gestion des utilisateurs';
-$string['session_gestion'] = 'Gestion des sessions';
-$string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
-$string['grade_gestion'] = 'Gestion des notes';
-$string['grid_eval_gestion'] = 'Gestion des grilles d\'évaluation';
+$string['add_student_csv'] = 'Add multiple students from a CSV file';
 
-$string['add_student_csv'] = 'Ajouter plusieurs étudiants à partir d\'un ficher CSV';
+$string['info_user_gestion'] = 'This section allows you to manage users: adding students or teachers to the current session';
+$string['info_attribution_gestion'] = 'This section allows you to manage automatic or manual attributions of productions and/or reviews to be evaluated by students or teachers';
+$string['info_teacher_dashboard'] = 'This section allows you to monitor each teacher\'s progress in correcting productions and reviews';
+$string['info_grade_gestion'] = 'This section allows you to manage each student\'s grades';
+$string['info_session_gestion'] = 'This section allows you to manage all sessions: modification, duplication, archiving, consultation, and deletion';
+$string['info_grid_eval_gestion'] = 'This section allows you to manage the evaluation grids of the current session: manual addition, import, export, and deletion';
 
-$string['info_user_gestion'] = 'Cette section permet d\'accéder à la gestion des utilisateurs : ajouter des étudiants ou enseignants à la session courante';
-$string['info_attribution_gestion'] = 'Cette section permet de gérer les attributions automatiques ou manuelles des productions et/ou révisions à évaluer par les étudiants ou enseignants';
-$string['info_teacher_dashboard'] = 'Cette section permet de visualiser l\'avancée de chaque enseignant sur la correction des productions et révisions';
-$string['info_grade_gestion'] = 'Cette section permet de gérer les notes de chaque étudiant';
-$string['info_session_gestion'] = 'Cette section permet de gérer l\'ensemble des sessions : modification, duplication, archivage, consultatiopn et suppression';
-$string['info_grid_eval_gestion'] = 'Cette section permet de gérer les grilles d\'évaluation de la session courante: ajout manuel, ajout par import, export et suppression';
+$string['manager_teacher'] = 'Actions available to the lead teacher';
+$string['teacher'] = 'Actions available to the teacher';
 
-$string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
-$string['teacher'] = 'Actions réalisables par l\'enseignant';
-
-$string['student_list'] = 'Liste des étudiants';
-$string['student_id'] = 'ID de l\'étudiant';
-$string['teacher_id'] = 'ID de l\'enseignant';
-$string['firstname'] = 'Nom';
-$string['lastname'] = 'Prénom';
-$string['email'] = 'Adresse email';
-$string['completed_question'] = 'Questions corrigées';
-$string['completed_revision'] = 'Révisions corrigées';
+$string['student_list'] = 'Student list';
+$string['student_id'] = 'Student ID';
+$string['teacher_id'] = 'Teacher ID';
+$string['firstname'] = 'First name';
+$string['lastname'] = 'Last name';
+$string['email'] = 'Email address';
+$string['completed_question'] = 'Questions corrected';
+$string['completed_revision'] = 'Revisions corrected';
 $string['actions'] = 'Actions';
-$string['connect'] = 'Se connecter';
-$string['correctors'] = 'ID des étudiants à évaluer';
-$string['full_name'] = 'Nom complet';
-$string['last_connected'] = 'Dernière connexion';
-$string['never_connected'] = 'Aucune connexion';
-$string['completed_reviews'] = 'Révisions complétées';
-$string['reviewed_question'] = 'Questions révisées';
-$string['tier_temps'] = 'Tiers temps';
-$string['add_student'] = 'Ajouter un étudiant';
+$string['connect'] = 'Connect';
+$string['correctors'] = 'ID of students to be evaluated';
+$string['full_name'] = 'Full name';
+$string['last_connected'] = 'Last connection';
+$string['never_connected'] = 'No connection';
+$string['completed_reviews'] = 'Completed reviews';
+$string['reviewed_question'] = 'Reviewed questions';
+$string['tier_temps'] = 'Extra time';
+$string['add_student'] = 'Add a student';
 
-$string['session_list'] = 'Liste des sessions';
-$string['session_id'] = 'ID de la session';
-$string['session_name'] = 'Nom de la session';
-$string['session_deleted'] = 'Session Suprimée';
+$string['session_list'] = 'Session list';
+$string['session_id'] = 'Session ID';
+$string['session_name'] = 'Session name';
+$string['session_deleted'] = 'Session deleted';
 
-$string['teacher_list'] = 'Liste des enseignants';
-$string['add_teacher'] = 'Ajouter un enseignant';
-$string['teacher_id'] = 'ID de l\'enseignant';
-$string['completed_evaluations'] = 'Évaluations complétées';
+$string['teacher_list'] = 'Teacher list';
+$string['add_teacher'] = 'Add a teacher';
+$string['teacher_id'] = 'Teacher ID';
+$string['completed_evaluations'] = 'Completed evaluations';
 
-$string['context'] = 'Contexte';
-$string['note_for_question'] = 'Attribuez une note pour cette question';
-$string['attributed_note_question'] = 'Note attribuée pour cette question';
-$string['note_for_revision'] = 'Attribuez une note pour cette révision';
-$string['attributed_note_revision'] = 'Note attribuée pour cette révision';
-$string['no_evaluation_for_this_question'] = 'Pas d\'évaluation pour cette question';
-$string['student_revision'] = 'Révision faite par l\'étudiant';
-$string['nb_evaluated_question'] = 'Questions évaluées';
-$string['nb_evaluated_revision'] = 'Révisions évaluées';
-$string['auto_save'] = 'Cette page utilise la sauvegarde automatique, la notation de chaque question / révision est donc automatiquement sauvegardée et peut être modifiée à tout moment';
-$string['unavailable_information'] = 'Informations indisponibles';
-$string['student'] = 'Étudiant';
-$string['autocomplete_question'] = 'Appliquer ces notes à toutes les questions suivantes';
-$string['autocomplete_review'] = 'Appliquer ces notes à toutes les révisions suivantes';
-$string['autocomplete_question_success'] = 'Notes des questions auto-complétées avec succès !';
-$string['autocomplete_review_success'] = 'Notes des révisions auto-complétées avec succès !';
+$string['context'] = 'Context';
+$string['note_for_question'] = 'Assign a grade for this question';
+$string['attributed_note_question'] = 'Grade assigned for this question';
+$string['note_for_revision'] = 'Assign a grade for this revision';
+$string['attributed_note_revision'] = 'Grade assigned for this revision';
+$string['no_evaluation_for_this_question'] = 'No evaluation for this question';
+$string['student_revision'] = 'Revision made by the student';
+$string['nb_evaluated_question'] = 'Questions evaluated';
+$string['nb_evaluated_revision'] = 'Revisions evaluated';
+$string['auto_save'] = 'This page uses auto-save, so the grading of each question/revision is automatically saved and can be modified at any time';
+$string['unavailable_information'] = 'Unavailable information';
+$string['student'] = 'Student';
+$string['autocomplete_question'] = 'Apply these grades to all following questions';
+$string['autocomplete_review'] = 'Apply these grades to all following reviews';
+$string['autocomplete_question_success'] = 'Question grades auto-completed successfully!';
+$string['autocomplete_review_success'] = 'Review grades auto-completed successfully!';
 
-$string['total_grade_questions'] = 'Note production';
-$string['total_grade_revisions'] = 'Note révisions';
-$string['total_general'] = 'Note générale';
-$string['show_production'] = 'Voir la production';
-$string['show_revision'] = 'Voir les révisions';
-$string['show_modification'] = 'Modifier les notes';
+$string['total_grade_questions'] = 'Production grade';
+$string['total_grade_revisions'] = 'Revisions grade';
+$string['total_general'] = 'General grade';
+$string['show_production'] = 'View production';
+$string['show_revision'] = 'View reviews';
+$string['show_modification'] = 'Edit grades';
 
-// Gestion des attributions
-$string['attribution_list'] = 'Liste des attributions de productions';
-$string['prod1'] = 'Production 1 à évaluer';
-$string['prod2'] = 'Production 2 à évaluer';
-$string['prod3'] = 'Production 3 à évaluer';
-$string['add_attribution'] = 'Ajouter manuellement une attribution';
-$string['save_students'] = 'Enregistrer les modifications';
-$string['save_teachers'] = 'Enregistrer les modifications';
-$string['trigger_attribution'] = 'Déclencher l\'attribution automatique';
+// Attribution Management
+$string['attribution_list'] = 'List of production attributions';
+$string['prod1'] = 'Production 1 to be evaluated';
+$string['prod2'] = 'Production 2 to be evaluated';
+$string['prod3'] = 'Production 3 to be evaluated';
+$string['add_attribution'] = 'Manually add an attribution';
+$string['save_students'] = 'Save changes';
+$string['save_teachers'] = 'Save changes';
+$string['trigger_attribution'] = 'Trigger automatic attribution';
 
-$string['session_name'] = 'Nom de la session';
-$string['session_start'] = 'Date de début';
-$string['session_end'] = 'Date de fin';
-$string['time_created'] = 'Date de création';
-$string['archived'] = 'Archivé';
-$string['archive'] = "Archiver";
-$string['session_list'] = 'Liste des sessions';
-$string['sessionsaved'] = 'Session sauvegardée !';
-$string['set_current_session'] = 'Rendre cette session courante';
+$string['session_name'] = 'Session name';
+$string['session_start'] = 'Start date';
+$string['session_end'] = 'End date';
+$string['time_created'] = 'Creation date';
+$string['archived'] = 'Archived';
+$string['archive'] = 'Archive';
+$string['session_list'] = 'Session list';
+$string['sessionsaved'] = 'Session saved!';
+$string['set_current_session'] = 'Set this session as current';
 
-$string['grid_eval_title'] = 'Grille d\'évaluation';
-$string['export_grid'] = 'Exporter';
-$string['import_grid'] = 'Importer';
-$string['import_texte'] = 'Si vous importez un fichier, toutes les données existantes seront écrasées.';
-$string['confirm_delete_session'] = 'Êtes-vous sûr de vouloir supprimer cette session ?';
-$string['activate'] = 'Activer';
-$string['confirm_activate_session'] = 'Êtes-vous sûr de vouloir activer cette session ?';
-$string['message_activate'] = 'Confirmer l\'activation';
-$string['information_session'] = 'Il faut qu\'au plus une session soit active à la fois. Si vous activez une session, les autres sessions seront automatiquement archivées, et donc désactivées.';
+$string['grid_eval_title'] = 'Evaluation grid';
+$string['export_grid'] = 'Export';
+$string['import_grid'] = 'Import';
+$string['import_texte'] = 'If you import a file, all existing data will be overwritten.';
+$string['confirm_delete_session'] = 'Are you sure you want to delete this session?';
+$string['activate'] = 'Activate';
+$string['confirm_activate_session'] = 'Are you sure you want to activate this session?';
+$string['message_activate'] = 'Confirm activation';
+$string['information_session'] = 'Only one session can be active at a time. If you activate a session, the other sessions will be automatically archived and thus deactivated.';
 
-$string['export_session'] = "Exporter";
+$string['export_session'] = 'Export';
 
 // Capabilities
-$string['studentqcm:manage'] = 'Gérer une instance de session';
-$string['studentqcm:addinstance'] = 'Ajouter une instance de session';
-$string['studentqcm:view'] = 'Voir une instance de session';
+$string['studentqcm:manage'] = 'Manage a session instance';
+$string['studentqcm:addinstance'] = 'Add a session instance';
+$string['studentqcm:view'] = 'View a session instance';
 
-$string['edit_session'] = 'Édition de la session';
-$string['info_section_general'] = 'Informations générales de la session';
-$string['info_section_date'] = 'Informations liées aux dates';
-$string['info_section_question'] = 'Informations liées aux questions';
-$string['info_section_competency'] = 'Informations liées aux compétences';
+$string['edit_session'] = 'Edit session';
+$string['info_section_general'] = 'General session information';
+$string['info_section_date'] = 'Date-related information';
+$string['info_section_question'] = 'Question-related information';
+$string['info_section_competency'] = 'Competency-related information';
 
-$string['competency_not_found'] = 'Aucune compétence trouvée';
-$string['add_competency'] = 'Ajouter une compétence';
+$string['competency_not_found'] = 'No competency found';
+$string['add_competency'] = 'Add a competency';
 
-$string['NA'] = 'Non renseigné';
+$string['NA'] = 'Not provided';
 
-$string['grid_qcu'] = 'Grille d\'évaluation des QCMs';
-$string['grid_qcm'] = 'Grille d\'évaluation des QCUs';
-$string['grid_tcs'] = 'Grille d\'évaluation des TCSs';
+$string['grid_qcu'] = 'QCU Evaluation Grid';
+$string['grid_qcm'] = 'QCM Evaluation Grid';
+$string['grid_tcs'] = 'TCS Evaluation Grid';

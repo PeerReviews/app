@@ -330,7 +330,8 @@ if ($qcms) {
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2'>";
                             echo "Contexte";
                             echo "</p>";
-                            echo "<span class=''>{$qcm->context}</span>";
+                            $context_sans_images = preg_replace('/<img[^>]*>/i', '', $qcm->context);
+                            echo "<span class=''>{$context_sans_images}</span>";
 
                             $filearea = 'contextfiles';
                             $itemid = $qcm->id;
@@ -364,12 +365,14 @@ if ($qcms) {
 
                             echo "<div class='w-full mb-2'>";
                             echo "<label class='flex flex-col w-full $bgColor p-3 rounded-lg'>";
-                            echo "<span class='$answerColor font-medium text-lg'>{$reponse->answer}</span>";
+                            $answer_sans_images = preg_replace('/<img[^>]*>/i', '', $reponse->answer);
+                            echo "<span class='$answerColor font-medium text-lg'>{$answer_sans_images}</span>";
 
                             if (!empty($reponse->explanation)) {
                                 echo "<div class='flex mt-1 text-gray-700 text-md'>";
                                 echo "<span class='mr-2 $answerColor'>&#10148;</span>";
-                                echo "<span class='$answerColor'>{$reponse->explanation}</span>";
+                                $explanation_sans_images = preg_replace('/<img[^>]*>/i', '', $reponse->explanation);
+                                echo "<span class='$answerColor'>{$explanation_sans_images}</span>";
                                 echo "</div>";
                             }
 
