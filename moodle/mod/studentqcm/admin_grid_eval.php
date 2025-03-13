@@ -69,35 +69,45 @@ if ($studentqcm) {
         echo "<p class='font-bold text-2xl m-8 text-$colorText text-center'>" . get_string($titleString, 'mod_studentqcm') . "</p>";
         echo "<div id='affichage-grid-$type' class='mt-4'>";
 
-        $index = 0;
-        foreach ($grid_eval as $element) {
+
+        for ($index = 1; $index <= 10; $index++) {
             // Bonus section
-            if ($index < 6 && $index != 0) {
-                $gridData[$type]["bonus"][$index - 1] = htmlspecialchars($element, ENT_QUOTES);
-                echo "<div class='items-center'>";
-                echo "<label>";
+            if ($index < 6) {
+                $indexbonus = "bonus" . $index;
+                $gridData[$type]["bonus"][$index - 1] = htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES);
+                echo "<div class='flex items-center gap-2'>";
+                echo "<label class='flex w-full items-center'>";
                 echo "<i class='$iconClass fa-plus text-lime-600'></i>";
                 echo "<i class='fas fa-1 mr-3 text-lime-600'></i>";
-                echo "<input class='text-md rounded border px-2' type='text' name='$type-bonus$index' value='" . htmlspecialchars($element, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
+                echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-bonus$index' value='" . htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
                 echo "</label>";
                 echo "</div>";
             }
 
             // Malus section
-            if ($index >= 6 && $index != 0) {
-                if ($element) {
-                    $gridData[$type]["malus"][$index - 6] = htmlspecialchars($element, ENT_QUOTES);
-                    $index_malus = $index - 5;
-                    echo "<div class='items-center'>";
-                    echo "<label>";
+            if ($index >= 6) {
+                $index_malus = $index - 5;
+                $indexmalus = "malus" . $index_malus;
+                if ($grille["data"]->$indexmalus) {
+                    $gridData[$type]["malus"][$index - 6] = htmlspecialchars($grille["data"]->$indexmalus, ENT_QUOTES);
+                    echo "<div class='flex items-center gap-2'>";
+                    echo "<label class='flex w-full items-center'>";
                     echo "<i class='fas fa-minus text-red-600'></i>";
                     echo "<i class='fas fa-1 mr-3 text-red-600'></i>";
-                    echo "<input class='texte-md rounded border px-2' type='text' name='$type-malus$index_malus' value='" . htmlspecialchars($element, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
+                    echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-malus$index_malus' value='" . htmlspecialchars($grille["data"]->$indexmalus, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
+                    echo "</label>";
+                    echo "</div>";
+                } else {
+                    $gridData[$type]["malus"][$index - 5] = "";
+                    echo "<div class='flex items-center gap-2'>";
+                    echo "<label class='flex w-full items-center'>";
+                    echo "<i class='fas fa-minus text-red-600'></i>";
+                    echo "<i class='fas fa-1 mr-3 text-red-600'></i>";
+                    echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-malus$index_malus' value='' oninput='updateHiddenGridData()'>";
                     echo "</label>";
                     echo "</div>";
                 }
             }
-            $index++;
         }
 
         echo "</div>";
@@ -138,6 +148,11 @@ echo $OUTPUT->footer();
             // Parcourir les types de valeurs (bonus/malus)
             Object.entries(grid_data).forEach(([type, elements]) => {
                 if (type === 'bonus' || type === 'malus') {
+                    console.log("elements: ", elements);
+                    if (!Array.isArray(elements)) {
+                        elements = Object.values(elements);
+                        gridData[gridType][type] = elements; // Mise à jour pour éviter d'autres erreurs
+                    }
                     elements.forEach((element, index) => {
                         let inputName = `${gridType}-${type}${index + 1}`; // Ex: "qcu_bonus1", "qcm_malus2"
                         let inputField = document.querySelector(`input[name="${inputName}"]`);
@@ -155,7 +170,7 @@ echo $OUTPUT->footer();
         // Mettre à jour le champ caché avec les nouvelles données
         document.getElementById('gridDataHidden').value = JSON.stringify(gridData);
     }
-    
+
 
     function importGrid() {
         let importContainer = document.getElementById("import_grid");
@@ -163,7 +178,7 @@ echo $OUTPUT->footer();
 
         let html = `
             <p><?php echo "" . get_string('import_texte', 'mod_studentqcm') . "" ?></p>
-            <div id="drop-area-grid" class="drop-area bg-sky-50 p-6 m-4 border border-white flex flex-col justify-center items-center text-center cursor-pointer">
+            <div id="drop-area-grid" class="drop-area bg-white p-6 m-4 border-4 border-dashed border-indigo-200 flex flex-col justify-center items-center text-center cursor-pointer rounded-3xl">
                 <i class="fa-solid fa-cloud-arrow-up fa-5x"></i>
                 <p>Glissez et déposer pour uploader le fichier</p>
                 <p>Ou</p>
@@ -231,7 +246,7 @@ echo $OUTPUT->footer();
                                 });
                             });
                             document.getElementById('gridDataHidden').value = JSON.stringify(gridData);
-                            
+
                             let fileItem = document.createElement("div");
                             fileItem.classList.add("file-item");
                             fileItem.textContent = file.name;
@@ -252,12 +267,12 @@ echo $OUTPUT->footer();
 
 
             }
-            
+
         }
     }
 
     function updateData() {
-        
+
     }
 
     function exportGrid() {
