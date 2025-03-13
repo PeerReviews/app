@@ -66,7 +66,7 @@ if ($studentqcm) {
         $titleString = $grille['title'];
 
         echo "<div id='grid-$type' class='bg-$colorBg shadow-md rounded-3xl p-4'>";
-        echo "<p class='font-bold text-2xl m-8 text-$colorText text-center'>" . get_string($titleString, 'mod_studentqcm') . "</p>";
+        echo "<p class='font-bold text-2xl text-$colorText text-center'>" . get_string($titleString, 'mod_studentqcm') . "</p>";
         echo "<div id='affichage-grid-$type' class='mt-4'>";
 
 
@@ -118,17 +118,19 @@ if ($studentqcm) {
 
 }
 
-echo "<div class='flex mt-4 justify-center'>";
-echo "<button type='button' id='export-grid' class='font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-2xl shadow-md py-2 px-4 m-4' onclick='exportGrid()'>
-    " . get_string('export_grid', 'mod_studentqcm') . "
-    </button>";
-echo "<button type='button' id='import-grid' class='font-bold text-gray-600 bg-gray-200 hover:bg-gray-300 rounded-2xl shadow-md py-2 px-4 m-4' onclick='importGrid()'>
-    " . get_string('import_grid', 'mod_studentqcm') . "
-    </button>";
+echo "<div class='flex mt-4 justify-center gap-4'>";
+    echo "<button type='button' id='export-grid' class='w-full p-4 bg-indigo-300 text-white font-semibold rounded-2xl shadow-md hover:bg-indigo-400 transition text-center text-lg' onclick='exportGrid()'>";
+        echo "<i class='fas fa-file-export mr-2'></i>" . get_string('export_grid', 'mod_studentqcm');
+    echo "</button>";
+
+    echo "<button type='button' id='import-grid' class='w-full p-4 bg-indigo-300 text-white font-semibold rounded-2xl shadow-md hover:bg-indigo-400 transition text-center text-lg' onclick='importGrid()'>";
+        echo "<i class='fas fa-file-import mr-2'></i>" . get_string('import_grid', 'mod_studentqcm');
+    echo "</button>";
 echo "</div>";
+
 echo "<div id='import_grid'></div>";
 
-echo "<div class='flex mr-6 justify-end'>";
+echo "<div class='flex mt-4 justify-end'>";
 echo '<form action="admin_grid_eval_save.php?id=' . $id . '" method="post" style="display:inline;">';
 echo '<input type="hidden" id="gridDataHidden" name="gridData" value="">';
 echo "<button type='submit' id='save-grid' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-200 hover:bg-lime-300 cursor-pointer text-lime-700 no-underline text-lg' onclick='saveGrid()'>
