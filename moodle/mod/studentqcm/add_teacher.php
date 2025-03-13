@@ -27,7 +27,7 @@ if (!$user) {
     exit;
 }
 
-$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+$session = $DB->get_record('studentqcm_session', ['archived' => 0], '*', MUST_EXIST);
 
 // Vérifier si l'utilisateur est déjà inscrit dans mdl_teachers
 $existing_teacher = $DB->get_record('teachers', ['userId' => $user->id, 'sessionid' => $session->id]);

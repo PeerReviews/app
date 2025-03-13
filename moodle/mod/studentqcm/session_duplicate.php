@@ -106,27 +106,17 @@ if (!empty($popsArray)) {
 }
 
 if (empty($record->name)) {
-    throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
+    throw new moodle_exception('missingfield', 'studentqcm_session', '', 'name');
 }
-// echo '<pre>';
-// print_r($record);
-// echo '</pre>';
-// exit;   
 
-// var_dump($record);
-// die();
-
-// Insérer l'instance principale dans la table 'studentqcm'
-$id = $DB->insert_record('studentqcm', $record);
+$id = $DB->insert_record('studentqcm_session', $record);
 if (!$id) {
-    throw new moodle_exception('insertfailed', 'studentqcm');
+    throw new moodle_exception('insertfailed', 'studentqcm_session');
 }
-
-
 
 $record_studentqcm_instance = new stdClass();
 $record_studentqcm_instance->name = trim($data->name_plugin);
-$DB->insert_record('studentqcm_instance', $record_studentqcm_instance);
+$DB->insert_record('studentqcm', $record_studentqcm);
 
 // Rediriger vers la liste des QCM avec un message de succès
 redirect(new moodle_url('/mod/studentqcm/admin_session_gestion.php', array('id' => $id)), get_string('qcm_deleted', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);

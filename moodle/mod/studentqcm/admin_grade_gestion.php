@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../config.php');
 
 $id = required_param('id', PARAM_INT);
-$session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
+$session = $DB->get_record('studentqcm_session', ['archived' => 0], '*', MUST_EXIST);
 
 // Récupération du module, cours et QCM
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
