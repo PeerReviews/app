@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/peerreview/db" VERSION="20220122" COMMENT="XMLDB file for PeerReview module"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+
+    <TABLE NAME="peerreview" COMMENT="Main table in PeerReview module">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="text" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="start_date_1" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_1" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_tt_1" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="start_date_2" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_2" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_tt_2" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="start_date_3" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_3" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="end_date_tt_3" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="nbqcm" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="nbqcu" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="nbtcs" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="nbpop" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="attribution_student_completed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="attribution_teacher_completed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="date_jury" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="start_date_session" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="end_date_session" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="nbreviewers" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="grid_eval_qcm" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="grid_eval_qcu" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="grid_eval_tcs" TYPE="int" LENGTH="10" NOTNULL="false"  SEQUENCE="false"/>
+
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_referentiel" COMMENT="List of referentiel">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+     <TABLE NAME="pr_competency" COMMENT="List of competencies">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel" SEQUENCE="false"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Référentiel (clé étrangère)" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="referentiel" REFTABLE="pr_referentiel" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_subcompetency" COMMENT="List of competencies">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Nom du référentiel" SEQUENCE="false"/>
+        <FIELD NAME="competency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Référentiel (clé étrangère)" SEQUENCE="false"/>
+        <FIELD NAME="iscustom" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>     
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="competency" REFTABLE="pr_competency" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_keyword" COMMENT="List of keywords">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="word" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Mot-clé" SEQUENCE="false"/>
+        <FIELD NAME="subcompetency" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Sous-compétence" SEQUENCE="false"/>
+        <FIELD NAME="iscustom" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency" REFTABLE="pr_subcompetency" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_question_keywords" COMMENT="Relation entre questions et mots-clés">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="question_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="keyword_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_question" TYPE="foreign" FIELDS="question_id" REFTABLE="pr_question" REFFIELDS="id"/>
+        <KEY NAME="foreign_keyword" TYPE="foreign" FIELDS="keyword_id" REFTABLE="pr_keyword" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_grade" COMMENT="Table des notes des étudiants">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="production_grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="revision_grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="global_grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_assigned_student_teacher" COMMENT="Table d'association étudiant/enseignant">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_grid_eval" COMMENT="Table pour la grille d'évaluation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="bonus1" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="bonus2" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="bonus3" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="bonus4" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="bonus5" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="malus1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="malus2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="malus3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="malus4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="malus5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_file" COMMENT="Table pour les fichiers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="mimetype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="filearea" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="id_competency" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="id_referentiel" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="filename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_question_pop" COMMENT="Table storing question pop data">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="nbqcm" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" COMMENT="Number of QCM" SEQUENCE="false"/>
+        <FIELD NAME="nbqcu" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" COMMENT="Number of QCU" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_refid" TYPE="foreign" FIELDS="sessionid" REFTABLE="peerreview" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+
+    <TABLE NAME="pr_question" COMMENT="Each record is one QCM and its config data">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="ID de l'étudiant créateur" SEQUENCE="false"/>
+        <FIELD NAME="question" TYPE="text" NOTNULL="true" COMMENT="Contenu XML ou chemin du fichier" SEQUENCE="false"/>
+        <FIELD NAME="global_comment" TYPE="text" NOTNULL="false" COMMENT="Commentaire global de la question" SEQUENCE="false"/>
+        <FIELD NAME="context" TYPE="text" NOTNULL="false" COMMENT="Context" SEQUENCE="false"/>
+        <FIELD NAME="referentiel" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Référentiel (clé étrangère)" SEQUENCE="false"/>
+        <FIELD NAME="competency" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Compétence (clé étrangère)" SEQUENCE="false"/>
+        <FIELD NAME="subcompetency" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Sous-Compétence (clé étrangère)" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="type" TYPE="char" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ispop" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="popid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="poptypeid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="is_improved" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_user" TYPE="foreign" FIELDS="userid" REFTABLE="users" REFFIELDS="id"/>
+        <KEY NAME="foreign_referentiel" TYPE="foreign" FIELDS="referentiel" REFTABLE="pr_referentiel" REFFIELDS="id"/>
+        <KEY NAME="foreign_competency" TYPE="foreign" FIELDS="competency" REFTABLE="pr_competency" REFFIELDS="id"/>
+        <KEY NAME="foreign_subcompetency" TYPE="foreign" FIELDS="subcompetency" REFTABLE="pr_subcompetency" REFFIELDS="id"/>
+        <KEY NAME="foreign_popid" TYPE="foreign" FIELDS="popid" REFTABLE="pr_pop" REFFIELDS="id"/>
+        <KEY NAME="foreign_poptypeid" TYPE="foreign" FIELDS="poptypeid" REFTABLE="pr_question_pop" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_pop" COMMENT="Table storing pop data">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" COMMENT="User ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="poptypeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Type ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="foreign_userid" TYPE="foreign" FIELDS="userid" REFTABLE="users" REFFIELDS="id"/>
+        <KEY NAME="foreign_poptypeid" TYPE="foreign" FIELDS="poptypeid" REFTABLE="pr_question_pop" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_assignedqcm" COMMENT="Table storing assigned QCMs for students">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="20" NOTNULL="true" COMMENT="User ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="prod1_id" TYPE="int" LENGTH="20" NOTNULL="true" COMMENT="Product 1 ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="prod2_id" TYPE="int" LENGTH="20" NOTNULL="false" COMMENT="Product 2 ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="prod3_id" TYPE="int" LENGTH="20" NOTNULL="false" COMMENT="Product 3 ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_user" TYPE="foreign" FIELDS="user_id" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_prod1" TYPE="foreign" FIELDS="prod1_id" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_prod2" TYPE="foreign" FIELDS="prod2_id" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="fk_prod3" TYPE="foreign" FIELDS="prod3_id" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_answer" COMMENT="Table storing answers to student QCM questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="question_id" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Question ID (foreign key)" SEQUENCE="false"/>
+        <FIELD NAME="istrue" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" COMMENT="Indicates if the answer is correct" SEQUENCE="false"/>
+        <FIELD NAME="answer" TYPE="text" NOTNULL="false" COMMENT="Answer text" SEQUENCE="false"/>
+        <FIELD NAME="explanation" TYPE="text" NOTNULL="false" COMMENT="Explanation for the answer" SEQUENCE="false"/>
+        <FIELD NAME="indexation" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Indexation for the answer" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_question_id" TYPE="foreign" FIELDS="question_id" REFTABLE="pr_question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_evaluation" COMMENT="Table storing evaluations for student QCM questions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="question_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="explanation" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_question_id" TYPE="foreign" FIELDS="question_id" REFTABLE="pr_question" REFFIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_teachers" COMMENT="Table storing teachers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="pr_students" COMMENT="Table storing students">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="istiertemps" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

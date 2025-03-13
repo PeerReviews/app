@@ -1,0 +1,36 @@
+id,question_id,isTrue,answer,explanation,indexation
+6,2,0,"Réponse incorrecte 1 pour q2","Explication 1 pour q2",1
+7,2,1,"Réponse correcte 2 pour q2","Explication 2 pour q2",2
+8,2,0,"Réponse incorrecte 3 pour q2","Explication 3 pour q2",3
+9,2,1,"Réponse correcte 4 pour q2","Explication 4 pour q2",4
+10,2,0,"Réponse incorrecte 5 pour q2","Explication 5 pour q2",5
+21,7,1,"TEST","TEST",1
+22,7,1,"TEST","TEST",2
+23,7,1,"TEST","TEST",3
+24,7,0,"TEST","TEST",4
+25,7,0,"TEST","TEST",5
+37,64,0,NULL,NULL,1
+38,64,0,NULL,NULL,2
+47,65,0,"rep1",NULL,1
+48,65,0,"rep2","e2",3
+49,65,0,NULL,"E3",2
+50,65,0,NULL,NULL,4
+51,65,1,NULL,"E5",5
+62,64,0,NULL,NULL,3
+63,64,0,NULL,NULL,4
+64,64,0,NULL,NULL,5
+65,66,0,NULL,NULL,1
+66,66,1,NULL,"?",2
+67,66,0,NULL,NULL,3
+68,66,0,NULL,NULL,4
+69,66,0,"lets go",NULL,5
+95,68,0,NULL,NULL,1
+96,68,0,NULL,NULL,2
+97,68,0,NULL,NULL,3
+98,68,0,NULL,NULL,4
+99,68,0,NULL,NULL,5
+100,69,1,"a","a",1
+101,69,0,"a","a",2
+102,69,0,"a","a",3
+103,69,0,"a","a",4
+104,69,0,"a","a",5

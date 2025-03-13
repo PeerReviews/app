@@ -1,0 +1,10 @@
+{
+    "baseUrl": "mod/peerreview/amd/src",
+    "dir": "mod/peerreview/amd/build",
+    "modules": [
+        {
+            "name": "main"
+        }
+    ],
+    "optimize": "none"
+}
