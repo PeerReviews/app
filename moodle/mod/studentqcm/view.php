@@ -209,31 +209,58 @@ if ($is_teacher || $is_manager) {
     echo "</div>";
 
 } else if ($is_student) {
+
+    $student = $DB->get_record('students', array('userId' => $USER->id), '*', MUST_EXIST);
+
+    if (!isset($studentqcm)) {
+        throw new moodle_exception('studentqcm_not_found', 'mod_studentqcm');
+    }
+    
     // Affichage pour les étudiants
     echo "<div class='p-4 bg-lime-200 rounded-3xl'>";
-        echo "<p class='font-semibold text-center text-lg text-lime-700'>" . get_string('phase1', 'mod_studentqcm') . "</p>";
-        echo "<p class='font-bold text-center text-xl text-lime-700 pt-2'>" . get_string('phase1_title', 'mod_studentqcm') . "</p>";
-
+        echo "<p class='font-semibold text-center text-lg text-lime-700'>" . htmlspecialchars(get_string('phase1', 'mod_studentqcm')) . "</p>";
+        echo "<p class='font-bold text-center text-xl text-lime-700 pt-2'>" . htmlspecialchars(get_string('phase1_title', 'mod_studentqcm')) . "</p>";
+    
         $now = time();
         $start_date_1 = isset($studentqcm->start_date_1) ? $studentqcm->start_date_1 : 0;
-        $is_available = ($now >= $start_date_1);
-
-        echo "<p class='text-center pt-4 italic text-lime-600'>" . get_string('phase_start', 'mod_studentqcm') . " : " . date('d M Y', $start_date_1) . "</p>";
-
+        $end_date_1 = $student->istiertemps ? $studentqcm->end_date_tt_1 : $studentqcm->end_date_1;
+    
+        $is_available = ($now >= $start_date_1 && $now <= $end_date_1);
+    
+        if ($now < $start_date_1) {
+            // La phase n'a pas encore commencé
+            echo "<p class='text-center pt-4 italic text-lime-600'>" . 
+                 htmlspecialchars(get_string('phase_start', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $start_date_1) . 
+                 "</p>";
+        } elseif ($now > $end_date_1) {
+            // La phase est terminée
+            echo "<p class='text-center pt-4 italic text-lime-600'>" . 
+                 htmlspecialchars(get_string('phase_ended', 'mod_studentqcm', 'Phase terminée')) . 
+                 "</p>";
+        } else {
+            // La phase est en cours
+            echo "<p class='text-center pt-4 italic text-lime-600'>" . 
+                 htmlspecialchars(get_string('phase_end', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $end_date_1) . 
+                 "</p>";
+        }
+    
         echo "<div class='flex justify-center mt-2'>";
-        if($is_available) {
+        if ($is_available) {
             echo "<a href='qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-lime-300 hover:bg-lime-400 cursor-pointer text-lime-700 no-underline'>";
-            echo get_string('phase_available', 'mod_studentqcm');
-            echo "<i class='fas fa-arrow-right ml-4'></i>";
+            echo htmlspecialchars(get_string('phase_available', 'mod_studentqcm'));
+            echo "<i class='fas fa-arrow-right ml-4' aria-hidden='true'></i>";
             echo "</a>";
         } else {
             echo "<a href='#' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-gray-200 text-gray-400 cursor-not-allowed no-underline'>";
-            echo "<i class='fas fa-ban mr-4'></i>";
-            echo get_string('phase_unavailable', 'mod_studentqcm');
+            echo "<i class='fas fa-ban mr-4' aria-hidden='true'></i> ";
+            echo htmlspecialchars(get_string('phase_unavailable', 'mod_studentqcm'));
             echo "</a>";
         }
         echo "</div>";
     echo "</div>";
+    
 
     
     echo "<div class='p-4 bg-sky-200 rounded-3xl'>";
@@ -242,9 +269,29 @@ if ($is_teacher || $is_manager) {
 
         $now = time();
         $start_date_2 = isset($studentqcm->start_date_2) ? $studentqcm->start_date_2 : 0;
-        $is_available = ($now >= $start_date_2);
+        $end_date_2 = $student->istiertemps ? $studentqcm->end_date_tt_2 : $studentqcm->end_date_2;
+    
+        $is_available = ($now >= $start_date_2 && $now <= $end_date_2);
+    
+        if ($now < $start_date_2) {
+            // La phase n'a pas encore commencé
+            echo "<p class='text-center pt-4 italic text-sky-600'>" . 
+                 htmlspecialchars(get_string('phase_start', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $start_date_2) . 
+                 "</p>";
+        } elseif ($now > $end_date_2) {
+            // La phase est terminée
+            echo "<p class='text-center pt-4 italic text-sky-600'>" . 
+                 htmlspecialchars(get_string('phase_ended', 'mod_studentqcm', 'Phase terminée')) . 
+                 "</p>";
+        } else {
+            // La phase est en cours
+            echo "<p class='text-center pt-4 italic text-sky-600'>" . 
+                 htmlspecialchars(get_string('phase_end', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $end_date_2) . 
+                 "</p>";
+        }
 
-        echo "<p class='text-center pt-4 italic text-sky-600'>" . get_string('phase_start', 'mod_studentqcm') . " : " . date('d M Y', $start_date_2) . "</p>";
         echo "<div class='flex justify-center mt-2'>";
         if($is_available) {
             echo "<a href='eval_prod_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-sky-300 hover:bg-sky-400 cursor-pointer text-sky-700 no-underline'>";
@@ -266,9 +313,29 @@ if ($is_teacher || $is_manager) {
 
         $now = time();
         $start_date_3 = isset($studentqcm->start_date_3) ? $studentqcm->start_date_3 : 0;
-        $is_available = ($now >= $start_date_3);
+        $end_date_3 = $student->istiertemps ? $studentqcm->end_date_tt_3 : $studentqcm->end_date_3;
+    
+        $is_available = ($now >= $start_date_3 && $now <= $end_date_3);
+    
+        if ($now < $start_date_3) {
+            // La phase n'a pas encore commencé
+            echo "<p class='text-center pt-4 italic text-indigo-600'>" . 
+                 htmlspecialchars(get_string('phase_start', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $start_date_3) . 
+                 "</p>";
+        } elseif ($now > $end_date_3) {
+            // La phase est terminée
+            echo "<p class='text-center pt-4 italic text-indigo-600'>" . 
+                 htmlspecialchars(get_string('phase_ended', 'mod_studentqcm', 'Phase terminée')) . 
+                 "</p>";
+        } else {
+            // La phase est en cours
+            echo "<p class='text-center pt-4 italic text-indigo-600'>" . 
+                 htmlspecialchars(get_string('phase_end', 'mod_studentqcm')) . " : " . 
+                 date('d M Y - H:i', $end_date_3) . 
+                 "</p>";
+        }
 
-        echo "<p class='text-center pt-4 text-indigo-600 italic'>" . get_string('phase_start', 'mod_studentqcm') . " : " . date('d M Y', $start_date_3) . "</p>";
         echo "<div class='flex justify-center mt-2'>";
         if($is_available) {
             echo "<a href='phase3_qcm_list.php?id={$id}' class='inline-block px-4 py-2 font-semibold rounded-2xl bg-indigo-300 hover:bg-indigo-400 cursor-pointer text-indigo-700 no-underline'>";

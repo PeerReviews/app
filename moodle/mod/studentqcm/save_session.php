@@ -10,12 +10,8 @@ $id = required_param('id', PARAM_INT);
 // Récupération de l'ID de la session (champ caché dans le formulaire)
 $session_id = required_param('session_id', PARAM_INT);
 
-print_r($id);
-print_r($session_id);
-
 // Récupération de l'enregistrement de la session dans la base de données
 $session = $DB->get_record('studentqcm', ['id' => $session_id], '*', MUST_EXIST);
-print_r($session);
 
 // Vérification du contexte et des permissions
 $cm = get_coursemodule_from_id('studentqcm', $id, 0, false, MUST_EXIST);
@@ -83,5 +79,5 @@ $session->timemodified = time();
 $DB->update_record('studentqcm', $session);
 
 // Redirection avec message de succès
-// redirect(new moodle_url('/mod/studentqcm/admin_sessions.php', ['id' => $id]), get_string('sessionsaved', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);
+redirect(new moodle_url('/mod/studentqcm/admin_sessions.php', ['id' => $id]), get_string('sessionsaved', 'mod_studentqcm'), null, \core\output\notification::NOTIFY_SUCCESS);
 ?>
