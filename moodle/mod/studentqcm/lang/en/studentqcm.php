@@ -251,6 +251,7 @@ $string['user_gestion'] = 'Gestion des utilisateurs';
 $string['session_gestion'] = 'Gestion des sessions';
 $string['attribution_gestion'] = 'Gestion de l\'attribution des productions';
 $string['grade_gestion'] = 'Gestion des notes';
+$string['grid_eval_gestion'] = 'Gestion des grilles d\'évaluation';
 
 $string['add_student_csv'] = 'Ajouter plusieurs étudiants à partir d\'un ficher CSV';
 
@@ -259,6 +260,7 @@ $string['info_attribution_gestion'] = 'Cette section permet de gérer les attrib
 $string['info_teacher_dashboard'] = 'Cette section permet de visualiser l\'avancée de chaque enseignant sur la correction des productions et révisions';
 $string['info_grade_gestion'] = 'Cette section permet de gérer les notes de chaque étudiant';
 $string['info_session_gestion'] = 'Cette section permet de gérer l\'ensemble des sessions : modification, duplication, archivage, consultatiopn et suppression';
+$string['info_grid_eval_gestion'] = 'Cette section permet de gérer les grilles d\'évaluation de la session courante: ajout manuel, ajout par import, export et suppression';
 
 $string['manager_teacher'] = 'Actions réalisables par l\'enseignant référent';
 $string['teacher'] = 'Actions réalisables par l\'enseignant';
@@ -335,6 +337,11 @@ $string['archive'] = "Archiver";
 $string['session_list'] = 'Liste des sessions';
 $string['sessionsaved'] = 'Session sauvegardée !';
 $string['set_current_session'] = 'Rendre cette session courante';
+
+$string['grid_eval_title'] = 'Grille d\'évaluation';
+$string['export_grid'] = 'Exporter';
+$string['import_grid'] = 'Importer';
+$string['import_texte'] = 'Si vous importez un fichier, toutes les données existantes seront écrasées.';
 $string['confirm_delete_session'] = 'Êtes-vous sûr de vouloir supprimer cette session ?';
 $string['activate'] = 'Activer';
 $string['confirm_activate_session'] = 'Êtes-vous sûr de vouloir activer cette session ?';
