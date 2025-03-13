@@ -808,40 +808,39 @@ class mod_studentqcm_mod_form extends moodleform_mod
             </label>
 
             <input type="hidden" name="add_tiers_temps_phase_hidden" id="add_tiers_temps_phase_hidden" value="0">
+            <input type="hidden" name="checkbox_tt_data" value="0">
 
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                var checkbox = document.getElementById("id_add_tiers_temps_phase");
-                var tiersElements = [];
-
-                    tiersElements = document.querySelectorAll(`[id^="fitem_id_end_date_tt_"], [id="timeSelectorContainer_tt"]`);
-
+                    var checkbox = document.getElementById("id_add_tiers_temps_phase");
+                    var tiersElements = Array.from(document.querySelectorAll(`[id^="fitem_id_end_date_tt_"], [id="timeSelectorContainer_tt"]`));
+                    var checkbox_tt = document.querySelector(`[name="checkbox_tt_data"]`);
 
                     function toggleTiersTemps() {
+                        const isChecked = checkbox.checked;
+
+                        // Affiche ou cache les éléments concernés
                         tiersElements.forEach(elt => {
-                            elt.style.display = checkbox.checked ? "grid" : "none";
+                            elt.style.display = isChecked ? "grid" : "none";
                         });
-                        let checkbox_tt = document.querySelector(`[name="checkbox_tt_data"]`);
-                        checkbox_tt.value = checkbox.checked;
+
+                        if (checkbox_tt) checkbox_tt.value = isChecked ? "1" : "0";
                     }
 
                     checkbox.addEventListener("change", toggleTiersTemps);
                     toggleTiersTemps();
                 });
-
             </script>
         ');
 
-
-
         $mform->addElement('html', '
-        <style>
-            #fitem_id_start_date_1, #fitem_id_start_date_2, #fitem_id_start_date_3,
-            #fitem_id_end_date_1, #fitem_id_end_date_2, #fitem_id_end_date_3,
-            #fitem_id_end_date_tt_1, #fitem_id_end_date_tt_2, #fitem_id_end_date_tt_3 {
-                margin: 0;
-            }
-        </style>
+            <style>
+                #fitem_id_start_date_1, #fitem_id_start_date_2, #fitem_id_start_date_3,
+                #fitem_id_end_date_1, #fitem_id_end_date_2, #fitem_id_end_date_3,
+                #fitem_id_end_date_tt_1, #fitem_id_end_date_tt_2, #fitem_id_end_date_tt_3 {
+                    margin: 0;
+                }
+            </style>
         ');
 
         $date_fields = [
@@ -849,26 +848,26 @@ class mod_studentqcm_mod_form extends moodleform_mod
             ['start_date_2', 'end_date_2', 'end_date_tt_2'],
             ['start_date_3', 'end_date_3', 'end_date_tt_3']
         ];
-        
+
         $bg_colors = ['bg-lime-200', 'bg-indigo-200', 'bg-sky-200'];
         $text_colors = ['text-lime-600', 'text-indigo-600', 'text-sky-600'];
         $focus_colors = ['focus:ring-lime-400', 'focus:ring-indigo-400', 'focus:ring-sky-400'];
-        
+
         foreach ($date_fields as $index => $dates) {
             $bg_color = $bg_colors[$index];
             $text_color = $text_colors[$index];
             $focus_color = $focus_colors[$index];
-            
+
             $mform->addElement('html', '<div class="'. $bg_color .' py-2 rounded-2xl text-sky-700 my-4 p-4 space-y-2">');
-            
+
             foreach ($dates as $date_field) {
-                // On ajoute un champ caché qui sera pris en compte par Moodle
+                // Champ caché Moodle
                 $mform->addElement('hidden', $date_field, '');
                 $mform->setType($date_field, PARAM_RAW);
-        
-                // Maintenant, on affiche notre champ personnalisé visuellement
+
+                // Champ datetime personnalisé
                 $mform->addElement('html', '
-                    <div class="items-center space-x-2 grid grid-cols-3">
+                    <div class="items-center space-x-2 grid grid-cols-3" id="fitem_id_' . $date_field . '">
                         <label class="font-semibold mb-2 ' . $text_color . ' text-md">' . get_string($date_field, 'mod_studentqcm') . ' : </label>
                         <input 
                             class="col-span-2 p-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 ' . $focus_color . ' w-[60%]" 
@@ -880,12 +879,12 @@ class mod_studentqcm_mod_form extends moodleform_mod
                     </div>
                 ');
             }
-            
+
             $mform->addElement('html', '</div>');
         }
-        
 
         $mform->addElement('html', '</div>');
+
 
         // Choix types éval
         $mform->addElement('html', '<div class="mb-8 rounded-2xl p-4 bg-sky-100">');

@@ -15,24 +15,17 @@ function studentqcm_add_instance($data, $mform = null) {
     global $CFG, $DB, $USER;
 
     require_once("$CFG->libdir/resourcelib.php");
+    require_once($CFG->dirroot . '/course/lib.php'); // Importation des fonctions liées aux cours
 
-    // echo '<pre>';
-    // print_r($data);
-    // echo '</pre>';
-    // exit;
 
     // Initialisation des dates
     $data->timecreated = time();
     $data->timemodified = $data->timecreated;
 
-    $record_studentqcm_instance = new stdClass();
-    $record_studentqcm_instance->name = trim($data->name_plugin);
-    $id_instance = $DB->insert_record('studentqcm_instance', $record_studentqcm_instance);
-
-    $session = $DB->get_record('studentqcm', ['archived' => 0], '*', MUST_EXIST);
-
     // Préparer les données du QCM
     $record = new stdClass();
+
+    $session_id = 1;
 
     //Data informations du référentiel
     $record->name = trim($data->name_plugin);
@@ -40,12 +33,9 @@ function studentqcm_add_instance($data, $mform = null) {
     $record->introformat = isset($data->intro['format']) ? $data->intro['format'] : 0;
     $record->timecreated = $data->timecreated;
     $record->timemodified = $data->timemodified;
-    $record->date_start_session = $data->date_start_referentiel;
-    $record->date_end_session = $data->date_end_referentiel;
+    $record->start_date_session = $data->date_start_referentiel;
+    $record->end_date_session = $data->date_end_referentiel;
     $record->date_jury = $data->date_jury;
-    $record_referentiel->sessionid = $session->id;
-    $record->studentqcm_instance_id = $id_instance;
-
 
     // Initialiser les champs de dates
     $date_fields = [
@@ -108,24 +98,21 @@ function studentqcm_add_instance($data, $mform = null) {
     if (empty($record->name)) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
-    // echo '<pre>';
-    // print_r($record);
-    // echo '</pre>';
-    // exit;   
-    
-    // var_dump($record);
-    // die();
 
     // Insérer l'instance principale dans la table 'studentqcm'
-    $id = $DB->insert_record('studentqcm', $record);
-    if (!$id) {
+    $session_id = $DB->insert_record('studentqcm', $record);
+    if (!$session_id) {
         throw new moodle_exception('insertfailed', 'studentqcm');
     }
 
     $record_referentiel = new stdClass();
     $record_referentiel->name = trim($data->name_referentiel);
-    $record_referentiel->studentqcm_id = $id;
+    $record_referentiel->sessionid = $session_id;
     $referentiel_id = $DB->insert_record('referentiel', $record_referentiel);
+
+    $record->referentiel = $referentiel_id;
+    $record->id = $session_id;
+    $DB->update_record('studentqcm', $record);
 
     //Data compétences, sous-compétences, mot-clefs
     if (!empty($data->competences_data) || $data->competences_data == "[]") {
@@ -136,7 +123,7 @@ function studentqcm_add_instance($data, $mform = null) {
             $comp_record = new stdClass();
             $comp_record->referentiel = $referentiel_id;
             $comp_record->name = trim($competence['name']);
-            $comp_record->sessionid = $session->id;
+            $comp_record->sessionid = $session_id;
             $competence_id = $DB->insert_record('competency', $comp_record);
     
             // Insérer les sous-compétences
@@ -144,7 +131,7 @@ function studentqcm_add_instance($data, $mform = null) {
                 $subcomp_record = new stdClass();
                 $subcomp_record->competency = $competence_id;
                 $subcomp_record->name = trim($sub['name']);
-                $subcomp_record->sessionid = $session->id;
+                $subcomp_record->sessionid = $session_id;
                 $subcompetence_id = $DB->insert_record('subcompetency', $subcomp_record);
     
                 // Insérer les mots-clés
@@ -152,7 +139,7 @@ function studentqcm_add_instance($data, $mform = null) {
                     $key_record = new stdClass();
                     $key_record->word = trim($keyword);
                     $key_record->subcompetency = $subcompetence_id;
-                    $key_record->sessionid = $session->id;
+                    $key_record->sessionid = $session_id;
                     $DB->insert_record('keyword', $key_record);
                 }
             }
@@ -168,7 +155,7 @@ function studentqcm_add_instance($data, $mform = null) {
             $pop_record = new stdClass();
             $pop_record->nbqcm = $pop['qcm'];
             $pop_record->nbqcu = $pop['qcu'];
-            $pop_record->sessionid = $session->id;
+            $pop_record->sessionid = $session_id;
             $pop_id = $DB->insert_record('question_pop', $pop_record);
         }
     }
@@ -192,19 +179,28 @@ function studentqcm_add_instance($data, $mform = null) {
         throw new moodle_exception('missingfield', 'studentqcm', '', 'name');
     }
 
-    $record_course = new stdClass();
-    $record_course->fullname = trim($data->name_plugin);
-    $record_course->shortname = trim($data->name_plugin);
-    $record_course->category = 1;
-    $record_course_id = $DB->insert_record('course', $record_course);
+    $course_data = new stdClass();
+    $course_data->fullname = trim($data->name_plugin);
+    $course_data->shortname = trim($data->name_plugin);
+    $course_data->category = 1; // ID de la catégorie où placer le cours
+    $course_data->visible = 1; // Rendre le cours visible
 
-    $record_studentqcm= $DB->get_record('studentqcm', array('id' => $id), '*', MUST_EXIST);
-    $record_studentqcm->courseid = $record_course_id; 
-    $record_studentqcm->referentiel = $referentiel_id;
+    $record_course = create_course($course_data); // Création du cours via Moodle
+
+    if (!$record_course) {
+        die("Erreur : La création du cours a échoué.");
+    } else {
+        echo "Cours créé avec succès ! ID : " . $record_course->id . "<br>";
+    }
+
+    // $record_studentqcm= $DB->get_record('studentqcm_session', array('id' => $id), '*', MUST_EXIST);
+    $record_studentqcm = $DB->get_record('studentqcm', ['id' => $session_id], '*', MUST_EXIST);
+    $record_studentqcm->courseid = $record_course->id; 
+    // $record_studentqcm->referentiel = $referentiel_id;
 
     $DB->update_record('studentqcm', $record_studentqcm);
 
-    return $id;
+    return $session_id;
 }
 
 
