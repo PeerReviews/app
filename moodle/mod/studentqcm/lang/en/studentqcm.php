@@ -258,8 +258,8 @@ $string['info_grade_gestion'] = 'This section allows you to manage each student\
 $string['info_session_gestion'] = 'This section allows you to manage all sessions: modification, duplication, archiving, consultation, and deletion';
 $string['info_grid_eval_gestion'] = 'This section allows you to manage the evaluation grids of the current session: manual addition, import, export, and deletion';
 
-$string['manager_teacher'] = 'Actions available to the lead teacher';
-$string['teacher'] = 'Actions available to the teacher';
+$string['manager_teacher'] = 'Actions available for the lead teacher';
+$string['teacher'] = 'Actions available for the teacher';
 
 $string['student_list'] = 'Student list';
 $string['student_id'] = 'Student ID';
