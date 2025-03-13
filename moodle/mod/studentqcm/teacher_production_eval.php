@@ -328,7 +328,7 @@ if ($qcms) {
                             echo "</div>";
 
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2'>";
-                            echo "Contexte";
+                            echo get_string('context', 'mod_studentqcm');
                             echo "</p>";
                             $context_sans_images = preg_replace('/<img[^>]*>/i', '', $qcm->context);
                             echo "<span class=''>{$context_sans_images}</span>";
@@ -350,7 +350,7 @@ if ($qcms) {
                             }
 
                             echo "<p class='font-semibold text-xl text-gray-700 mb-2 mt-4'>";
-                            echo "Explication globale";
+                            echo get_string('global_comment', 'mod_studentqcm');
                             echo "</p>";
                             echo "<span class=''>{$qcm->global_comment}</span>";
 

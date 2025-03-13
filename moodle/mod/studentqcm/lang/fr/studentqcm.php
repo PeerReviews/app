@@ -369,3 +369,11 @@ $string['NA'] = 'Non renseigné';
 $string['grid_qcu'] = 'Grille d\'évaluation des QCMs';
 $string['grid_qcm'] = 'Grille d\'évaluation des QCUs';
 $string['grid_tcs'] = 'Grille d\'évaluation des TCSs';
+
+$string['duplicate_session'] = 'Dupliquer cette session';
+$string['archive_session'] = 'Archiver cette session';
+$string['activate_session'] = 'Activer cette session';
+$string['export_session'] = 'Exporter l\ensemble des productions de cette session';
+$string['delete_session'] = 'Supprimer cette session';
+$string['yes'] = 'Oui';
+$string['no'] = 'Non';

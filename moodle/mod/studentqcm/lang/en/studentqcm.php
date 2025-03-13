@@ -7,7 +7,7 @@ $string['modulenameplural'] = 'Student QCMs';
 $string['modulename_help'] = 'This tool allows students to create their own questions and teachers to evaluate them.';
 $string['name'] = 'Name';
 $string['name_plugin'] = 'Session name';
-$string['name_referentiel'] = 'Reference name';
+$string['name_referentiel'] = 'referentiel name';
 $string['surname'] = 'First name';
 $string['mail'] = 'Email address';
 $string['description'] = 'Description';
@@ -30,7 +30,7 @@ $string['start_date_session'] = 'Session start date';
 $string['end_date_session'] = 'Session end date';
 $string['date_jury'] = 'Jury date';
 
-$string['newreferentiel'] = 'New reference';
+$string['newreferentiel'] = 'New referentiel';
 $string['newcompetency'] = 'New competency';
 $string['newsubcompetency'] = 'New sub-competency';
 $string['newkeyword'] = 'New keyword';
@@ -79,7 +79,7 @@ $string['explanation'] = 'Explanation';
 $string['correct_answer'] = 'Correct answer';
 $string['submit'] = 'Submit';
 $string['save'] = 'Save';
-$string['referentiel'] = 'Reference';
+$string['referentiel'] = 'Referentiel';
 $string['competency'] = 'Competency';
 $string['subcompetency'] = 'Sub-competency';
 $string['keywords'] = 'Keywords';
@@ -114,7 +114,7 @@ $string['completed_pops'] = 'Completed POPs';
 $string['new_subcompetency'] = 'Add a new sub-competency';
 $string['new_keyword'] = 'Add a new keyword';
 
-$string['select_referentiel'] = 'Select a reference';
+$string['select_referentiel'] = 'Select a referentiel';
 $string['select_competency'] = 'Select a competency';
 $string['select_subcompetency'] = 'Select a sub-competency';
 
@@ -363,3 +363,12 @@ $string['NA'] = 'Not provided';
 $string['grid_qcu'] = 'QCU Evaluation Grid';
 $string['grid_qcm'] = 'QCM Evaluation Grid';
 $string['grid_tcs'] = 'TCS Evaluation Grid';
+
+$string['duplicate_session'] = 'Duplicate session';
+$string['archive_session'] = 'Archive session';
+$string['activate_session'] = 'Activate session';
+$string['export_session'] = 'Export all productions from this session';
+$string['delete_session'] = 'Delete session';
+
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
