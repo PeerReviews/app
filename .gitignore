@@ -12,3 +12,6 @@ moodle/composer.phar
 # PHPCodeSniffer
 phpcbf.phar
 phpcs.phar
+
+# Inutile
+.DS_Store
