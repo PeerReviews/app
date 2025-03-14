@@ -27,8 +27,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $logs = array(
-    array('module'=>'peerreview', 'action'=>'view', 'mtable'=>'pr_session', 'field'=>'name'),
-    array('module'=>'peerreview', 'action'=>'view all', 'mtable'=>'pr_session', 'field'=>'name'),
-    array('module'=>'peerreview', 'action'=>'update', 'mtable'=>'pr_session', 'field'=>'name'),
-    array('module'=>'peerreview', 'action'=>'add', 'mtable'=>'pr_session', 'field'=>'name'),
+    array('module'=>'peerreview', 'action'=>'view', 'mtable'=>'peerreview', 'field'=>'name'),
+    array('module'=>'peerreview', 'action'=>'view all', 'mtable'=>'peerreview', 'field'=>'name'),
+    array('module'=>'peerreview', 'action'=>'update', 'mtable'=>'peerreview', 'field'=>'name'),
+    array('module'=>'peerreview', 'action'=>'add', 'mtable'=>'peerreview', 'field'=>'name'),
 );

@@ -74,14 +74,25 @@ if ($session) {
             // Bonus section
             if ($index < 6) {
                 $indexbonus = "bonus" . $index;
-                $gridData[$type]["bonus"][$index - 1] = htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES);
-                echo "<div class='flex items-center gap-2'>";
-                echo "<label class='flex w-full items-center'>";
-                echo "<i class='$iconClass fa-plus text-lime-600'></i>";
-                echo "<i class='fas fa-1 mr-3 text-lime-600'></i>";
-                echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-bonus$index' value='" . htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
-                echo "</label>";
-                echo "</div>";
+                if ($grille["data"]->$indexbonus) {
+                    $gridData[$type]["bonus"][$index - 1] = htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES);
+                    echo "<div class='flex items-center gap-2'>";
+                    echo "<label class='flex w-full items-center'>";
+                    echo "<i class='$iconClass fa-plus text-lime-600'></i>";
+                    echo "<i class='fas fa-1 mr-3 text-lime-600'></i>";
+                    echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-bonus$index' value='" . htmlspecialchars($grille["data"]->$indexbonus, ENT_QUOTES) . "' oninput='updateHiddenGridData()'>";
+                    echo "</label>";
+                    echo "</div>";
+                } else {
+                    $gridData[$type]["bonus"][$index - 1] = "";
+                    echo "<div class='flex items-center gap-2'>";
+                    echo "<label class='flex w-full items-center'>";
+                    echo "<i class='$iconClass fa-plus text-lime-600'></i>";
+                    echo "<i class='fas fa-1 mr-3 text-lime-600'></i>";
+                    echo "<input class='text-md rounded border px-2 w-full' type='text' name='$type-bonus$index' value='' oninput='updateHiddenGridData()'>";
+                    echo "</label>";
+                    echo "</div>";
+                }
             }
 
             // Malus section

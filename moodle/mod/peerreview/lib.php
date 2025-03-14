@@ -37,7 +37,17 @@ function peerreview_add_instance($data, $mform = null) {
     $record->end_date_session = $data->date_end_referentiel;
     $record->date_jury = $data->date_jury;
     $record->archived = 0;
+    $record->courseid = 0;
    
+    $record_grid = new stdClass();
+    $record_grid->bonus1 = null;
+    $grid_qcu_id = $DB->insert_record('pr_grid_eval', $record_grid);
+    $grid_qcm_id = $DB->insert_record('pr_grid_eval', $record_grid);
+    $grid_tcs_id = $DB->insert_record('pr_grid_eval', $record_grid);
+
+    $record->grid_eval_qcu = $grid_qcu_id;
+    $record->grid_eval_qcm = $grid_qcm_id;
+    $record->grid_eval_tcs = $grid_tcs_id;
 
     // Initialiser les champs de dates
     $date_fields = [
@@ -227,9 +237,150 @@ function peerreview_update_instance($data, $mform = null) {
         throw new moodle_exception('missingfield', 'peerreview', '', 'name');
     }
 
-    // Mise à jour des données dans la table peerreview.
-    return $DB->update_record('peerreview', $data);
+    // Récupérer l'instance de 'peerreview' à mettre à jour.
+    $peerreview_instance = $DB->get_record('peerreview', ['id' => $data->id], '*', MUST_EXIST);
+    
+    // Préparer les données à mettre à jour.
+    $record = new stdClass();
+    $record->id = $data->id;
+    $record->name = trim($data->name_plugin);
+    $record->intro = isset($data->intro['text']) ? trim($data->intro['text']) : '';
+    $record->introformat = isset($data->intro['format']) ? $data->intro['format'] : 0;
+    $record->timemodified = $data->timemodified;
+    $record->start_date_session = $data->date_start_referentiel;
+    $record->end_date_session = $data->date_end_referentiel;
+    $record->date_jury = $data->date_jury;
+    
+    // Mise à jour de la grille de l'évaluation (QCM, QCU, TCS).
+    $record_grid = new stdClass();
+    $record_grid->bonus1 = null;
+    $grid_qcu_id = $DB->insert_record('pr_grid_eval', $record_grid);
+    $grid_qcm_id = $DB->insert_record('pr_grid_eval', $record_grid);
+    $grid_tcs_id = $DB->insert_record('pr_grid_eval', $record_grid);
+
+    $record->grid_eval_qcu = $grid_qcu_id;
+    $record->grid_eval_qcm = $grid_qcm_id;
+    $record->grid_eval_tcs = $grid_tcs_id;
+
+    // Mise à jour des dates supplémentaires (start_date_1, end_date_1, etc.).
+    $date_fields = [
+        'start_date_1', 'end_date_1', 'end_date_tt_1',
+        'start_date_2', 'end_date_2', 'end_date_tt_2',
+        'start_date_3', 'end_date_3', 'end_date_tt_3'
+    ];
+
+    $type = 0;
+    $index = 0;
+
+    foreach ($date_fields as $date_field) {
+        if (isset($data->$date_field)) {
+            $date_value = $data->$date_field;
+            $timestamp = (is_string($date_value) && !empty($date_value)) ? strtotime($date_value) : ($date_value ?? null);
+            if ($timestamp === false) {
+                throw new moodle_exception('invaliddate', 'peerreview', '', $date_field);
+            }
+
+            if ($type != 2 || $data->checkbox_tt_data != "false") {
+                $record->$date_field = $timestamp;
+            }
+
+            $type++;
+            if ($type == 3) {
+                $type = 0;
+                $index++;
+            }
+        }
+    }
+
+    // Mise à jour du réféentiel associé.
+    $record_referentiel = new stdClass();
+    $record_referentiel->name = trim($data->name_referentiel);
+    $record_referentiel->sessionid = $data->id;
+    $referentiel_id = $DB->insert_record('pr_referentiel', $record_referentiel);
+
+    $record->referentiel = $referentiel_id;
+
+    // Mise à jour des compétences, sous-compétences et mots-clés.
+    if (!empty($data->competences_data) || $data->competences_data == "[]") {
+        $competencesArray = json_decode($data->competences_data, true);
+        
+        foreach ($competencesArray as $competence) {
+            // Insérer la compétence
+            $comp_record = new stdClass();
+            $comp_record->referentiel = $referentiel_id;
+            $comp_record->name = trim($competence['name']);
+            $comp_record->sessionid = $data->id;
+            $competence_id = $DB->insert_record('pr_competency', $comp_record);
+    
+            // Insérer les sous-compétences
+            foreach ($competence['subCompetences'] as $sub) {
+                $subcomp_record = new stdClass();
+                $subcomp_record->competency = $competence_id;
+                $subcomp_record->name = trim($sub['name']);
+                $subcomp_record->sessionid = $data->id;
+                $subcompetence_id = $DB->insert_record('pr_subcompetency', $subcomp_record);
+    
+                // Insérer les mots-clés
+                foreach ($sub['keywords'] as $keyword) {
+                    $key_record = new stdClass();
+                    $key_record->word = trim($keyword);
+                    $key_record->subcompetency = $subcompetence_id;
+                    $key_record->sessionid = $data->id;
+                    $DB->insert_record('pr_keyword', $key_record);
+                }
+            }
+        }
+    } else {
+        throw new moodle_exception('invaliddate', 'peerreview', '', $competences_data);
+    }
+
+    // Mise à jour des pops.
+    $popsArray = json_decode($data->pops_data, true);
+    if (!empty($popsArray)) {
+        foreach ($popsArray as $pop) {
+            $pop_record = new stdClass();
+            $pop_record->nbqcm = $pop['qcm'];
+            $pop_record->nbqcu = $pop['qcu'];
+            $pop_record->sessionid = $data->id;
+            $pop_id = $DB->insert_record('pr_question_pop', $pop_record);
+        }
+    }
+
+    // Mise à jour des fichiers de cours
+    if (!empty($data->courses_files_data)) {
+        $selectedCourses = json_decode($data->courses_files_data, true);
+        
+        foreach($selectedCourses as $fileId => $file){
+            $file_record = $DB->get_record('pr_file', ['filearea' => 'coursefiles', 'filename' => $file['file_name']]);
+            $competency = $DB->get_record('pr_competency', ['name' => $file['competency_name'], 'sessionid' => $data->id]);
+            
+            $file_record->id_referentiel = $referentiel_id;
+            $file_record->id_competency = $competency->id;
+            $file_id = $DB->update_record('pr_file', $file_record);
+        }
+    }
+
+    // Mise à jour du cours
+    $course_data = new stdClass();
+    $course_data->fullname = trim($data->name_plugin);
+    $course_data->shortname = trim($data->name_plugin);
+    $course_data->category = 1;
+    $course_data->visible = 1;
+
+    $record_course = create_course($course_data);
+
+    if (!$record_course) {
+        die("Erreur : La mise à jour du cours a échoué.");
+    } else {
+        echo "Cours mis à jour avec succès ! ID : " . $record_course->id . "<br>";
+    }
+
+    $peerreview_instance->courseid = $record_course->id;
+    $DB->update_record('peerreview', $peerreview_instance);
+
+    return true;
 }
+
 
 /**
  * Supprimer une instance de peerreview de la base de données.

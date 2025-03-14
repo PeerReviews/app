@@ -25,8 +25,8 @@ class attribution_teacher_task extends scheduled_task {
             die();  // Si déjà effectuée, on arrête l'exécution
         }
 
-        $current_timestamp = time(); 
-        $start_timestamp = $session->end_date_tt_3;
+        $current_timestamp = strtotime(time()); 
+        $start_timestamp = strtotime($session->end_date_tt_3);
 
         if ($current_timestamp < $start_timestamp) {
             mtrace("La date de lancement n'est pas encore atteinte.");

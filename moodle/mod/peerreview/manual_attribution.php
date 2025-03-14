@@ -107,7 +107,7 @@ if ($gestion_type === 'student') {
     // Affichage des étudiants
     foreach ($students as $student) {
         $student_name = $DB->get_record('user', array('id' => $student->user_id));
-        $student_fullname = ucwords(strtolower($student_name->firstname)) . ' ' . ucwords(strtolower($student_name->lastname));
+        $student_fullname = ucwords($student_name->firstname) . ' ' . ucwords($student_name->lastname);
         $assignedqcm = $DB->get_record('pr_assignedqcm', array('user_id' => $student->user_id, 'sessionid' => $session->id));
 
         echo '<tr id="row-' . $student->user_id . '" class="border-t hover:bg-gray-50">';

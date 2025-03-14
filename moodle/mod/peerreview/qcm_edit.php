@@ -240,7 +240,7 @@ echo "<div class='mt-8'>";
     echo "<div class='rounded-3xl bg-indigo-200 my-4 p-4'>";
     echo "<label for='global_comment' class='block font-semibold text-gray-700 text-lg'>" . get_string('global_comment', 'mod_peerreview') . " :</label>";
     echo "<textarea id='global_comment' name='questions[1][global_comment]' rows='4' maxlength='5000' class='w-full p-2 mt-2 border border-gray-300 rounded-lg' required>";
-    echo htmlspecialchars($question->global_comment);
+    echo $question->global_comment;
     echo "</textarea>";
     echo "<div id='char-count' class='text-gray-600 mt-1'></div>";
     echo "</div>";

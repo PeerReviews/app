@@ -37,7 +37,7 @@
         <FIELD NAME="grid_eval_qcm" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="grid_eval_qcu" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="grid_eval_tcs" TYPE="int" LENGTH="10" NOTNULL="false"  SEQUENCE="false"/>
-
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -138,11 +138,11 @@
     <TABLE NAME="pr_grid_eval" COMMENT="Table pour la grille d'évaluation">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="bonus1" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="bonus2" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="bonus3" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="bonus4" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="bonus5" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="bonus1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bonus2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bonus3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bonus4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bonus5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="malus1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="malus2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="malus3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

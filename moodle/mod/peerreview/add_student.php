@@ -10,11 +10,19 @@ if (!is_siteadmin()) {
     exit;
 }
 
+$istiertemps = 0;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $student_data = [];
     foreach ($_POST as $key => $value) {
         if ($key !== "add_student") { // Exclure le champ du bouton
-            $student_data[$key] = trim($value);
+            if ($key === "istiertemps") {
+                $istiertemps = $value;
+            } 
+            else {
+                $student_data[$key] = trim($value);
+            }
+                
         }
     }
 
@@ -27,7 +35,7 @@ if (!$user) {
     exit;
 }
 
-$session = $DB->get_record('pr_session', ['archived' => 0], '*', MUST_EXIST);
+$session = $DB->get_record('peerreview', ['archived' => 0], '*', MUST_EXIST);
 
 // Vérifier si l'utilisateur est déjà inscrit dans mdl_pr_students
 $existing_student = $DB->get_record('pr_students', ['userid' => $user->id, 'sessionid' => $session->id]);
@@ -40,7 +48,7 @@ if ($existing_student) {
 // Insérer l'étudiant dans la table 
 $new_student = new stdClass();
 $new_student->userid = $user->id;
-$new_student->istiertemps = $student_data['istiertemps'];
+$new_student->istiertemps = $istiertemps;
 $new_student->sessionid = $session->id;
 
 try {

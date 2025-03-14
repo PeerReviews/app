@@ -59,8 +59,8 @@ if ($gestion_type === 'student') {
     $students = $DB->get_records('pr_students', ['sessionid' => $session->id]);
 
     echo '<div class="mt-8 w-full text-center">';
-        $mass_enroll_url = new moodle_url('/local/mass_enroll/massenrol.php', array('id' => $session->courseid));
-        echo "<a href='$mass_enroll_url' class='w-full p-4 bg-lime-400 text-white font-semibold rounded-2xl shadow-md hover:bg-lime-500 transition text-lg block'>"; // Assure-toi que le lien se comporte comme un bloc (block)
+        // $mass_enroll_url = new moodle_url('/local/mass_enroll/massenrol.php', array('id' => $session->courseid));
+        echo "<a class='w-full p-4 bg-lime-400 text-white font-semibold rounded-2xl shadow-md hover:bg-lime-500 transition text-lg block'>"; // Assure-toi que le lien se comporte comme un bloc (block)
         echo "<i class='fas fa-users mr-2'></i>";
         echo get_string('add_student_csv', 'mod_peerreview');
         echo "</a>";
