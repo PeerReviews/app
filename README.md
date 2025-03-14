@@ -27,4 +27,4 @@ BLUTEAU Laure-Anne - EL KANBI Asmae - MAHAMOUDOU Hannane - LESUR Louane
 <br>
 <br>
 
-Ce projet est concédé sous licence selon les termes de la licence MIT.
+Ce projet est concédé sous licence selon les termes de la licence GPLv3.
